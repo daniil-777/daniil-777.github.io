@@ -102,6 +102,12 @@ if (hasArchitecture) {
   console.log(`architecture activated local files: ${activatedBytes} bytes (cap ${architectureBudget.activatedLocalMaxBytes}; external graphics runtime loads on visibility or Play)`);
   if (activatedBytes > architectureBudget.activatedLocalMaxBytes) problems.push('architecture activated local payload exceeds its explicit budget');
 }
+if (home.includes('data-live-preview="2d"')) {
+  if (/<iframe[^>]+src=["'][^"']*drawings\//.test(home)) problems.push('drawing iframe loads eagerly');
+  const drawingBytes = files.filter((file) => file.startsWith('drawings/')).reduce((sum, file) => sum + statSync(path.join(build, file)).size, 0);
+  console.log(`drawing activated local files: ${drawingBytes} bytes (cap ${architectureBudget.drawingActivatedLocalMaxBytes}; shares the cached graphics runtime with the 3D preview)`);
+  if (drawingBytes > architectureBudget.drawingActivatedLocalMaxBytes) problems.push('drawing activated local payload exceeds its explicit budget');
+}
 for (const file of files) {
   if (/\.(wasm|onnx)$/.test(file) && statSync(path.join(build, file)).size > BINARY_MAX) problems.push(`${file} is a model or runtime binary over 1 MB`);
 }

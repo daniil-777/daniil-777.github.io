@@ -1,0 +1,42 @@
+{
+  "repository": "https://github.com/daniil-777/real-time-web-2D3D-generation",
+  "commit": "0b02e184be388bce1caa73fd1ae5f24ba174bd7e",
+  "note": "Fast drawing model with its first anchor chunk (six objects) only. meta.json keeps that one chunk and drops credit_html; sources.json keeps the six photos; drawings.js is a dots-only port of the page engine at a 192-px field.",
+  "files": [
+    {
+      "upstream": "pixel-morph/model/decoder.bin.gz",
+      "local": "drawings/model/decoder.bin.gz",
+      "upstreamSha256": "660eb7d9b8e56bdefef9222485580555cbf6946ec29542986fa00eeb0d189807",
+      "localSha256": "660eb7d9b8e56bdefef9222485580555cbf6946ec29542986fa00eeb0d189807",
+      "localBytes": 297637
+    },
+    {
+      "upstream": "pixel-morph/model/anchors-0.bin.gz",
+      "local": "drawings/model/anchors-0.bin.gz",
+      "upstreamSha256": "09748337b5aaed1d0078b2233fe401dc20c99d940131004d81c51843f8b8fc3e",
+      "localSha256": "09748337b5aaed1d0078b2233fe401dc20c99d940131004d81c51843f8b8fc3e",
+      "localBytes": 240113
+    },
+    {
+      "upstream": "pixel-morph/model/meta.json",
+      "local": "drawings/model/meta.json",
+      "upstreamSha256": "7b5e96f26cf3869af54b2ed21f508278be5c3b2d5b4e5a741d0bad5d7472267b",
+      "localSha256": "17cbcc24c9f4d799a1f54c81a0125273df7281bb93b474ea4a93578368659953",
+      "localBytes": 3599
+    },
+    {
+      "upstream": "pixel-morph/model/sources.json",
+      "local": "drawings/model/sources.json",
+      "upstreamSha256": "08384ad9f591425f719e646c249b397dc4abcea980d9a9841744167aa2881ebc",
+      "localSha256": "a005f95d6348347cdbd90150caf5fc2c87d6002915b370b603ce86f685e7b1a7",
+      "localBytes": 1750
+    },
+    {
+      "upstream": "pixel-morph/index.html",
+      "local": "drawings/drawings.js",
+      "upstreamSha256": "2afb35ce5487620e6fe319907aecd4a1dbec2d41085ab84987a311e466930e2e",
+      "localSha256": "7ebd9e1ced33c8a0e27a5a58fed8af9a4b9fd50b42958c17bc72e6b1ec5ab668",
+      "localBytes": 25547
+    }
+  ]
+}

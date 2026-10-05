@@ -1,31 +1,41 @@
-<section class="live-architecture" aria-labelledby="architecture-title" data-architecture>
+---
+/** A small round live preview: neural 3D architecture or neural 2D drawings, each in its own browsing context. */
+interface Props { kind?: '3d' | '2d' }
+const { kind = '3d' } = Astro.props;
+const copy = {
+  '3d': { href: '/architecture/', play: 'Play live 3D', title: 'Live 3D, in your browser.', lead: 'Neural architecture in HD, transforming live.', credits: '/architecture/credits.html', creditsLabel: 'Model credits' },
+  '2d': { href: '/drawings/', play: 'Play live 2D', title: 'Live 2D, in your browser.', lead: 'Neural drawings, morphing live in dots.', credits: '/drawings/credits.html', creditsLabel: 'Photo credits' },
+}[kind];
+const id = kind === '3d' ? 'architecture' : 'drawing';
+---
+<section class="live-architecture" aria-labelledby={`${id}-title`} data-live-preview={kind} data-architecture={kind === '3d' ? '' : undefined}>
   <div class="live-architecture__visual">
-    <div id="architecture-preview" data-architecture-preview hidden></div>
-    <a class="live-architecture__play" href="/architecture/" data-play aria-controls="architecture-preview" aria-expanded="false"><span aria-hidden="true">▶</span> Play live 3D</a>
+    <div id={`${id}-preview`} data-preview hidden></div>
+    <a class="live-architecture__play" href={copy.href} data-play aria-controls={`${id}-preview`} aria-expanded="false"><span aria-hidden="true">▶</span> {copy.play}</a>
   </div>
   <div class="live-architecture__copy">
-    <h2 id="architecture-title">Live 3D, in your browser.</h2>
-    <p>Neural architecture in HD, transforming live.</p>
+    <h2 id={`${id}-title`}>{copy.title}</h2>
+    <p>{copy.lead}</p>
     <div class="live-architecture__actions">
       <button type="button" data-toggle hidden>Pause</button>
       <button type="button" data-next hidden>Next</button>
       <button type="button" data-remove hidden>Remove</button>
     </div>
-    <div class="live-architecture__links"><a href="/work/pixel-morph/">Explore the project ↗</a><a href="/architecture/credits.html" target="_blank" rel="noopener">Model credits</a></div>
+    <div class="live-architecture__links"><a href="/work/pixel-morph/">Explore the project ↗</a><a href={copy.credits} target="_blank" rel="noopener">{copy.creditsLabel}</a></div>
     <p class="live-architecture__status" data-status role="status" hidden></p>
   </div>
 </section>
 
 <script>
   import { activateWhenVisible } from '../lib/architecture/activation';
-  const root = document.querySelector<HTMLElement>('[data-architecture]');
-  if (root) {
+  for (const root of document.querySelectorAll<HTMLElement>('[data-live-preview]')) {
     const play = root.querySelector<HTMLAnchorElement>('[data-play]')!;
+    const drawing = root.dataset.livePreview === '2d';
     let controller: Promise<{ start(manual?: boolean): void }> | undefined;
     let stopAuto = () => {};
     const activate = (manual: boolean) => {
       stopAuto();
-      controller ??= import('../lib/architecture/preview').then(({ setupPreview }) => setupPreview(root));
+      controller ??= import('../lib/architecture/preview').then(({ setupPreview, ARCHITECTURE, DRAWING }) => setupPreview(root, drawing ? DRAWING : ARCHITECTURE));
       void controller.then((preview) => preview.start(manual)).catch(() => { controller = undefined; if (manual) location.assign(play.href); });
     };
     play.addEventListener('click', (event) => {
@@ -37,9 +47,10 @@
 </script>
 
 <style>
+  .live-architecture + .live-architecture { margin-top: 16px; }
   .live-architecture { display: grid; grid-template-columns: 160px minmax(0, 1fr); align-items: center; gap: 20px; max-width: 520px; margin-top: 28px; }
   .live-architecture__visual { position: relative; width: 160px; height: 160px; overflow: hidden; border-radius: 50%; background: var(--tile); }
-  [data-architecture-preview], [data-architecture-preview] :global(iframe) { display: block; width: 100%; height: 100%; border: 0; }
+  [data-preview], [data-preview] :global(iframe) { display: block; width: 100%; height: 100%; border: 0; }
   h2 { font-size: 16px; font-weight: 600; letter-spacing: -.02em; }
   .live-architecture__copy > p { margin-top: 5px; color: var(--text-2); font-size: 13px; line-height: 1.45; }
   .live-architecture__play { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--link); font-size: 13px; font-weight: 600; }

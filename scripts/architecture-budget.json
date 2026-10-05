@@ -1,5 +1,5 @@
 {
-  "note": "Explicit budget for the compact HD About preview, 2026-10-05: in-view activation and external playback controls. Original chat baseline and allowances retained. Runtime and models must stay outside the eager graph. Pre-feature measurements remain below.",
+  "note": "Explicit budget for the compact HD About preview, 2026-10-05: in-view activation and external playback controls. Original chat baseline and allowances retained. Runtime and models must stay outside the eager graph. Pre-feature measurements remain below. The 2D drawing preview (2026-10-05) shares the launcher and its allowance; its local files have their own cap.",
   "before": {
     "html": 22379,
     "css": 11147,
@@ -10,5 +10,6 @@
     "css": 350,
     "js": 850
   },
-  "activatedLocalMaxBytes": 3400000
+  "activatedLocalMaxBytes": 3400000,
+  "drawingActivatedLocalMaxBytes": 600000
 }

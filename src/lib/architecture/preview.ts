@@ -1,11 +1,34 @@
 /** The model runs in its own browsing context, activated on visibility or Play. */
 import { currentLocale, LANGUAGE_EVENT } from '../../i18n/client.ts';
-export function setupPreview(root: HTMLElement) {
+
+export interface PreviewKind {
+  channel: string;
+  title: string;
+  loading: string;
+  failure: string;
+  src(query: string, manual: boolean): string;
+}
+export const ARCHITECTURE: PreviewKind = {
+  channel: 'portfolio-architecture',
+  title: 'Live neural architecture generation — Pixel Morph',
+  loading: 'Loading live 3D…',
+  failure: 'This browser could not start the 3D preview. Try Play again, or open the full Pixel Morph demo from Selected work.',
+  src: (query, manual) => `/architecture/?${query}&anchor=8&walk=tour&trans=blend&hd=1&neural=1&compact=1&speed=0.8&play=${manual ? 1 : 0}`,
+};
+export const DRAWING: PreviewKind = {
+  channel: 'portfolio-drawing',
+  title: 'Live neural drawing generation — Pixel Morph',
+  loading: 'Loading live 2D…',
+  failure: 'This browser could not start the 2D preview. Try Play again, or open the full Pixel Morph demo from Selected work.',
+  src: (query, manual) => `/drawings/?${query}&play=${manual ? 1 : 0}`,
+};
+
+export function setupPreview(root: HTMLElement, kind: PreviewKind = ARCHITECTURE) {
   const play = root.querySelector<HTMLAnchorElement>('[data-play]')!;
   const remove = root.querySelector<HTMLButtonElement>('[data-remove]')!;
   const toggle = root.querySelector<HTMLButtonElement>('[data-toggle]')!;
   const next = root.querySelector<HTMLButtonElement>('[data-next]')!;
-  const panel = root.querySelector<HTMLElement>('[data-architecture-preview]')!;
+  const panel = root.querySelector<HTMLElement>('[data-preview]')!;
   const status = root.querySelector<HTMLElement>('[data-status]')!;
   let frame: HTMLIFrameElement | null = null;
   let session = '';
@@ -13,12 +36,12 @@ export function setupPreview(root: HTMLElement) {
   let ready = false;
   let deadline: ReturnType<typeof setTimeout> | undefined;
   const say = (message: string) => { status.hidden = !message; status.textContent = message; };
-  const send = (type: string) => frame?.contentWindow?.postMessage({ channel: 'portfolio-architecture', session, type, active: visible && !document.hidden }, location.origin);
+  const send = (type: string) => frame?.contentWindow?.postMessage({ channel: kind.channel, session, type, active: visible && !document.hidden }, location.origin);
   const scheme = matchMedia('(prefers-color-scheme: dark)');
   const appearance = () => document.documentElement.dataset.theme ?? (scheme.matches ? 'dark' : 'light');
   const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; onVisibility(); }, { threshold: 0.05 });
-  const sendTheme = () => frame?.contentWindow?.postMessage({ channel: 'portfolio-architecture', session, type: 'theme', theme: appearance() }, location.origin);
-  const sendLanguage = () => frame?.contentWindow?.postMessage({ channel: 'portfolio-architecture', session, type: 'language', locale: currentLocale() }, location.origin);
+  const sendTheme = () => frame?.contentWindow?.postMessage({ channel: kind.channel, session, type: 'theme', theme: appearance() }, location.origin);
+  const sendLanguage = () => frame?.contentWindow?.postMessage({ channel: kind.channel, session, type: 'language', locale: currentLocale() }, location.origin);
   const theme = new MutationObserver(sendTheme);
 
   function teardown(message = '', restoreFocus = false) {
@@ -58,7 +81,7 @@ export function setupPreview(root: HTMLElement) {
   function onMessage(event: MessageEvent) {
     if (!frame || event.source !== frame.contentWindow || event.origin !== location.origin) return;
     const data = event.data;
-    if (!data || data.channel !== 'portfolio-architecture' || data.session !== session) return;
+    if (!data || data.channel !== kind.channel || data.session !== session) return;
     if (data.type === 'ready') {
       ready = true;
       clearTimeout(deadline);
@@ -68,7 +91,7 @@ export function setupPreview(root: HTMLElement) {
     } else if (data.type === 'playback' && typeof data.paused === 'boolean') {
       playback(data.paused);
     } else if (data.type === 'error') {
-      teardown('This browser could not start the 3D preview. Try Play again, or open the full Pixel Morph demo from Selected work.', true);
+      teardown(kind.failure, true);
     }
   }
   remove.addEventListener('click', () => { teardown('Preview removed.'); play.focus({ preventScroll: true }); });
@@ -81,8 +104,8 @@ export function setupPreview(root: HTMLElement) {
       session = crypto.randomUUID();
       visible = panel.getBoundingClientRect().top < innerHeight && root.getBoundingClientRect().bottom > 0;
       frame = document.createElement('iframe');
-      frame.title = 'Live neural architecture generation — Pixel Morph';
-      frame.src = `/architecture/?session=${encodeURIComponent(session)}&lang=${currentLocale()}&theme=${appearance()}&anchor=8&walk=tour&trans=blend&hd=1&neural=1&compact=1&speed=0.8&play=${manual ? 1 : 0}`;
+      frame.title = kind.title;
+      frame.src = kind.src(`session=${encodeURIComponent(session)}&lang=${currentLocale()}&theme=${appearance()}`, manual);
       frame.addEventListener('load', () => { sendTheme(); sendLanguage(); onVisibility(); });
       document.addEventListener(LANGUAGE_EVENT, sendLanguage);
       window.addEventListener('message', onMessage);
@@ -94,7 +117,7 @@ export function setupPreview(root: HTMLElement) {
       play.hidden = true;
       play.setAttribute('aria-expanded', 'true');
       if (manual) remove.focus({ preventScroll: true });
-      say('Loading live 3D…');
+      say(kind.loading);
       observer.observe(panel);
       theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
       scheme.addEventListener('change', sendTheme);

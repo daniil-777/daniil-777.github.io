@@ -41,7 +41,8 @@ worker/node_modules/
 # Document the non-secret frontend endpoint variable.
 !/.env.example
 
-# Public model provenance required by architecture tests; all other local docs stay private.
+# Public model provenance required by architecture and drawing tests; all other local docs stay private.
 !/docs/
 /docs/*
 !/docs/live-architecture-provenance.json
+!/docs/live-drawing-provenance.json
