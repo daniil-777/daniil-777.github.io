@@ -20,7 +20,7 @@ test('activation, controls, focus, removal during loading, stale messages and re
   }
   const play = new Element(), remove = new Element(), panel = new Element(), status = new Element();
   const toggle = new Element(), next = new Element();
-  const elements: Record<string, Element> = { '[data-play]': play, '[data-remove]': remove, '[data-toggle]': toggle, '[data-next]': next, '[data-architecture-preview]': panel, '[data-status]': status };
+  const elements: Record<string, Element> = { '[data-play]': play, '[data-remove]': remove, '[data-toggle]': toggle, '[data-next]': next, '[data-preview]': panel, '[data-status]': status };
   const root = Object.assign(new Element(), { querySelector: (selector: string) => elements[selector], contains: (element: Element) => Object.values(elements).includes(element) || panel.children.includes(element) });
   const host = new EventTarget();
   const document = Object.assign(new EventTarget(), { activeElement: new Element(), hidden: false, documentElement: { dataset: { theme: 'light' } }, createElement: () => new Element() });

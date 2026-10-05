@@ -1,0 +1,65 @@
+{
+ "note": "Photos behind the anchor scenes; contours and colours were distilled from them. All from Wikimedia Commons.",
+ "photos": [
+  {
+   "class": "mountain",
+   "anchors": [
+    0
+   ],
+   "title": "File:DER Berg - Matterhorn (Juli 2008).jpg",
+   "author": "JoachimKohler-HB",
+   "license": "CC BY-SA 4.0",
+   "url": "https://commons.wikimedia.org/wiki/File:DER_Berg_-_Matterhorn_(Juli_2008).jpg"
+  },
+  {
+   "class": "airliner",
+   "anchors": [
+    1
+   ],
+   "title": "File:Airbus A330-323, D-AAED (1).jpg",
+   "author": "Cjp24",
+   "license": "CC BY-SA 4.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Airbus_A330-323,_D-AAED_(1).jpg"
+  },
+  {
+   "class": "car",
+   "anchors": [
+    2
+   ],
+   "title": "File:Moscow, Volvo C30 blue, Sept 2025 02-1.jpg",
+   "author": "Retired electrician",
+   "license": "CC0",
+   "url": "https://commons.wikimedia.org/wiki/File:Moscow,_Volvo_C30_blue,_Sept_2025_02-1.jpg"
+  },
+  {
+   "class": "spacecraft",
+   "anchors": [
+    3
+   ],
+   "title": "File:STS-107 launchpad.jpg",
+   "author": "NASA",
+   "license": "Public domain",
+   "url": "https://commons.wikimedia.org/wiki/File:STS-107_launchpad.jpg"
+  },
+  {
+   "class": "lighthouse",
+   "anchors": [
+    4
+   ],
+   "title": "File:La Martre lighthouse - La Martre, QC, CA - 16-06-2013.jpg",
+   "author": "Letartean",
+   "license": "CC BY 3.0",
+   "url": "https://commons.wikimedia.org/wiki/File:La_Martre_lighthouse_-_La_Martre,_QC,_CA_-_16-06-2013.jpg"
+  },
+  {
+   "class": "earth",
+   "anchors": [
+    5
+   ],
+   "title": "File:Africa from low orbiting satellite Suomi NPP.jpg",
+   "author": "NASA/NOAA",
+   "license": "Public domain",
+   "url": "https://commons.wikimedia.org/wiki/File:Africa_from_low_orbiting_satellite_Suomi_NPP.jpg"
+  }
+ ]
+}

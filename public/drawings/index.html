@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Live neural drawing · Daniil Emtsev</title>
+  <style>
+    :root { color-scheme: light; --bg: #fff; }
+    :root[data-theme=dark] { color-scheme: dark; --bg: #000; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); }
+    canvas { display: block; width: 100vmin; height: 100vmin; margin: calc((100vh - 100vmin) / 2) auto 0; }
+    /* Dark paper: invert lightness, keep the dots' hues. */
+    :root[data-theme=dark] canvas { filter: invert(1) hue-rotate(180deg); }
+  </style>
+</head>
+<body>
+  <canvas id="c" width="1" height="1" aria-hidden="true"></canvas>
+  <script src="drawings.js"></script>
+</body>
+</html>
