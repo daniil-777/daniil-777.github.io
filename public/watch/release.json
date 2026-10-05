@@ -1,5 +1,6 @@
 {
-  "release": "smart-watch-three-faces-expanded-20261005-v1",
+  "release": "smart-watch-four-faces-layered-no-aircraft-20261006-v1",
   "watch": "Smart watch",
-  "aircraftEnvironment": "chronos-plane-4"
+  "aircraftEnvironment": "chronos-plane-4",
+  "aircraftPublicEnabled": false
 }

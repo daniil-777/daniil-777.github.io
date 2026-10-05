@@ -14,6 +14,11 @@ const facts = pack.facts;
 const app = (await readdir(join(build, '_astro'))).find(name => /^app\..*\.js$/.test(name));
 assert.ok(app, 'Build must include the public watch app');
 const appBytes = await readFile(join(build, '_astro', app));
+const planeWorkerPaths = [];
+for (const name of (await readdir(join(build, '_astro'))).filter(name => /^worker[-.].*\.js$/.test(name))) {
+  if ((await readFile(join(build, '_astro', name), 'utf8')).includes('planeRadialHalfWidth')) planeWorkerPaths.push(`/_astro/${name}`);
+}
+assert.ok(planeWorkerPaths.length > 0, 'The aircraft trainer code remains in the build');
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 await mkdir(output, { recursive: true });
 const results = [], typography = [];
@@ -78,20 +83,22 @@ async function circularCase(style) {
   results.push({ test: `${style} has a circular steel outer case`, passed: true, ...measured });
 }
 
-async function continuousPlane(style) {
+async function noPublicAircraft(style) {
   await setPaused(browser, false);
-  await until(browser, 'getComputedStyle(document.querySelector("[data-watch-plane]")).display!=="none"');
-  const first = await browser.evaluate('document.querySelector("[data-watch-plane]").getAttribute("transform")');
-  await wait(800);
-  const flight = await browser.evaluate(`(()=>{
-    const n=document.querySelector('[data-watch-plane]'),b=n.getBoundingClientRect();
-    return {transform:n.getAttribute('transform'),width:b.width,height:b.height,
-      opacity:getComputedStyle(n).opacity,motion:document.querySelector('[data-watch-motion]').value};
+  const state = await browser.evaluate(String.raw`(()=>{
+    const root=document.querySelector('[data-watch]'),settings=root.querySelector('.chronos__settings');
+    const previous=settings.open;settings.open=true;
+    const selector='[data-watch-plane],[data-watch-clouds],[data-watch-plane-toggle],[data-watch-clouds-toggle],[data-watch-learn],[data-watch-reset-learn],[data-watch-learning],[data-watch-metrics]';
+    const visible=[...root.querySelectorAll(selector)].filter(n=>{
+      const b=n.getBoundingClientRect(),s=getComputedStyle(n);return b.width>0&&b.height>0&&s.display!=='none'&&s.visibility!=='hidden';
+    }).map(n=>n.outerHTML.slice(0,120));settings.open=previous;
+    return {enabled:root.dataset.watchAircraft,visible,resources:performance.getEntriesByType('resource').map(r=>r.name)
+      .filter(n=>/\/watch\/plane\//.test(n)||${JSON.stringify(planeWorkerPaths)}.includes(new URL(n).pathname))};
   })()`);
-  assert.notEqual(flight.transform, first, 'Aircraft must continue moving in every layout');
-  assert.ok(flight.width > 8 && flight.height > 8, 'Aircraft is physically visible at desktop size');
-  assert.equal(flight.motion, 'sweep');
-  results.push({ test: `${style} keeps the outer-ring aircraft flying`, passed: true, ...flight });
+  assert.equal(state.enabled, 'false');
+  assert.deepEqual(state.visible, [], 'Aircraft, clouds, controls and diagnostics stay hidden with settings open');
+  assert.deepEqual(state.resources, [], 'No aircraft policy or worker is downloaded');
+  results.push({ test: `${style} omits aircraft and aircraft asset downloads`, passed: true, ...state });
   await setPaused(browser, true);
 }
 
@@ -115,7 +122,10 @@ const cardMeasurement = `(()=>{
   const b=n.getBoundingClientRect(),scale=face.width/440;
   return {sentence:n.textContent,caption:document.querySelector('[data-watch-caption]').textContent,
     font:parseFloat(getComputedStyle(n).fontSize),fontUnits:parseFloat(getComputedStyle(n).fontSize)/scale,
-    height:b.height,relativeBottom:(b.bottom-face.top)/scale,
+    height:b.height,relativeTop:(b.top-face.top)/scale,relativeBottom:(b.bottom-face.top)/scale,
+    hourOverlaps:[...document.querySelector('[data-watch-layered-hours]').children].filter(hour=>{
+      const h=hour.getBoundingClientRect();return h.width>0&&h.height>0&&Math.min(b.right,h.right)>Math.max(b.left,h.left)
+        &&Math.min(b.bottom,h.bottom)>Math.max(b.top,h.top);}).map(hour=>hour.textContent),
     maxRadius:Math.max(...[b.left,b.right].flatMap(x=>[b.top,b.bottom].map(y=>
       Math.hypot((x-face.left)/scale-220,(y-face.top)/scale-220))))};
 })()`;
@@ -140,7 +150,8 @@ async function checkTypography(style) {
           assert.ok(measured.firstRotation < 0 && measured.lastRotation > 0, evidence);
           assert.equal(measured.hasStretch, false);
         } else {
-          assert.ok(measured.relativeBottom < 374, evidence);
+          assert.ok(measured.relativeBottom < (style === 'layered' ? 350.1 : 374), evidence);
+          if (style === 'layered') { assert.ok(measured.relativeTop > 220, evidence); assert.deepEqual(measured.hourOverlaps, [], evidence); }
           assert.ok(measured.fontUnits >= 14, evidence);
         }
         rows.push({ style, width, fact: fact.id, ...measured });
@@ -159,8 +170,69 @@ async function checkTypography(style) {
     maxRadius: Math.max(...rows.map(r => r.maxRadius)) });
 }
 
+async function checkLayeredSize() {
+  const measure = async () => {
+    await settle(browser);const measured=await browser.evaluate(cardMeasurement);
+    assert.equal(measured.sentence,measured.caption);assert.ok(measured.relativeTop>220);
+    assert.ok(measured.relativeBottom<=350.1&&measured.maxRadius<198);
+    assert.deepEqual(measured.hourOverlaps,[]);
+    assert.equal(await browser.evaluate('document.documentElement.scrollWidth>innerWidth'),false);
+    return measured;
+  };
+  const representatives = [facts.filter(f=>f.mode==='ai').sort((a,b)=>a.answer.length-b.answer.length)[0],
+    facts.filter(f=>f.mode==='ai').sort((a,b)=>b.answer.length-a.answer.length)[0],
+    facts.filter(f=>f.mode==='profile').sort((a,b)=>b.answer.length-a.answer.length)[0]];
+  const selectFact = async fact => {
+    await clickMode(browser,fact.mode);if(fact.mode==='ai')await choose(browser,'select[data-watch-domain]','all');
+    for(let i=0;i<facts.length;i++) {
+      if(await browser.evaluate(`document.querySelector('[data-watch-caption]').textContent===${JSON.stringify(fact.answer)}`))return;
+      await browser.evaluate('document.querySelector("[data-watch-next]").click()');
+    }
+    throw new Error(`Could not select representative ${fact.id}`);
+  };
+  const samples=[];
+  for(const fact of representatives) {
+    await selectFact(fact);
+    for(const requested of [16,24,28]) {
+      await browser.evaluate(`(()=>{const range=document.querySelector('[data-watch-answer-size]');range.value=${JSON.stringify(String(requested))};range.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+      const measured=await measure();assert.equal(measured.sentence,fact.answer);
+      assert.ok(measured.fontUnits<=requested+.01&&measured.fontUnits>=14);
+      samples.push({fact:fact.id,requested,...measured});
+    }
+  }
+  await selectFact(representatives[0]);
+  const pointer = async (kind,target) => {
+    await browser.evaluate('document.querySelector("[data-watch-answer-size]").scrollIntoView({block:"center"})');
+    await settle(browser);
+    const range=await browser.evaluate(`(()=>{const n=document.querySelector('[data-watch-answer-size]'),b=n.getBoundingClientRect();return {left:b.left,top:b.top,width:b.width,height:b.height,value:Number(n.value),min:Number(n.min),max:Number(n.max),step:Number(n.step)};})()`);
+    assert.equal(range.min,16);assert.equal(range.max,28);assert.equal(range.step,1);
+    const x=value=>range.left+8+(range.width-16)*(value-range.min)/(range.max-range.min),y=range.top+range.height/2;
+    if(kind==='mouse') {
+      await browser.send('Input.dispatchMouseEvent',{type:'mousePressed',x:x(range.value),y,button:'left',buttons:1,clickCount:1});
+      await browser.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:x(target),y,button:'left',buttons:1});
+      await browser.send('Input.dispatchMouseEvent',{type:'mouseReleased',x:x(target),y,button:'left',buttons:0,clickCount:1});
+    } else {
+      await browser.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
+      await browser.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:x(range.value),y,radiusX:1,radiusY:1,id:1}]});
+      for(let i=1;i<=6;i++)await browser.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x(range.value+(target-range.value)*i/6),y,radiusX:1,radiusY:1,id:1}]});
+      await browser.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+    }
+    assert.equal(await browser.evaluate('Number(document.querySelector("[data-watch-answer-size]").value)'),target,`${kind} drag changes native range`);
+    const measured=await measure();assert.match(await browser.evaluate('document.querySelector("[data-watch-answer-size-label]").textContent'),/%/);
+    return {kind,requested:target,...measured};
+  };
+  await browser.send('Emulation.setDeviceMetricsOverride',{width:1440,height:1100,deviceScaleFactor:1,mobile:false});
+  const small=await pointer('mouse',16),large=await pointer('mouse',28);
+  assert.ok(large.fontUnits>small.fontUnits,'Mouse resizing changes the rendered answer size');
+  await browser.send('Emulation.setDeviceMetricsOverride',{width:380,height:1100,deviceScaleFactor:1,mobile:true});
+  const finger=await pointer('touch',16);
+  assert.ok(finger.fontUnits<large.fontUnits,'Finger resizing changes the rendered answer size');
+  await browser.send('Emulation.setTouchEmulationEnabled',{enabled:false});
+  results.push({test:'layered answer resizes live with mouse and touch while complete text stays below center and clear of hour numbers',passed:true,samples,pointers:[small,large,finger]});
+}
+
 try {
-  for (const style of ['arc', 'card']) {
+  for (const style of ['arc', 'card', 'layered']) {
     await browser.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false });
     await navigate(style);
     const visible = await browser.evaluate(`(()=>{const n=document.querySelector('[data-watch-thought-layout]');
@@ -182,17 +254,46 @@ try {
       assert.equal(arrangement.phraseDisplay, 'none');
       results.push({ test: 'companion face places the small analogue clock above its complete answer', passed: true, ...arrangement });
     }
-    await continuousPlane(style);
+    if (style === 'layered') {
+      assert.equal(await browser.evaluate('Number(document.querySelector("[data-watch-answer-size]").value)'), 24, 'Layered answer starts at its smaller default size');
+      const arrangement = await browser.evaluate(`(()=>{
+        const face=document.querySelector('[data-watch-dial]'),clock=document.querySelector('.chronos__clock-mechanism');
+        const output=document.querySelector('[data-watch-card-output]'),hours=[...document.querySelector('[data-watch-layered-hours]').children];
+        return {clockTransform:getComputedStyle(clock).transform,faceZ:Number(getComputedStyle(face).zIndex),
+          outputZ:Number(getComputedStyle(output).zIndex),color:getComputedStyle(output).color,
+          phraseDisplay:getComputedStyle(document.querySelector('[data-watch-phrase]')).display,
+          indices:document.querySelector('[data-watch-layered-indices]').children.length,
+          hours:hours.map(n=>({label:n.textContent,transform:getComputedStyle(n).transform,
+            radius:Math.hypot(Number(n.getAttribute('x'))-220,Number(n.getAttribute('y'))-220)})),
+          hands:[...clock.querySelectorAll('[data-watch-hand]')].map(n=>({hand:n.dataset.watchHand,
+            opacity:Number(getComputedStyle(n).opacity),transform:n.getAttribute('transform')}))};
+      })()`);
+      assert.equal(arrangement.clockTransform, 'none', 'Layered clock keeps its full centered geometry');
+      assert.ok(arrangement.outputZ > arrangement.faceZ, 'Answer sits above transparent clock hands');
+      assert.equal(arrangement.color, 'rgb(255, 255, 255)');
+      assert.equal(arrangement.phraseDisplay, 'none');
+      assert.equal(arrangement.indices, 60);
+      assert.deepEqual(arrangement.hours.map(hour=>Number(hour.label)).sort((a,b)=>a-b), Array.from({length:12},(_,i)=>i+1));
+      for (const hour of arrangement.hours) { assert.equal(hour.transform, 'none'); assert.ok(Math.abs(hour.radius-166)<.1); }
+      assert.equal(arrangement.hands.length, 3);
+      for (const hand of arrangement.hands) { assert.ok(hand.opacity > 0 && hand.opacity <= .30); assert.match(hand.transform, /220 220\)/); }
+      results.push({ test: 'layered face places its white answer above full centered transparent hands and twelve upright hours', passed: true, ...arrangement });
+    }
+    await noPublicAircraft(style);
     await writeFile(join(output, `${style}-desktop.png`), await browser.screenshot());
     await checkTypography(style);
     results.push({ test: `${style} URL flag and visible selector initialize the layout`, passed: true });
+    if(style==='layered')await checkLayeredSize();
   }
 
-  for (const style of ['dial', 'arc', 'card']) {
+  for (const style of ['dial', 'arc', 'card', 'layered']) {
     await choose(browser, '[data-watch-thought-layout]', style);
     assert.equal(await browser.evaluate('document.querySelector("[data-watch]").dataset.watchThoughtStyle'), style);
+    const resizeVisible=await browser.evaluate(`(()=>{const n=document.querySelector('[data-watch-answer-size-control]'),b=n.getBoundingClientRect();return b.width>0&&b.height>0&&getComputedStyle(n).display!=='none';})()`);
+    assert.equal(resizeVisible,style==='layered','Answer-size control is visible only for layered face');
+    if (style === 'dial') await noPublicAircraft(style);
   }
-  results.push({ test: 'visible selector switches all three layouts', passed: true });
+  results.push({ test: 'visible selector switches all four layouts', passed: true });
   await clickMode(browser, 'ai');
   for (const domain of ['math', 'ai']) {
     await choose(browser, 'select[data-watch-domain]', domain);
@@ -217,12 +318,13 @@ try {
     const initial={style:root.dataset.watchThoughtStyle,domain:root.dataset.watchDomain};
     handle.setSettings({thoughtStyle:'card',knowledgeDomain:'math'});
     const changed={style:root.dataset.watchThoughtStyle,domain:root.dataset.watchDomain};
+    handle.setSettings({thoughtStyle:'layered'});const layered=root.dataset.watchThoughtStyle;
     let badStyle=false,badDomain=false;
     try{handle.setSettings({thoughtStyle:'bad'});}catch{badStyle=true;}
     try{handle.setSettings({knowledgeDomain:'bad'});}catch{badDomain=true;}
-    handle.unmount();root.remove();return {initial,changed,badStyle,badDomain};
+    handle.unmount();root.remove();return {initial,changed,layered,badStyle,badDomain};
   })()`);
-  assert.deepEqual(api, { initial: { style: 'arc', domain: 'ai' }, changed: { style: 'card', domain: 'math' }, badStyle: true, badDomain: true });
+  assert.deepEqual(api, { initial: { style: 'arc', domain: 'ai' }, changed: { style: 'card', domain: 'math' }, layered: 'layered', badStyle: true, badDomain: true });
   results.push({ test: 'public mount and settings API support validated layout and knowledge flags', passed: true, ...api });
   const resources = await browser.evaluate('performance.getEntriesByType("resource").map(r=>r.name)');
   assert.ok(!resources.some(resource => /\.(?:onnx|wasm)(?:$|\?)|ort[.-]wasm/.test(resource)));

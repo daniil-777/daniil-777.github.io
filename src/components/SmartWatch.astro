@@ -1,6 +1,6 @@
 ---
 import '../styles/watch.css';
-import { minuteIndex } from '../lib/watch/geometry';
+import { minuteIndex, pointOnDial } from '../lib/watch/geometry';
 import { readClock } from '../lib/watch/clock';
 import { PHRASE_APERTURE_PATH, PHRASE_ARC_PATH } from '../lib/watch/phrase';
 import type { LanguageMode, WatchMotion, WatchThoughtStyle, WatchKnowledgeDomain } from '../lib/watch/types';
@@ -15,10 +15,19 @@ interface Props {
   motion?: WatchMotion;
   thoughtStyle?: WatchThoughtStyle;
   knowledgeDomain?: WatchKnowledgeDomain;
+  /** Retained flight experiment; disabled in every public watch. */
+  aircraft?: boolean;
 }
-const { id = 'chronos', compact = false, diameter = 380, timeZone = '', phraseIntervalMs = 20000, languageMode = 'ai', motion = 'sweep', thoughtStyle = 'dial', knowledgeDomain = 'all' } = Astro.props;
+const { id = 'chronos', compact = false, diameter = 380, timeZone = '', phraseIntervalMs = 20000, languageMode = 'ai', motion = 'sweep', thoughtStyle = 'dial', knowledgeDomain = 'all', aircraft = false } = Astro.props;
 const dialSize = Math.max(96, Math.min(480, diameter));
 const indices = Array.from({ length: 60 }, (_, index) => minuteIndex(index));
+const outerIndices = Array.from({ length: 60 }, (_, index) => ({
+  start: pointOnDial(index % 5 === 0 ? 184 : 188, index * Math.PI / 30),
+  end: pointOnDial(193, index * Math.PI / 30), major: index % 5 === 0,
+}));
+const outerHours = Array.from({ length: 12 }, (_, index) => ({
+  label: index || 12, point: pointOnDial(166, index * Math.PI / 6),
+}));
 const clock = readClock(new Date(), timeZone);
 const gradient = (name: string) => `${id}-${name}`;
 const Panel = compact ? 'dialog' : 'div';
@@ -29,7 +38,7 @@ const unavailable = 'Reviewed thoughts are available while the trained local lan
   data-watch data-compact={String(compact)} data-watch-zone-value={timeZone}
   data-watch-interval-value={phraseIntervalMs} data-watch-mode-value={languageMode} data-watch-motion-value={motion}
   data-watch-thought-style-value={thoughtStyle} data-watch-thought-style={thoughtStyle}
-  data-watch-domain-value={knowledgeDomain}
+  data-watch-domain-value={knowledgeDomain} data-watch-aircraft={String(aircraft)}
   style={`--watch-diameter: ${dialSize}px;`} aria-label="Smart watch" lang="en" data-no-translate>
   {compact && <button class="chronos__launcher" data-watch-open aria-haspopup="dialog" aria-controls={`${id}-panel`} aria-label="Open smart watch">
     <svg viewBox="0 0 96 96" aria-hidden="true">
@@ -72,6 +81,14 @@ const unavailable = 'Reviewed thoughts are available while the trained local lan
           <circle cx="220" cy="220" r="205" fill={`url(#${gradient('bezel')})`} stroke="#080c0d" stroke-width="1.5" />
           <circle cx="220" cy="220" r="198" fill={`url(#${gradient('dial')})`} stroke="#788387" stroke-opacity=".65" stroke-width=".65" />
           <circle cx="220" cy="220" r="194.5" fill="none" stroke="#859093" stroke-opacity=".1" stroke-width=".5" />
+          <g class="chronos__layered-ring" aria-hidden="true">
+            <g data-watch-layered-indices>
+              {outerIndices.map(({ start, end, major }) => <line x1={start.x.toFixed(3)} y1={start.y.toFixed(3)} x2={end.x.toFixed(3)} y2={end.y.toFixed(3)} stroke={major ? '#edf2ec' : '#a5b6b2'} stroke-width={major ? '2' : '.8'} stroke-linecap="butt" />)}
+            </g>
+            <g class="chronos__layered-hours" data-watch-layered-hours text-anchor="middle" dominant-baseline="central">
+              {outerHours.map(({ label, point }) => <text x={point.x.toFixed(3)} y={point.y.toFixed(3)}>{label}</text>)}
+            </g>
+          </g>
           <g data-watch-clouds class="chronos__clouds" aria-hidden="true"></g>
           <g class="chronos__clock-mechanism">
           <circle class="chronos__small-clock-bezel" cx="220" cy="220" r="198" fill="#0b1012" stroke="#b7c6c5" stroke-opacity=".55" stroke-width="1.5" />
@@ -117,17 +134,23 @@ const unavailable = 'Reviewed thoughts are available while the trained local lan
           <button type="button" data-watch-mode="profile" aria-pressed={languageMode === 'profile'}>About me</button>
           <button type="button" data-watch-mode="wellbeing" aria-pressed={languageMode === 'wellbeing'}>Wellbeing</button>
         </div>
+        <p class="chronos__layered-label" aria-hidden="true">A moment to reflect</p>
         <p class="chronos__card-output" data-watch-card-output aria-hidden="true">{unavailable}</p>
         <p class="chronos__card-source" data-watch-card-source aria-hidden="true">Cited thoughts · on device</p>
       </div>
       <time class="chronos__time" data-watch-time datetime={new Date(clock.epochMs).toISOString()} aria-live="off">{clock.label}</time>
-      <label class="chronos__layout-control">Thought layout<select data-watch-thought-layout><option value="dial" selected={thoughtStyle === 'dial'}>Inside dial</option><option value="arc" selected={thoughtStyle === 'arc'}>Around rim</option><option value="card" selected={thoughtStyle === 'card'}>Companion face</option></select></label>
+      <label class="chronos__layout-control">Thought layout<select data-watch-thought-layout><option value="dial" selected={thoughtStyle === 'dial'}>Inside dial</option><option value="arc" selected={thoughtStyle === 'arc'}>Around rim</option><option value="card" selected={thoughtStyle === 'card'}>Companion face</option><option value="layered" selected={thoughtStyle === 'layered'}>Layered face</option></select></label>
+      <label class="chronos__answer-size" data-watch-answer-size-control>
+        <span>Answer size</span><output data-watch-answer-size-label for={`${id}-answer-size`}>100%</output>
+        <input id={`${id}-answer-size`} data-watch-answer-size type="range" min="16" max="28" step="1" value="24" aria-label="Answer size" />
+        <small data-watch-answer-size-hint hidden></small>
+      </label>
     </div>
 
     <div class="chronos__companion">
       <p class="chronos__overline">THE SMART WATCH EXPERIMENT</p>
       <h3 id={`${id}-title`}>A moment of<br />intelligence.</h3>
-      <p class="chronos__intro">A precise clock. A useful thought. A tiny aircraft learning its way around the dial.</p>
+      <p class="chronos__intro">A precise clock. A useful thought. A moment to reflect.</p>
       <div class="chronos__modes" role="group" aria-label="Choose a language mode">
         <button type="button" data-watch-mode="ai" aria-pressed={languageMode === 'ai'}>AI</button>
         <button type="button" data-watch-mode="profile" aria-pressed={languageMode === 'profile'}>About me</button>
@@ -153,7 +176,7 @@ const unavailable = 'Reviewed thoughts are available while the trained local lan
       <details class="chronos__details" data-watch-details>
         <summary>Source &amp; details <span aria-hidden="true">+</span></summary>
         <div data-watch-sources class="chronos__sources" data-no-translate>Sources and model availability appear here when the watch is opened.</div>
-        <p class="chronos__metrics" data-watch-metrics></p>
+        <p class="chronos__metrics" data-watch-metrics hidden={!aircraft}></p>
       </details>
       <details class="chronos__settings">
         <summary>Make it yours <span aria-hidden="true">+</span></summary>
@@ -161,11 +184,11 @@ const unavailable = 'Reviewed thoughts are available while the trained local lan
           <label>Time zone<select data-watch-zone><option value="" selected={!timeZone}>Device time</option><option value="Europe/Zurich" selected={timeZone === 'Europe/Zurich'}>Zurich</option></select></label>
           <label>Motion<select data-watch-motion><option value="system" selected={motion === 'system'}>Respect device</option><option value="sweep" selected={motion === 'sweep'}>Sweeping</option><option value="tick" selected={motion === 'tick'}>Ticking</option></select></label>
           <label class="chronos__interval">New thought every <output data-watch-interval-label>{Math.round(phraseIntervalMs / 1000)} seconds</output><input data-watch-interval type="range" min="2" max="60" step="1" value={Math.round(phraseIntervalMs / 1000)} aria-label="Seconds between thoughts" /></label>
-          <label class="chronos__switch"><span>Aircraft</span><input data-watch-plane-toggle type="checkbox" checked /></label>
-          <label class="chronos__switch"><span>Clouds</span><input data-watch-clouds-toggle type="checkbox" checked /></label>
-          <label class="chronos__switch"><span>Learn in simulation</span><input data-watch-learn type="checkbox" /></label>
-          <button class="chronos__reset" data-watch-reset-learn type="button">Reset learning</button>
-          <p class="chronos__learning" data-watch-learning aria-live="off">Frozen policy. Learning starts only when enabled.</p>
+          <label class="chronos__switch" data-watch-flight-control hidden={!aircraft}><span>Aircraft</span><input data-watch-plane-toggle type="checkbox" checked={aircraft} /></label>
+          <label class="chronos__switch" data-watch-flight-control hidden={!aircraft}><span>Clouds</span><input data-watch-clouds-toggle type="checkbox" checked={aircraft} /></label>
+          <label class="chronos__switch" data-watch-flight-control hidden={!aircraft}><span>Learn in simulation</span><input data-watch-learn type="checkbox" /></label>
+          <button class="chronos__reset" data-watch-reset-learn data-watch-flight-control hidden={!aircraft} type="button">Reset learning</button>
+          <p class="chronos__learning" data-watch-learning data-watch-flight-control hidden={!aircraft} aria-live="off">Frozen policy. Learning starts only when enabled.</p>
         </div>
       </details>
       <form class="chronos__question" data-watch-question>

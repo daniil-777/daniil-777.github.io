@@ -10,8 +10,28 @@ const base = process.env.WATCH_QA_URL ?? 'http://127.0.0.1:4321';
 const output = process.env.WATCH_QA_OUTPUT ?? '/tmp/chronos-qa';
 await mkdir(output, { recursive: true });
 const results = [];
+const planeWorkerPaths = [];
+for (const name of (await readdir('build/_astro')).filter(name => /^worker[-.].*\.js$/.test(name))) {
+  if ((await readFile(join('build/_astro', name), 'utf8')).includes('planeRadialHalfWidth')) planeWorkerPaths.push(`/_astro/${name}`);
+}
+assert.ok(planeWorkerPaths.length > 0, 'The aircraft trainer code remains in the build');
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 const until = async (browser, expression) => { for (let i = 0; i < 100; i++) { if (await browser.evaluate(expression)) return; await wait(100); } throw new Error(`Not ready: ${expression}`); };
+const aircraftSelectors = '[data-watch-plane],[data-watch-clouds],[data-watch-plane-toggle],[data-watch-clouds-toggle],[data-watch-learn],[data-watch-reset-learn],[data-watch-learning],[data-watch-metrics]';
+async function assertNoPublicAircraft(browser) {
+  const state = await browser.evaluate(String.raw`(()=>{
+    const root=document.querySelector('[data-watch]'),settings=root.querySelector('.chronos__settings');
+    const previous=settings.open;settings.open=true;
+    const visible=[...root.querySelectorAll(${JSON.stringify(aircraftSelectors)})].filter(n=>{
+      const b=n.getBoundingClientRect(),s=getComputedStyle(n);return b.width>0&&b.height>0&&s.display!=='none'&&s.visibility!=='hidden';
+    }).map(n=>n.outerHTML.slice(0,120));settings.open=previous;
+    return {enabled:root.dataset.watchAircraft,visible,resources:performance.getEntriesByType('resource').map(r=>r.name)
+      .filter(n=>/\/watch\/plane\//.test(n)||${JSON.stringify(planeWorkerPaths)}.includes(new URL(n).pathname))};
+  })()`);
+  assert.equal(state.enabled, 'false');
+  assert.deepEqual(state.visible, [], 'Aircraft, clouds, controls and diagnostics stay hidden even with settings open');
+  assert.deepEqual(state.resources, [], 'Public watches download no aircraft policy or worker');
+}
 const browser = await startBrowser(`${base}/`, { width: 1440, height: 1100 });
 try {
   await until(browser, 'Boolean(document.querySelector("[data-watch]"))');
@@ -22,14 +42,9 @@ try {
   await browser.send('Page.navigate', { url: `${base}/smart-watch/` });
   await until(browser, 'document.querySelector("[data-watch-status]")?.textContent.includes("Reviewed thought")');
   await wait(1000);
-  await until(browser, 'getComputedStyle(document.querySelector("[data-watch-plane]")).display !== "none"');
   assert.equal(await browser.evaluate('document.querySelector("[data-watch-motion]").value'), 'sweep');
-  const planeBefore = await browser.evaluate('document.querySelector("[data-watch-plane]").getAttribute("transform")');
-  await wait(1000);
-  const planeAfter = await browser.evaluate('document.querySelector("[data-watch-plane]").getAttribute("transform")');
-  assert.notEqual(planeAfter, planeBefore, 'Aircraft flies without opening any settings');
-  assert.ok(await browser.evaluate('(()=>{const b=document.querySelector("[data-watch-plane]").getBoundingClientRect();return b.width>10&&b.height>10})()'), 'Aircraft is visibly larger than a dial index');
-  results.push({ test: 'visible aircraft flies continuously by default', passed: true });
+  await assertNoPublicAircraft(browser);
+  results.push({ test: 'public watch hides aircraft and downloads no aircraft policy or worker', passed: true });
   const dialLayers = await browser.evaluate('(()=>{const phrase=document.querySelector("[data-watch-phrase]"), guide=document.querySelector("[data-watch-aperture]"), hour=document.querySelector("[data-watch-hand=hour]"), minute=document.querySelector("[data-watch-hand=minute]");return {fill:getComputedStyle(guide).fill,stroke:getComputedStyle(guide).stroke,textBehindHands:Boolean(phrase.compareDocumentPosition(hour)&Node.DOCUMENT_POSITION_FOLLOWING),hourOpacity:getComputedStyle(hour).opacity,minuteOpacity:getComputedStyle(minute).opacity,hourLength:hour.getBBox().height,minuteLength:minute.getBBox().height}})()');
   assert.equal(dialLayers.fill, 'rgba(0, 0, 0, 0)');
   assert.equal(dialLayers.stroke, 'none');
@@ -92,13 +107,16 @@ try {
   await browser.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   await browser.evaluate('(()=>{const motion=document.querySelector("[data-watch-motion]");motion.value="system";motion.dispatchEvent(new Event("change",{bubbles:true}));})()');
   await wait(150);
-  assert.notEqual(await browser.evaluate('getComputedStyle(document.querySelector("[data-watch-plane]")).display'), 'none');
-  assert.equal(await browser.evaluate('getComputedStyle(document.querySelector("[data-watch-clouds]")).display'), 'none');
+  await assertNoPublicAircraft(browser);
   assert.equal(await browser.evaluate('document.querySelector("[data-watch]").dataset.watchTicking'), 'true');
   await browser.evaluate('(()=>{const motion=document.querySelector("[data-watch-motion]");motion.value="sweep";motion.dispatchEvent(new Event("change",{bubbles:true}));})()');
   await wait(150);
   assert.equal(await browser.evaluate('document.querySelector("[data-watch]").dataset.watchTicking'), 'false');
-  results.push({ test: 'reduced motion keeps aircraft visible; explicit sweeping enables flight', passed: true });
+  const handBefore = await browser.evaluate('document.querySelector("[data-watch-hand=second]").getAttribute("transform")');
+  await wait(250);
+  assert.notEqual(await browser.evaluate('document.querySelector("[data-watch-hand=second]").getAttribute("transform")'), handBefore);
+  await assertNoPublicAircraft(browser);
+  results.push({ test: 'reduced motion ticks hands and explicit sweeping moves hands without aircraft', passed: true });
   await browser.send('Emulation.setEmulatedMedia', { features: [] });
   for (const width of [320, 390, 768]) {
     await browser.send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: width < 768 });
@@ -115,6 +133,7 @@ try {
   await writeFile(join(output, 'compact-96.png'), await browser.screenshot());
   await browser.evaluate('document.querySelector("[data-watch-open]").click()');
   await until(browser, 'document.querySelector("dialog")?.open && document.querySelector("[data-watch-status]").textContent.includes("Reviewed thought")');
+  await assertNoPublicAircraft(browser);
   await writeFile(join(output, 'compact-expanded.png'), await browser.screenshot());
   await browser.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });
   await browser.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });
@@ -150,6 +169,7 @@ try {
   await until(browser, 'Boolean(document.querySelector("[data-watch]"))');
   await browser.evaluate('document.querySelector("[data-watch]").scrollIntoView({block:"center"})');
   await until(browser, 'document.querySelector("[data-watch-status]")?.textContent.includes("Reviewed thought")');
+  await assertNoPublicAircraft(browser);
   await browser.evaluate('scrollTo(0,0)');
   await wait(300);
   const before = await browser.evaluate('document.querySelector("[data-watch-hand=second]").getAttribute("transform")');
