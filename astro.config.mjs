@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import { defaultClientConditions } from 'vite';
 
 export default defineConfig({
-  site: 'https://daniil-777.github.io',
+  site: 'https://demtsev.com',
   // `dist/` in this folder already holds unrelated build artefacts, and
   // Astro empties its output directory on every build.
   outDir: './build',

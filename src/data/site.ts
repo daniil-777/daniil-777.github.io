@@ -7,8 +7,8 @@ export const site = {
   name: 'Daniil Emtsev',
   role: 'AI Research Engineer',
   location: 'Zurich, Switzerland',
-  url: 'https://daniil-777.github.io',
-  domain: 'daniil-777.github.io',
+  url: 'https://demtsev.com',
+  domain: 'demtsev.com',
   email: 'daniil.emtsev.ig@gmail.com',
   title: 'Daniil Emtsev · AI Research Engineer',
   description:

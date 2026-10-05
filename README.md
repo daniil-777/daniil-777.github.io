@@ -1,6 +1,6 @@
 # Public hosting
 
-This publication copy serves https://daniil-777.github.io/ from GitHub Pages. The original local source retains its custom-domain configuration. No DNS or CNAME changes are required. Push to `main` runs the tested Pages workflow. Provider keys are never part of this repository. The optional chat Worker is configured separately; without a public endpoint the portfolio assistant uses its on-device/site search modes.
+This publication copy serves https://demtsev.com/ from GitHub Pages, with DNS managed by Cloudflare. Push to `main` runs the tested Pages workflow. Provider keys are never part of this repository. The optional chat Worker is configured separately; without a public endpoint the portfolio assistant uses its on-device/site search modes.
 
 # demtsev.com
 
