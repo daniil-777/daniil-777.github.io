@@ -73,6 +73,9 @@
       if (p && p.total && p.got < p.total) $('msg').textContent = `loading the decoder… ${(p.got / 2 ** 20).toFixed(1)} / ${(p.total / 2 ** 20).toFixed(1)} MB`;
     }, 150);
     st.backend = await backend(); watchGPU(st.backend);
+    // TF.js reuses a freed GPU buffer only once the batch of dispatches that read it is submitted (15 by default), so a
+    // keyframe's pool holds more of the decoder's intermediates than are ever alive at once
+    if (st.backend === 'webgpu') tf.env().set('WEBGPU_DEFERRED_SUBMIT_BATCH_SIZE', 1);
     const F = window.__M3D_FETCH, meta = await F.meta;
     const model = M.createModel(meta, await M.gunzip(await F.decoder));       // v1 or v2 runtime, from meta.arch
     model.addAnchors(await M.gunzip(await F.a0), 0);
@@ -122,17 +125,19 @@
     };
     setHD(hd);
 
-    let pc = null, floorHint;                            // planes of the last latent: a hold's fine grid reuses them
-    const planesFor = (spec) => {
-      if (pc && pc.key === spec.key) return pc.P;
+    // planes of the last latent: a hold's fine grid reuses them. size: already resampled to the grid that reads them,
+    // as the grid itself would (compact without HD or per-pixel detail: arch3's full planes are 240 MB, 160^2 ones 25 MB)
+    let pc = null, floorHint;
+    const planesFor = (spec, size) => {
+      if (pc && pc.key === spec.key && pc.size === size) return pc.P;
+      if (pc) { pc.P.dispose(); pc = null; }             // before the next ones exist: one latent's planes at a time
       const z = model.tensor(spec); let P;
-      try { P = model.planes(z); } finally { z.dispose(); }
-      if (pc) pc.P.dispose();
-      pc = { key: spec.key, P };
+      try { P = model.planes(z, size); } finally { z.dispose(); }
+      pc = { key: spec.key, size, P };
       return P;
     };
     const decode = async (spec, R, floorGuess) => {
-      const P = planesFor(spec);
+      const P = planesFor(spec, compact && !hd && !R3.neuralOn ? R : undefined);
       if (glgrid) return lev(await R3.gridVolume(model, P, R, floorGuess, band(R)));   // its exact floor arrives a frame or two later
       const g = await grid(P, R);
       try { const v = R3.volume(g); v.floor = floorHint = floorOf(g, floorHint); return lev(v); } finally { if (g.done) g.done(); }

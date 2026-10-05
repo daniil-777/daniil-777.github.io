@@ -39,7 +39,11 @@ test('activation, controls, focus, removal during loading, stale messages and re
     const controller = setupPreview(root as unknown as HTMLElement);
     assert.equal(requests.length, 0, 'no iframe/model fetch before activation');
     controller.start(); const first = panel.children[0];
-    const firstSession = new URL(first.src, 'https://portfolio.test').searchParams.get('session')!;
+    const params = new URL(first.src, 'https://portfolio.test').searchParams;
+    const firstSession = params.get('session')!;
+    assert.equal(params.get('compact'), '1');
+    assert.equal(params.has('hd'), false, 'no 256^3 grids in the circle');
+    assert.equal(params.get('neural'), '0', 'no per-pixel decoding in the circle (the runtime enables it by default for this model)');
     assert.equal(requests.length, 1); assert.equal(panel.hidden, false);
     assert.equal(document.activeElement, remove, 'manual Play moves focus to a visible control');
     controller.start(); assert.equal(requests.length, 1, 'repeated Play does not duplicate the context');

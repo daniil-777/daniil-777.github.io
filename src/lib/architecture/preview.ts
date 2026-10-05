@@ -82,7 +82,10 @@ export function setupPreview(root: HTMLElement) {
       visible = panel.getBoundingClientRect().top < innerHeight && root.getBoundingClientRect().bottom > 0;
       frame = document.createElement('iframe');
       frame.title = 'Live neural architecture generation — Pixel Morph';
-      frame.src = `/architecture/?session=${encodeURIComponent(session)}&lang=${currentLocale()}&theme=${appearance()}&anchor=8&walk=tour&trans=blend&hd=1&neural=1&compact=1&speed=0.8&play=${manual ? 1 : 0}`;
+      // No HD grids or per-pixel decoding in a 160px circle: with them the preview took 2+ GB of GPU memory, enough for a
+      // phone's browser to kill the page and reload it. neural=0 is explicit because the runtime turns it on for this model
+      // by default; detail keeps the curvature shading HD brought, which costs nothing but a few texture reads per pixel.
+      frame.src = `/architecture/?session=${encodeURIComponent(session)}&lang=${currentLocale()}&theme=${appearance()}&anchor=8&walk=tour&trans=blend&neural=0&detail=1.2&compact=1&speed=0.8&play=${manual ? 1 : 0}`;
       frame.addEventListener('load', () => { sendTheme(); sendLanguage(); onVisibility(); });
       document.addEventListener(LANGUAGE_EVENT, sendLanguage);
       window.addEventListener('message', onMessage);

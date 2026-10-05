@@ -17,14 +17,35 @@
 
     lin(t, k, act) { return tf.fused.matMul({ a: t, b: this.W[k + '.w'], bias: this.W[k + '.b'], activation: act || 'linear' }); }
 
+    // WebGL convolves through im2col, k*k*Cin floats per output pixel: a 4L plane (arch3: 256^2 x 128 channels) needs a
+    // 300 MB texture, which TF.js then keeps pooled beside the 2L stage's. Row bands of 2L^2 pixels share the 2L stage's
+    // instead; each band reads its neighbour rows, and zeros only past the image as 'same' padding does: same values.
+    conv(x, k, act) {
+      const [n, H, Wd] = x.shape, rows = 4 * this.meta.lat ** 2 / Wd, w = this.W[k + '.w'];
+      if (!this.perPlane || n !== 1 || rows >= H || H % rows || w.shape[0] !== 3) return super.conv(x, k, act);
+      const bands = [];
+      for (let r0 = 0; r0 < H; r0 += rows) {
+        const a = Math.max(0, r0 - 1), b = Math.min(H, r0 + rows + 1);
+        bands.push(tf.tidy(() => tf.fused.conv2d({ x: tf.slice(x, [0, a, 0, 0], [1, b - a, Wd, -1]), filter: w, strides: 1,
+          pad: [[0, 0], [a + 1 - r0, r0 + rows + 1 - b], [1, 1], [0, 0]], bias: this.W[k + '.b'], activation: act || 'linear' })));
+      }
+      const y = tf.concat(bands, 1);
+      tf.dispose(bands);
+      return y;
+    }
+
     // per-pixel linear layer on one plane [1, r, r, cin] -> [1, r, r, cout] (the grouped 1x1 heads, the detail pw)
     pix(t, k, act) { const [, r, s, c] = t.shape; return tf.reshape(this.lin(tf.reshape(t, [r * s, c]), k, act), [1, r, s, -1]); }
 
     // the detail stage on plane p, u [1, 8L, 8L, C] already bilinear x2: u + pw(relu(depthwise 3x3 (u))) -- geometry
-    // (dw, pw: m3d_model.DecoderV2) and colour (cdw, cpw: m3d3_model.DecoderA3)
+    // (dw, pw: m3d_model.DecoderV2) and colour (cdw, cpw: m3d3_model.DecoderA3). Consumes u; the depthwise output is
+    // freed once pw has read it, so at most three 8L^2 tensors exist at a time (arch3 geometry: 67 MB each)
     detail(u, p, dw, pw) {
-      return tf.add(u, this.pix(tf.fused.depthwiseConv2d({ x: u, filter: this.W[dw + p + '.w'], strides: 1, pad: 'same',
+      const r = tf.tidy(() => this.pix(tf.fused.depthwiseConv2d({ x: u, filter: this.W[dw + p + '.w'], strides: 1, pad: 'same',
         bias: this.W[dw + p + '.b'], activation: 'relu' }), pw + p));
+      const y = tf.add(u, r);
+      tf.dispose([u, r]);
+      return y;
     }
 
     // TokenMixer: 2x2-merged tokens of all three planes, pre-norm attention blocks, 1x1 unmerge + pixel shuffle, residual
@@ -49,31 +70,48 @@
       return tf.add(x, tf.reshape(tf.transpose(u, [0, 2, 1, 3]), [3, L, L, c]));
     }
 
-    planes(z) {                              // z [3, L, L, cz] -> P [3, planes_res, planes_res, hid + chc]
+    // z [3, L, L, cz] -> P [3, planes_res, planes_res, hid + chc]; with size, P as tf.image.resizeBilinear(P, [size, size],
+    // true) would make it, each plane's channels resampled as soon as they exist, so the planes_res^2 planes (arch3:
+    // 240 MB) never exist together. Every step frees its input once the next exists, and after the last step that mixes
+    // the planes they go one at a time. TF.js keeps freed GPU memory pooled by exact size, so what a keyframe holds is the
+    // sum over sizes of how many are alive at once: when the tidy held every intermediate to the end, that was 1.5 GB on
+    // WebGPU and 2.3 GB on WebGL for arch3. The tidy now only cleans up after an error. Same ops on the same inputs, so
+    // the same values.
+    planes(z, size) {
       return tf.tidy(() => {
-        const W = this.W, D = this.D, L = this.meta.lat, chc = this.chc;
-        let x = tf.relu(tf.add(tf.conv2d(z, W['inp.w'], 1, 'same'), this.inpBias));
-        x = this.res(this.exchange(x), 'res0');
-        if (D.blocks) x = this.mixer(x);
-        const pal = chc && D.pal ? this.lin(tf.reshape(tf.mean(x, [0, 1, 2]), [1, -1]), 'pal') : null;       // [1, chc]
-        x = this.res(this.conv(tf.image.resizeNearestNeighbor(x, [2 * L, 2 * L]), 'up1', 'relu'), 'res1');
-        x = D.hi === 'conv3' ? this.conv(tf.image.resizeNearestNeighbor(x, [4 * L, 4 * L]), 'up2', 'relu')
-          : this.res(this.conv(tf.image.resizeBilinear(x, [4 * L, 4 * L], true), 'up2', 'relu'), 'res2');
-        const R2 = 8 * L, pl = tf.split(x, 3, 0);
-        // one plane at a time, each in its own tidy so the 8L intermediates never pile up (arch3: 512^2 x 64 floats =
-        // 67 MB a plane): geometry head (1x1) [-> bilinear x2 -> detail]; colour head [+ palette, xy plane] [-> bilinear
-        // x2] [-> colour detail (cdetail), the palette after it]; then the plane's geometry and colour channels side by side
-        return tf.concat(pl.map((t, p) => tf.tidy(() => {
-          let g = this.pix(t, 'head' + p);
-          if (D.detail) g = this.detail(tf.image.resizeBilinear(g, [R2, R2], true), p, 'dw', 'pw');
-          if (!chc) return g;
-          let c = this.pix(t, 'chead' + p);
-          const pp = pal && p === 0 ? tf.reshape(pal, [1, 1, 1, chc]) : null;
-          if (pp && !D.cdetail) c = tf.add(c, pp);
-          if (D.detail) c = tf.image.resizeBilinear(c, [R2, R2], true);
-          if (D.cdetail) { c = this.detail(c, p, 'cdw', 'cpw'); if (pp) c = tf.add(c, pp); }
-          return tf.concat([g, c], 3);
-        })), 0);
+        const W = this.W, D = this.D, L = this.meta.lat, chc = this.chc, R2 = 8 * L;
+        const step = (x, f) => { const y = tf.tidy(() => f(x)); x.dispose(); return y; };      // f(x), x released
+        const rs = (t) => (size && size !== t.shape[1] ? step(t, (t) => tf.image.resizeBilinear(t, [size, size], true)) : t);
+        let x = tf.tidy(() => tf.relu(tf.add(tf.conv2d(z, W['inp.w'], 1, 'same'), this.inpBias)));
+        x = step(x, (t) => this.exchange(t));
+        x = step(x, (t) => this.res(t, 'res0'));
+        if (D.blocks) x = step(x, (t) => this.mixer(t));
+        const pal = chc && D.pal ? tf.tidy(() => tf.reshape(this.lin(tf.reshape(tf.mean(x, [0, 1, 2]), [1, -1]), 'pal'), [1, 1, 1, chc])) : null;
+        const pl = tf.split(x, 3, 0);
+        x.dispose();
+        // plane p: the 2L and 4L stages; geometry head (1x1) [-> bilinear x2 -> detail]; colour head [+ palette, xy plane]
+        // [-> bilinear x2] [-> colour detail (cdetail), the palette after it]; then its geometry and colour channels side by side
+        const out = pl.map((t, p) => {
+          let f = step(t, (t) => this.res(this.conv(tf.image.resizeNearestNeighbor(t, [2 * L, 2 * L]), 'up1', 'relu'), 'res1'));
+          f = step(f, (t) => (D.hi === 'conv3' ? this.conv(tf.image.resizeNearestNeighbor(t, [4 * L, 4 * L]), 'up2', 'relu')
+            : this.res(this.conv(tf.image.resizeBilinear(t, [4 * L, 4 * L], true), 'up2', 'relu'), 'res2')));
+          let g = tf.tidy(() => this.pix(f, 'head' + p)), c = chc ? tf.tidy(() => this.pix(f, 'chead' + p)) : null;
+          f.dispose();
+          if (D.detail) g = this.detail(step(g, (t) => tf.image.resizeBilinear(t, [R2, R2], true)), p, 'dw', 'pw');
+          g = rs(g);
+          if (!c) return g;
+          const pp = pal && p === 0 ? pal : null;
+          if (pp && !D.cdetail) c = step(c, (t) => tf.add(t, pp));
+          if (D.detail) c = step(c, (t) => tf.image.resizeBilinear(t, [R2, R2], true));
+          if (D.cdetail) { c = this.detail(c, p, 'cdw', 'cpw'); if (pp) c = step(c, (t) => tf.add(t, pp)); }
+          c = rs(c);
+          g = step(g, (t) => tf.concat([t, c], 3));
+          c.dispose();
+          return g;
+        });
+        const P = tf.concat(out, 0);
+        tf.dispose(out);
+        return P;
       });
     }
 
