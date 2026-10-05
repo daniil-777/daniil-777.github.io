@@ -1,0 +1,65 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a newer push waits for the running one to finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx astro check
+      # The embedding model the build uses for the assistant's "Smarter search" (23 MB).
+      # Its name and revision are in embed.ts, so a new revision starts a new cache.
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/transformers
+          key: transformers-${{ hashFiles('src/lib/chat/embed.ts') }}
+      - run: npm run build
+        env:
+          # Address of the Worker in worker/. Unset: the assistant only quotes the site.
+          PUBLIC_CHAT_ENDPOINT: ${{ vars.PUBLIC_CHAT_ENDPOINT }}
+      # Integration tests read the generated public KB, so build before the full suite.
+      - run: npm test
+      # Also fails if the build could not embed the content: better no deploy than one without "Smarter search".
+      - run: npm run check:build -- --vectors
+        env:
+          PUBLIC_CHAT_ENDPOINT: ${{ vars.PUBLIC_CHAT_ENDPOINT }}
+      # Search quality with the embedding model the build just used, and no unanswerable question answered.
+      - run: npm run check:i18n
+      - run: npm run eval:chat
+      # The Worker is deployed by hand, but a type error or a broken route in it should stop here.
+      # The smoke run uses a stand-in for the Anthropic API: no key, no cost.
+      - run: npm ci --prefix worker
+      - run: npx tsc -p worker/tsconfig.json --noEmit
+      - run: npm run chat:smoke
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
