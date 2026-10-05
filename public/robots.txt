@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://demtsev.com/sitemap.xml
+Sitemap: https://daniil-777.github.io/sitemap.xml

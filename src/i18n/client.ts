@@ -169,7 +169,7 @@ export function initializeLanguage() {
   const pack = document.querySelector('[data-i18n-pack]');
   if (pack?.textContent) {
     const data = JSON.parse(pack.textContent) as { sources: string[]; translations: string[][] };
-    catalogs = Object.fromEntries(LOCALES.slice(1).map((code, index) => [code, Object.fromEntries(data.sources.map((source, i) => [source, data.translations[index][i]]))]));
+    catalogs = Object.fromEntries(LOCALES.slice(1).map((code, index) => [code, Object.fromEntries(data.sources.map((source, i) => [source, data.translations[index][i] || source]))]));
   }
   watched = document.body;
   observer = new MutationObserver((records) => {

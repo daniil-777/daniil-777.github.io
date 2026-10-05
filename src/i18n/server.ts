@@ -17,5 +17,9 @@ const decodeHtml = (html: string) => html.replace(/&#(x[\da-f]+|\d+);/gi, (_, va
 export function pageCatalog(html: string): { sources: string[]; translations: string[][] } {
   const content = normaliseSource(decodeHtml(html));
   const keys = Object.keys(en).filter((key) => sharedKeys.has(key) || content.includes(key));
-  return { sources: keys, translations: LOCALES.filter((locale) => locale !== 'en').map((locale) => keys.map((key) => dictionaries[locale][key] || key)) };
+  // Identity translations reuse their source on the client instead of shipping it six times.
+  return { sources: keys, translations: LOCALES.filter((locale) => locale !== 'en').map((locale) => keys.map((key) => {
+    const value = dictionaries[locale][key] || key;
+    return value === key ? '' : value;
+  })) };
 }

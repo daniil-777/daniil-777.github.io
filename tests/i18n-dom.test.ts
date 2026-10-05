@@ -25,12 +25,13 @@ test('all seven locales switch instantly, restore copy, preserve state and suppo
   const env = environment();
   try {
     const sources = Object.keys(dictionaries.en);
-    const pack = { sources, translations: LOCALES.slice(1).map((locale) => sources.map((source) => dictionaries[locale][source])) };
+    const pack = { sources, translations: LOCALES.slice(1).map((locale) => sources.map((source) => dictionaries[locale][source] === source ? '' : dictionaries[locale][source])) };
     document.body.innerHTML = `<h1>About</h1><a href="/work/test/">Work</a><input placeholder="Search projects"><dialog open><span data-count>Page 1 of 16</span></dialog><p data-no-translate>About</p><div data-language-switcher><button data-language-trigger aria-expanded="false">Language</button><span data-language-code data-no-translate>EN</span><div data-language-menu hidden>${LOCALES.map((code) => `<button data-language-option="${code}" tabindex="-1">${code}</button>`).join('')}</div><span data-language-status data-no-translate></span></div><script type="application/json" data-i18n-pack>${JSON.stringify(pack).replace(/</g, '\\u003c')}</script>`;
-    const { initializeLanguage, setLocale, prose } = await import('../src/i18n/client.ts');
+    const { initializeLanguage, setLocale, prose, dictionary } = await import('../src/i18n/client.ts');
     initializeLanguage();
     for (const locale of LOCALES) {
       await setLocale(locale); await tick();
+      if (locale !== 'en') assert.deepEqual(dictionary(), dictionaries[locale], 'compact catalogs restore every translation and preserve source order');
       assert.equal(document.querySelector('h1')!.textContent, dictionaries[locale].About);
       assert.equal(document.querySelector<HTMLInputElement>('input')!.placeholder, dictionaries[locale]['Search projects']);
       assert.equal(document.querySelector('[data-no-translate]')!.textContent, 'About');

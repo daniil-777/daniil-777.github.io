@@ -1,7 +1,7 @@
 ---
 title: Universal AI Proctor
-tagline: Guidance for any process.
-summary: Video and camera guidance with optional TXT, voice and reports.
+tagline: Video and camera guidance for real processes.
+summary: Turn process videos and optional TXT instructions into an interactive guide. Follow visible stages, ask questions by voice or text, and share reports with video evidence.
 category: independent
 year: "2026"
 sortDate: 2026-10-05
