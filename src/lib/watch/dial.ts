@@ -11,7 +11,7 @@ export function mountDial(root: HTMLElement, options: DialOptions = {}): DialCon
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const now = options.now ?? (() => new Date());
   let timeZone = validateTimeZone(options.timeZone);
-  let motion: WatchMotion = options.motion ?? 'sweep';
+  let motion: WatchMotion = options.motion ?? 'system';
   let frame = 0;
   let suspended = false;
   let disposed = false;
@@ -23,7 +23,7 @@ export function mountDial(root: HTMLElement, options: DialOptions = {}): DialCon
     frame = 0;
     if (disposed || suspended || document.hidden) return;
     const clock = readClock(now(), timeZone);
-    const ticking = motion === 'tick' || reduced.matches;
+    const ticking = motion === 'tick' || (motion === 'system' && reduced.matches);
     const tickValue = String(ticking);
     if (root.dataset.watchTicking !== tickValue) root.dataset.watchTicking = tickValue;
     const tick = Math.floor(clock.epochMs / 1_000);

@@ -1,0 +1,4 @@
+# These unchanged videos exceed the Cloudflare 25 MiB asset limit.
+# The gateway streams them from the existing GitHub origin.
+/media/video/ai-proctor-davos.mp4
+/media/video/astro-pilot.mp4

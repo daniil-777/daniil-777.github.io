@@ -1,8 +1,8 @@
 /** Shared deterministic, normalized aircraft dynamics. No rendering or learning dependencies. */
-export const ENVIRONMENT_VERSION = 'chronos-plane-2';
+export const ENVIRONMENT_VERSION = 'chronos-plane-4';
 export const ANGULAR_SPEED = Math.PI * 2 / 60;
 export const PHYSICS_DT = 1 / 20;
-export const LANES = [0.15, 0.5, 0.85] as const;
+export const LANES = [0.22, 0.5, 0.78] as const;
 export type LaneAction = 0 | 1 | 2;
 export interface PhysicalState { radial: number; velocity: number }
 export interface Cloud {
@@ -17,7 +17,7 @@ export interface EnvironmentSettings {
   potentialStrength: number; potentialDiscount: number;
 }
 export const DEFAULT_SETTINGS: Readonly<EnvironmentSettings> = Object.freeze({
-  maxSpeed: 0.7, acceleration: 2.8, planeRadialHalfWidth: 0.13, planeAngularHalfWidth: 0.023,
+  maxSpeed: 0.7, acceleration: 2.8, planeRadialHalfWidth: 0.22, planeAngularHalfWidth: 0.061,
   cloudRadialMin: 0.10, cloudRadialMax: 0.18, cloudAngularMin: 0.028, cloudAngularMax: 0.052,
   leadSeconds: 3.0, spacingMin: 3.4, spacingMax: 4.6, spawnHorizon: 4.2,
   survivalReward: 0.08, collisionReward: -2, passReward: 0.4, speedPenalty: 0.015, accelerationPenalty: 0.0008,
@@ -43,7 +43,7 @@ export function advanceRadial(state: PhysicalState, action: LaneAction, dt = PHY
   if (radial < minimum || radial > maximum) { radial = Math.max(minimum, Math.min(maximum, radial)); velocity = 0; }
   return { radial, velocity };
 }
-/** Exact intersection of the swept center segment with the Minkowski-expanded ellipse. */
+/** Exact intersection of the swept center segment with the defined expanded collision ellipse. */
 export function sweptCloudCollision(a: PhysicalState, b: PhysicalState, startTime: number, endTime: number, cloud: Cloud, settings = DEFAULT_SETTINGS): boolean {
   const angularSize = cloud.angularHalfWidth + settings.planeAngularHalfWidth;
   const radialSize = cloud.radialHalfWidth + settings.planeRadialHalfWidth;
@@ -62,6 +62,9 @@ export function collides(a: PhysicalState, b: PhysicalState, startTime: number, 
  * Quantized pruning can reject valid arrangements, but cannot falsely certify impossible ones. */
 export function reachable(initial: PhysicalState, time: number, clouds: readonly Cloud[], settings = DEFAULT_SETTINGS): boolean {
   if (!clouds.length) return true;
+  // A cloud covering every attainable radial center at its center time has no safe trajectory.
+  // This is an impossibility rejection, never a shortcut that certifies a merely free lane.
+  if (clouds.some(c => c.centerTime >= time && Math.max(Math.abs(settings.planeRadialHalfWidth - c.radial), Math.abs(1 - settings.planeRadialHalfWidth - c.radial)) <= c.radialHalfWidth + settings.planeRadialHalfWidth)) return false;
   const end = Math.max(...clouds.map(c => c.centerTime + (c.angularHalfWidth + settings.planeAngularHalfWidth) / ANGULAR_SPEED)) + 0.15;
   // Fast certification by complete constant-target trajectories; never substitutes a free-lane assumption.
   for (const action of [0, 1, 2] as const) {

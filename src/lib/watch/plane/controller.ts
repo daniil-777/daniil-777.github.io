@@ -1,4 +1,4 @@
-import { ANGULAR_SPEED, DEFAULT_SETTINGS, ENVIRONMENT_VERSION, PHYSICS_DT, PlaneEnvironment, isActionSafe, lookAheadAction, wrapAngle } from './environment.ts';
+import { ANGULAR_SPEED, DEFAULT_SETTINGS, ENVIRONMENT_VERSION, PHYSICS_DT, LANES, PlaneEnvironment, isActionSafe, lookAheadAction, wrapAngle } from './environment.ts';
 import { argmax, forward, validateCheckpoint, workspace, type PolicyCheckpoint } from './network.ts';
 import type { TrainingMetrics } from './trainer.ts';
 
@@ -16,7 +16,7 @@ export interface PlaneController {
 /** Clock phase is authoritative; integration never accumulates the aircraft's displayed orbit. */
 export function createPlaneController(options: PlaneOptions = {}): PlaneController {
   const phaseOffset = options.phaseOffset ?? 0; const seed = options.seed ?? 72631;
-  const trackInnerRadius = options.trackInnerRadius ?? 162; const trackWidth = options.trackWidth ?? 33;
+  const trackInnerRadius = options.trackInnerRadius ?? 155; const trackWidth = options.trackWidth ?? 43;
   let environment = new PlaneEnvironment(seed); let previousPhysical = environment.physical;
   let weights: Float32Array | null = null; let checkpoint: PolicyCheckpoint | null = null;
   let phase = 0; let lastPhase: number | null = null; let accumulator = 0; let paused = false; let disposed = false;
@@ -26,7 +26,7 @@ export function createPlaneController(options: PlaneOptions = {}): PlaneControll
   let loadAbort: AbortController | null = null;
   const storageKey = 'chronos-plane-local-v1';
   async function readAsset(url: string, signal: AbortSignal): Promise<Response> {
-    try { const response = await fetch(url, { signal }); if (!response.ok) throw new Error(`Plane asset HTTP ${response.status}`); return response; }
+    try { const response = await fetch(url, { signal, cache: 'no-cache' }); if (!response.ok) throw new Error(`Plane asset HTTP ${response.status}`); return response; }
     catch (error) { if (signal.aborted) throw error; const cached = typeof caches !== 'undefined' ? await (await caches.open('chronos-plane-assets-v1')).match(url) : undefined; if (cached) return cached; throw error; }
   }
   function sync(clockPhaseSeconds: number): void {
@@ -126,4 +126,4 @@ export function createPlaneController(options: PlaneOptions = {}): PlaneControll
   };
 }
 
-export const PLANE_GEOMETRY = { radialHalfWidth: DEFAULT_SETTINGS.planeRadialHalfWidth, angularHalfWidth: DEFAULT_SETTINGS.planeAngularHalfWidth, innerLane: 0.15, middleLane: 0.5, outerLane: 0.85 } as const;
+export const PLANE_GEOMETRY = { radialHalfWidth: DEFAULT_SETTINGS.planeRadialHalfWidth, angularHalfWidth: DEFAULT_SETTINGS.planeAngularHalfWidth, innerLane: LANES[0], middleLane: LANES[1], outerLane: LANES[2] } as const;

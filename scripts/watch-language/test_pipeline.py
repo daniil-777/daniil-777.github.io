@@ -4,8 +4,10 @@ import torch
 from model import TinyDecoder
 from tokenizer import Tokenizer, RESERVED
 from train import loss
-from dataset import grouped_splits, generate
+from dataset import grouped_splits, generate, pilot, validate
 from pathlib import Path
+from tempfile import TemporaryDirectory
+import json
 
 
 class PipelineTests(unittest.TestCase):
@@ -51,6 +53,26 @@ class PipelineTests(unittest.TestCase):
                  {'id': 'other', 'sourceId': 'other'}, {'id': 'third', 'sourceId': 'third'}]
         splits = grouped_splits(facts)
         self.assertEqual(splits['v1'], splits['v2'])
+
+    def test_expanded_corpus_has_unique_rows_and_source_disjoint_domains(self):
+        pack = json.loads((Path(__file__).resolve().parents[2] / 'public/watch/facts.v1.json').read_text())
+        with TemporaryDirectory(prefix='watch-corpus-test-') as folder:
+            target = Path(folder) / 'corpus.jsonl'
+            stats = pilot(pack, target, 20261005)
+            rows = [json.loads(line) for line in target.read_text().splitlines()]
+        self.assertGreaterEqual(stats['distinctFacts'], 360)
+        self.assertGreaterEqual(stats['accepted'], 2500)
+        self.assertEqual(stats['rejected'], 0)
+        self.assertEqual(len({r['id'] for r in rows}), len(rows))
+        groups = {}
+        for row in rows:
+            self.assertEqual(validate(row), [])
+            for kind in ['sourceGroup', 'factGroup', 'scenarioGroup']:
+                identity = (kind, row[kind])
+                self.assertEqual(groups.setdefault(identity, row['split']), row['split'])
+        for domain, split in stats['domainSplits'].items():
+            self.assertGreater(split['train'], 0, domain)
+            self.assertGreater(split['test'], 0, domain)
 
     def test_paid_generation_disabled_before_credentials_or_requests(self):
         with self.assertRaises(SystemExit):

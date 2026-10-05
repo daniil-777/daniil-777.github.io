@@ -287,7 +287,7 @@ Official API references: https://developers.openai.com/api/docs/guides/streaming
 https://developers.openai.com/api/docs/guides/prompt-caching,
 https://developers.openai.com/api/docs/models/gpt-6-luna.
 
-## Chronos smart watch
+## Smart watch
 
 The new bottom chapter is at `/#smart-watch`, with a full demo at `/smart-watch/` and a 96px launcher demo at `/smart-watch/embed/`. It has three English modes, cited reviewed thoughts, precise device/Zurich time, an original SVG dial and a genuinely trained aircraft policy. The language candidate remains experimental and does not download for public inference; Safety assist is labelled separately from learned aircraft performance.
 

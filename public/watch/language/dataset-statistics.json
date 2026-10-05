@@ -1,22 +1,146 @@
 {
-  "datasetVersion": "chronos-grounded-v1",
-  "factPackVersion": "chronos-facts-2026-10-05.1",
+  "datasetVersion": "chronos-grounded-v2-expanded",
+  "factPackVersion": "chronos-facts-2026-10-05.2-expanded",
   "seed": 20261005,
-  "accepted": 78,
+  "accepted": 2720,
   "rejected": 0,
-  "distinctFacts": 34,
-  "sourceGroups": 10,
+  "distinctFacts": 364,
+  "sourceGroups": 43,
   "splits": {
-    "train": 45,
-    "validation": 15,
-    "test": 18
+    "train": 1475,
+    "validation": 536,
+    "test": 709
   },
   "modes": {
-    "ai": 29,
-    "profile": 27,
-    "wellbeing": 22
+    "ai": 2546,
+    "profile": 96,
+    "wellbeing": 78
   },
+  "domains": {
+    "ai": 696,
+    "finance": 296,
+    "healthcare": 148,
+    "math": 518,
+    "profile": 96,
+    "robotics": 296,
+    "science": 222,
+    "security": 148,
+    "vision": 222,
+    "wellbeing": 78
+  },
+  "domainFacts": {
+    "ai": 92,
+    "finance": 40,
+    "healthcare": 20,
+    "math": 70,
+    "profile": 12,
+    "robotics": 40,
+    "science": 30,
+    "security": 20,
+    "vision": 30,
+    "wellbeing": 10
+  },
+  "sourceSplitMap": {
+    "rope": "train",
+    "prediction-metrics": "train",
+    "probability-calibration": "train",
+    "dqn": "train",
+    "ensemble-learning": "train",
+    "decision-trees": "train",
+    "gqa": "train",
+    "validation": "train",
+    "clustering": "train",
+    "anomaly-detection": "validation",
+    "linear-models": "validation",
+    "attention": "test",
+    "decomposition": "test",
+    "finance-boe": "train",
+    "finance-bis": "train",
+    "finance-time-series": "validation",
+    "finance-fsb": "test",
+    "biomedical-segmentation": "train",
+    "health-ai-ethics": "test",
+    "calculus": "train",
+    "numerical-integration": "train",
+    "automatic-differentiation": "train",
+    "statistics": "train",
+    "convex-optimization": "train",
+    "linear-algebra": "validation",
+    "graph-mathematics": "test",
+    "journey": "train",
+    "research": "validation",
+    "portfolio": "test",
+    "robotics-kinematics": "train",
+    "robotics-diffusion": "train",
+    "robotics-transformer": "validation",
+    "robotics-planning": "test",
+    "protein-folding": "train",
+    "physics-informed-networks": "validation",
+    "weather-forecasting": "test",
+    "ai-risk-management": "train",
+    "adversarial-ml": "test",
+    "residual-networks": "train",
+    "neural-radiance-fields": "validation",
+    "camera-geometry": "test",
+    "activity": "train",
+    "stress": "test"
+  },
+  "splitMethod": "Connected source/fact/scenario/version components stratified by domain before all prompt augmentation.",
+  "domainSplits": {
+    "ai": {
+      "train": 435,
+      "validation": 148,
+      "test": 113
+    },
+    "finance": {
+      "train": 148,
+      "validation": 74,
+      "test": 74
+    },
+    "healthcare": {
+      "train": 74,
+      "validation": 0,
+      "test": 74
+    },
+    "math": {
+      "train": 370,
+      "validation": 74,
+      "test": 74
+    },
+    "profile": {
+      "train": 53,
+      "validation": 18,
+      "test": 25
+    },
+    "robotics": {
+      "train": 148,
+      "validation": 74,
+      "test": 74
+    },
+    "science": {
+      "train": 74,
+      "validation": 74,
+      "test": 74
+    },
+    "security": {
+      "train": 74,
+      "validation": 0,
+      "test": 74
+    },
+    "vision": {
+      "train": 74,
+      "validation": 74,
+      "test": 74
+    },
+    "wellbeing": {
+      "train": 25,
+      "validation": 0,
+      "test": 53
+    }
+  },
+  "promptVariantsPerFact": 7,
+  "missingEvidenceVariantsPerSource": 4,
   "pilotQuotaReached": false,
   "teacherSpendUsd": 0,
-  "note": "Small reviewed canonical feasibility corpus; not a 5,000-example teacher pilot or independent clinical review."
+  "note": "Expanded original canonical fact corpus with deterministic prompt variants; variants are not new independent facts or paid teacher examples. No independent clinical review."
 }

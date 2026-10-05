@@ -14,7 +14,7 @@
   },
   "step": 5000,
   "seed": 20261005,
-  "bestValidationLoss": 3.689435569877562,
+  "bestValidationLoss": 6.760394576547751,
   "order": [
     594,
     516,
@@ -1495,154 +1495,154 @@
   "curves": [
     {
       "step": 250,
-      "trainLoss": 3.739405035972595,
-      "validationLoss": 4.136710826976538,
-      "gradientNorm": 2.221160888671875,
-      "elapsedSeconds": 10.583753375016386
+      "trainLoss": 3.3618656396865845,
+      "validationLoss": 6.760394576547751,
+      "gradientNorm": 3.274759531021118,
+      "elapsedSeconds": 7.889929666998796
     },
     {
       "step": 500,
-      "trainLoss": 3.2952592372894287,
-      "validationLoss": 3.878683214996623,
-      "gradientNorm": 3.5902559757232666,
-      "elapsedSeconds": 20.314166334021138
+      "trainLoss": 2.9710683822631836,
+      "validationLoss": 7.102295099410103,
+      "gradientNorm": 2.4918904304504395,
+      "elapsedSeconds": 16.06779087500763
     },
     {
       "step": 750,
-      "trainLoss": 2.6434216499328613,
-      "validationLoss": 3.7179834939018312,
-      "gradientNorm": 4.7904510498046875,
-      "elapsedSeconds": 29.97208700000192
+      "trainLoss": 2.52050244808197,
+      "validationLoss": 7.5923603653574165,
+      "gradientNorm": 2.0432207584381104,
+      "elapsedSeconds": 24.030529999989085
     },
     {
       "step": 1000,
-      "trainLoss": 3.138437271118164,
-      "validationLoss": 3.689435569877562,
-      "gradientNorm": 6.744232177734375,
-      "elapsedSeconds": 39.3747607920086
+      "trainLoss": 3.2206473350524902,
+      "validationLoss": 7.223889942013367,
+      "gradientNorm": 8.914071083068848,
+      "elapsedSeconds": 31.879588209005306
     },
     {
       "step": 1250,
-      "trainLoss": 1.8374068140983582,
-      "validationLoss": 3.8498126932029,
-      "gradientNorm": 5.382653713226318,
-      "elapsedSeconds": 48.970519209018676
+      "trainLoss": 2.2996119260787964,
+      "validationLoss": 7.497305177819373,
+      "gradientNorm": 4.80741548538208,
+      "elapsedSeconds": 39.82503158398322
     },
     {
       "step": 1500,
-      "trainLoss": 1.158699095249176,
-      "validationLoss": 3.887347900205677,
-      "gradientNorm": 6.708564281463623,
-      "elapsedSeconds": 58.34187712499988
+      "trainLoss": 1.6313311457633972,
+      "validationLoss": 7.528931678822715,
+      "gradientNorm": 3.10768461227417,
+      "elapsedSeconds": 47.722308708995115
     },
     {
       "step": 1750,
-      "trainLoss": 0.8057118952274323,
-      "validationLoss": 4.001652704521887,
-      "gradientNorm": 5.632590293884277,
-      "elapsedSeconds": 67.83373533401755
+      "trainLoss": 1.8146886825561523,
+      "validationLoss": 7.477138605932254,
+      "gradientNorm": 5.540354251861572,
+      "elapsedSeconds": 55.65605262501049
     },
     {
       "step": 2000,
-      "trainLoss": 0.649847537279129,
-      "validationLoss": 4.187077798291078,
-      "gradientNorm": 6.803653240203857,
-      "elapsedSeconds": 77.82693466701312
+      "trainLoss": 1.890130877494812,
+      "validationLoss": 7.955496814968099,
+      "gradientNorm": 7.472416400909424,
+      "elapsedSeconds": 63.26863224999397
     },
     {
       "step": 2250,
-      "trainLoss": 0.15862327814102173,
-      "validationLoss": 4.479936769491503,
-      "gradientNorm": 2.4743263721466064,
-      "elapsedSeconds": 88.19697595899925
+      "trainLoss": 1.294932782649994,
+      "validationLoss": 8.133850326069627,
+      "gradientNorm": 4.57240629196167,
+      "elapsedSeconds": 71.40867016700213
     },
     {
       "step": 2500,
-      "trainLoss": 0.1799783930182457,
-      "validationLoss": 4.539521962188751,
-      "gradientNorm": 3.6842408180236816,
-      "elapsedSeconds": 97.64085820902255
+      "trainLoss": 1.1794286370277405,
+      "validationLoss": 8.059602652006147,
+      "gradientNorm": 11.09778881072998,
+      "elapsedSeconds": 80.89530499998364
     },
     {
       "step": 2750,
-      "trainLoss": 0.041048670187592506,
-      "validationLoss": 4.726090438472666,
-      "gradientNorm": 1.2904891967773438,
-      "elapsedSeconds": 106.41336141701322
+      "trainLoss": 0.8896011114120483,
+      "validationLoss": 8.278122776454452,
+      "gradientNorm": 4.4127068519592285,
+      "elapsedSeconds": 89.2547222499852
     },
     {
       "step": 3000,
-      "trainLoss": 0.03874042886309326,
-      "validationLoss": 4.821011811056592,
-      "gradientNorm": 5.597117900848389,
-      "elapsedSeconds": 115.22745329199824
+      "trainLoss": 0.5030580312013626,
+      "validationLoss": 8.062077372362372,
+      "gradientNorm": 5.066189765930176,
+      "elapsedSeconds": 97.82535983400885
     },
     {
       "step": 3250,
-      "trainLoss": 0.020636065863072872,
-      "validationLoss": 4.998627709653744,
-      "gradientNorm": 0.650860607624054,
-      "elapsedSeconds": 125.06258520900155
+      "trainLoss": 0.767726868391037,
+      "validationLoss": 8.107317831064487,
+      "gradientNorm": 4.747915744781494,
+      "elapsedSeconds": 106.232714459009
     },
     {
       "step": 3500,
-      "trainLoss": 0.012205289211124182,
-      "validationLoss": 5.134638798787749,
-      "gradientNorm": 1.1099982261657715,
-      "elapsedSeconds": 134.3070526670199
+      "trainLoss": 0.8489737510681152,
+      "validationLoss": 8.182976521099794,
+      "gradientNorm": 7.8496928215026855,
+      "elapsedSeconds": 114.49621929199202
     },
     {
       "step": 3750,
-      "trainLoss": 0.0030207878444343805,
-      "validationLoss": 5.216529225577131,
-      "gradientNorm": 0.08688756078481674,
-      "elapsedSeconds": 143.13853333401494
+      "trainLoss": 0.34325549006462097,
+      "validationLoss": 8.23462512811651,
+      "gradientNorm": 3.320587158203125,
+      "elapsedSeconds": 122.88583679200383
     },
     {
       "step": 4000,
-      "trainLoss": 0.0021219721529632807,
-      "validationLoss": 5.296692518483402,
-      "gradientNorm": 0.11258603632450104,
-      "elapsedSeconds": 152.65646275001927
+      "trainLoss": 0.41343245655298233,
+      "validationLoss": 8.183670019942308,
+      "gradientNorm": 7.642506122589111,
+      "elapsedSeconds": 131.1850789169839
     },
     {
       "step": 4250,
-      "trainLoss": 0.0006146185132820392,
-      "validationLoss": 5.415388607813225,
-      "gradientNorm": 0.010182778351008892,
-      "elapsedSeconds": 162.6085529999982
+      "trainLoss": 0.1433151355740847,
+      "validationLoss": 8.175574464293643,
+      "gradientNorm": 1.13275146484375,
+      "elapsedSeconds": 139.5623850839911
     },
     {
       "step": 4500,
-      "trainLoss": 0.0005896088405279443,
-      "validationLoss": 5.488843850996697,
-      "gradientNorm": 0.010225771926343441,
-      "elapsedSeconds": 172.94344662502408
+      "trainLoss": 0.27333441376686096,
+      "validationLoss": 8.255927750590631,
+      "gradientNorm": 2.654168128967285,
+      "elapsedSeconds": 148.57086220898782
     },
     {
       "step": 4750,
-      "trainLoss": 0.0003679239598568529,
-      "validationLoss": 5.568475677646568,
-      "gradientNorm": 0.005146749317646027,
-      "elapsedSeconds": 187.34611437501735
+      "trainLoss": 0.12871895730495453,
+      "validationLoss": 8.370981225960051,
+      "gradientNorm": 1.9467151165008545,
+      "elapsedSeconds": 157.87212562499917
     },
     {
       "step": 5000,
-      "trainLoss": 0.0002725054364418611,
-      "validationLoss": 5.660149051929818,
-      "gradientNorm": 0.0037008265499025583,
-      "elapsedSeconds": 196.81514533399604
+      "trainLoss": 0.07711770385503769,
+      "validationLoss": 8.399412081244254,
+      "gradientNorm": 0.7740839719772339,
+      "elapsedSeconds": 166.60743400000501
     }
   ],
   "dataVersion": "chronos-facts-2026-10-05.2-expanded",
-  "tokenizerPath": "/tmp/chronos-expanded-language-data/tokenizer-1024.json",
+  "tokenizerPath": "/tmp/chronos-expanded-language-data/tokenizer.json",
   "config": {
     "seed": 20261005,
     "device": "cpu",
     "cpuThreads": 2,
     "dataset": "/tmp/chronos-expanded-language-data/dataset.jsonl",
-    "tokenizer": "/tmp/chronos-expanded-language-data/tokenizer-1024.json",
-    "output": "/tmp/chronos-expanded-language-trained-1024",
+    "tokenizer": "/tmp/chronos-expanded-language-data/tokenizer.json",
+    "output": "/tmp/chronos-expanded-language-trained",
     "steps": 5000,
     "microbatch": 1,
     "gradientAccumulation": 2,
@@ -1661,13 +1661,13 @@
   "measurements": {
     "hardwareDevice": "cpu",
     "trainRows": 1475,
-    "validationRows": 529,
+    "validationRows": 536,
     "rejectedTrainBudget": 0,
-    "rejectedValidationBudget": 7,
-    "learnedAnswerTokens": 360962,
-    "wallSeconds": 196.81545179200475,
-    "answerTokensPerSecond": 1834.0124992114238,
-    "peakProcessRssBytes": 359235584,
+    "rejectedValidationBudget": 0,
+    "learnedAnswerTokens": 242768,
+    "wallSeconds": 166.6077577919932,
+    "answerTokensPerSecond": 1457.123019767046,
+    "peakProcessRssBytes": 365084672,
     "mpsAllocatedBytes": 0,
     "pretrainingPerformed": false
   }

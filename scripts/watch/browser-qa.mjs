@@ -22,6 +22,22 @@ try {
   await browser.send('Page.navigate', { url: `${base}/smart-watch/` });
   await until(browser, 'document.querySelector("[data-watch-status]")?.textContent.includes("Reviewed thought")');
   await wait(1000);
+  await until(browser, 'getComputedStyle(document.querySelector("[data-watch-plane]")).display !== "none"');
+  assert.equal(await browser.evaluate('document.querySelector("[data-watch-motion]").value'), 'sweep');
+  const planeBefore = await browser.evaluate('document.querySelector("[data-watch-plane]").getAttribute("transform")');
+  await wait(1000);
+  const planeAfter = await browser.evaluate('document.querySelector("[data-watch-plane]").getAttribute("transform")');
+  assert.notEqual(planeAfter, planeBefore, 'Aircraft flies without opening any settings');
+  assert.ok(await browser.evaluate('(()=>{const b=document.querySelector("[data-watch-plane]").getBoundingClientRect();return b.width>10&&b.height>10})()'), 'Aircraft is visibly larger than a dial index');
+  results.push({ test: 'visible aircraft flies continuously by default', passed: true });
+  const dialLayers = await browser.evaluate('(()=>{const phrase=document.querySelector("[data-watch-phrase]"), guide=document.querySelector("[data-watch-aperture]"), hour=document.querySelector("[data-watch-hand=hour]"), minute=document.querySelector("[data-watch-hand=minute]");return {fill:getComputedStyle(guide).fill,stroke:getComputedStyle(guide).stroke,textBehindHands:Boolean(phrase.compareDocumentPosition(hour)&Node.DOCUMENT_POSITION_FOLLOWING),hourOpacity:getComputedStyle(hour).opacity,minuteOpacity:getComputedStyle(minute).opacity,hourLength:hour.getBBox().height,minuteLength:minute.getBBox().height}})()');
+  assert.equal(dialLayers.fill, 'rgba(0, 0, 0, 0)');
+  assert.equal(dialLayers.stroke, 'none');
+  assert.equal(dialLayers.textBehindHands, true);
+  assert.equal(dialLayers.hourOpacity, '0.45');
+  assert.equal(dialLayers.minuteOpacity, '0.45');
+  assert.ok(dialLayers.hourLength < 70 && dialLayers.minuteLength < 80);
+  results.push({ test: 'short transparent hands above unboxed upper-dial text', passed: true });
   for (const mode of ['ai', 'profile', 'wellbeing']) {
     await browser.evaluate(`document.querySelector('[data-watch-mode="${mode}"]').click()`);
     await wait(100);
@@ -41,6 +57,8 @@ try {
   const resources = await browser.evaluate('performance.getEntriesByType("resource").map(r=>r.name)');
   assert.ok(!resources.some(url => /\.(?:onnx|wasm)(?:$|\?)|ort[.-]wasm/.test(url)), 'Experimental model and ONNX runtime must remain gated');
   results.push({ test: 'unreleased model does not download', passed: true });
+  assert.equal(await browser.evaluate('/chronos/i.test(document.body.innerText+document.title)'), false);
+  results.push({ test: 'watch has no visible Chronos branding', passed: true });
   const factPack = JSON.parse(await readFile('public/watch/facts.v1.json', 'utf8'));
   const typography = [];
   await browser.evaluate('document.querySelector("[data-watch-pause]").click()');
@@ -50,27 +68,37 @@ try {
       await browser.evaluate(`document.querySelector('[data-watch-mode="${mode}"]').click()`);
       const expected = factPack.facts.filter(fact => fact.mode === mode);
       for (const fact of expected) {
-        const measured = await browser.evaluate(`(()=>{const phrase=document.querySelector('[data-watch-phrase]');return {sentence:phrase.textContent.trim(),font:Number(phrase.getAttribute('font-size')),boxes:[...phrase.children].map(line=>{const b=line.getBBox();return {x:b.x,y:b.y,width:b.width,height:b.height}})}})()`);
+        const measured = await browser.evaluate(`(()=>{const phrase=document.querySelector('[data-watch-phrase]');return {sentence:phrase.textContent.trim(),font:Number(phrase.getAttribute('font-size')),boxes:[...phrase.children].map(line=>{const b=line.getBBox(),guide=document.querySelector('[data-watch-aperture]');return {x:b.x,y:b.y,width:b.width,height:b.height,inside:[b.x,b.x+b.width].every(x=>[b.y,b.y+b.height].every(y=>guide.isPointInFill(new DOMPoint(x,y))))}})}})()`);
         assert.equal(measured.sentence, fact.answer, 'Every complete reviewed thought reaches the dial');
         for (const box of measured.boxes) {
-          assert.ok(box.y >= 307, 'Text stays below the upper aperture edge');
-          for (const x of [box.x, box.x + box.width]) for (const y of [box.y, box.y + box.height]) {
-            assert.ok(Math.hypot(x - 220, y - 219.73) < 135, 'Actual glyph bounds stay inside the curved aperture');
-          }
+          assert.ok(box.inside, 'Actual glyph bounds stay inside the upper aperture');
+          assert.ok(box.y + box.height < 220, 'The complete sentence stays in the upper half');
         }
         typography.push({ width, fact: fact.id, font: measured.font });
         await browser.evaluate('document.querySelector("[data-watch-next]").click()');
       }
     }
   }
-  results.push({ test: 'all 34 complete thoughts fit curved dial at 320, 380 and 480px', passed: true, sentencesChecked: typography.length, minimumSvgFont: Math.min(...typography.map(row=>row.font)) });
+  results.push({ test: `all ${factPack.facts.length} complete thoughts fit upper dial at 320, 380 and 480px`, passed: true, sentencesChecked: typography.length, minimumSvgFont: Math.min(...typography.map(row=>row.font)) });
   await writeFile(join(output, 'typography.json'), JSON.stringify(typography, null, 2));
+  await browser.evaluate('(()=>{const range=document.querySelector("[data-watch-interval]");range.value="2";range.dispatchEvent(new Event("change",{bubbles:true}));document.querySelector("[data-watch-pause]").click();})()');
+  const previous = await browser.evaluate('document.querySelector("[data-watch-caption]").textContent');
+  const started = Date.now();
+  await until(browser, `document.querySelector('[data-watch-caption]').textContent !== ${JSON.stringify(previous)}`);
+  assert.ok(Date.now() - started < 2600, 'Two-second answer interval must take effect promptly');
+  await browser.evaluate('(()=>{const range=document.querySelector("[data-watch-interval]");range.value="20";range.dispatchEvent(new Event("change",{bubbles:true}));document.querySelector("[data-watch-pause]").click();})()');
+  results.push({ test: 'answer interval starts at two seconds and actually rotates', passed: true });
   await browser.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false });
   await browser.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+  await browser.evaluate('(()=>{const motion=document.querySelector("[data-watch-motion]");motion.value="system";motion.dispatchEvent(new Event("change",{bubbles:true}));})()');
   await wait(150);
-  assert.equal(await browser.evaluate('getComputedStyle(document.querySelector("[data-watch-plane]")).display'), 'none');
+  assert.notEqual(await browser.evaluate('getComputedStyle(document.querySelector("[data-watch-plane]")).display'), 'none');
+  assert.equal(await browser.evaluate('getComputedStyle(document.querySelector("[data-watch-clouds]")).display'), 'none');
   assert.equal(await browser.evaluate('document.querySelector("[data-watch]").dataset.watchTicking'), 'true');
-  results.push({ test: 'reduced motion disables aircraft and ticks hands', passed: true });
+  await browser.evaluate('(()=>{const motion=document.querySelector("[data-watch-motion]");motion.value="sweep";motion.dispatchEvent(new Event("change",{bubbles:true}));})()');
+  await wait(150);
+  assert.equal(await browser.evaluate('document.querySelector("[data-watch]").dataset.watchTicking'), 'false');
+  results.push({ test: 'reduced motion keeps aircraft visible; explicit sweeping enables flight', passed: true });
   await browser.send('Emulation.setEmulatedMedia', { features: [] });
   for (const width of [320, 390, 768]) {
     await browser.send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: width < 768 });
@@ -116,7 +144,7 @@ try {
     assert.ok(Math.abs(angles.hour - (hour * 30 + minute / 2)) < .1);
     assert.ok(Math.abs(angles.minute - minute * 6) < .2);
     await writeFile(join(output, `clock-${hour}-${minute}.png`), await browser.screenshot());
-    results.push({ test: `clock fixture ${hour}:${minute} and lower-window visual review`, passed: true });
+    results.push({ test: `clock fixture ${hour}:${minute} and upper-dial visual review`, passed: true });
   }
   await browser.send('Page.navigate', { url: `${base}/` });
   await until(browser, 'Boolean(document.querySelector("[data-watch]"))');

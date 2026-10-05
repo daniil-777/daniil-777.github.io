@@ -1,0 +1,358 @@
+{
+  "asOf": "2026-10-05",
+  "method": "Primary references opened and factual summaries checked by the authoring agent; not an independent human or clinical review. Only original sentences are in the training corpus; full sources are not ingested.",
+  "dates": "New sourceDate values record access date, not an asserted publication date.",
+  "teacherSpendUsd": 0,
+  "references": [
+    {
+      "sourceId": "linear-algebra",
+      "domain": "math",
+      "title": "MIT: Some Linear Algebra",
+      "url": "https://ocw.mit.edu/ans7870/18/18.013a/textbook/HTML/chapter32/contents.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "linear-algebra"
+    },
+    {
+      "sourceId": "calculus",
+      "domain": "math",
+      "title": "MIT: Single Variable Calculus differentiation",
+      "url": "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/pages/1.-differentiation/",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "calculus"
+    },
+    {
+      "sourceId": "statistics",
+      "domain": "math",
+      "title": "NIST/SEMATECH: Statistical handbook quantitative techniques",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda35.htm",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "statistics"
+    },
+    {
+      "sourceId": "convex-optimization",
+      "domain": "math",
+      "title": "Boyd and Vandenberghe: Convex Optimization",
+      "url": "https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "convex-optimization"
+    },
+    {
+      "sourceId": "numerical-integration",
+      "domain": "math",
+      "title": "SciPy: Numerical integration",
+      "url": "https://docs.scipy.org/doc/scipy/tutorial/integrate.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "numerical-integration"
+    },
+    {
+      "sourceId": "automatic-differentiation",
+      "domain": "math",
+      "title": "PyTorch: Automatic differentiation",
+      "url": "https://docs.pytorch.org/tutorials/beginner/basics/autogradqs_tutorial.html",
+      "checkedAt": "2026-10-05",
+      "facts": 9,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "automatic-differentiation"
+    },
+    {
+      "sourceId": "graph-mathematics",
+      "domain": "math",
+      "title": "NetworkX: Graph tutorial",
+      "url": "https://networkx.org/documentation/stable/tutorial.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "graph-mathematics"
+    },
+    {
+      "sourceId": "linear-models",
+      "domain": "ai",
+      "title": "scikit-learn: Linear models",
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "linear-models"
+    },
+    {
+      "sourceId": "decision-trees",
+      "domain": "ai",
+      "title": "scikit-learn: Decision trees",
+      "url": "https://scikit-learn.org/stable/modules/tree.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "decision-trees"
+    },
+    {
+      "sourceId": "clustering",
+      "domain": "ai",
+      "title": "scikit-learn: Clustering",
+      "url": "https://scikit-learn.org/stable/modules/clustering.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "clustering"
+    },
+    {
+      "sourceId": "prediction-metrics",
+      "domain": "ai",
+      "title": "scikit-learn: Prediction metrics",
+      "url": "https://scikit-learn.org/stable/modules/model_evaluation.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "prediction-metrics"
+    },
+    {
+      "sourceId": "ensemble-learning",
+      "domain": "ai",
+      "title": "scikit-learn: Ensemble learning",
+      "url": "https://scikit-learn.org/stable/modules/ensemble.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "ensemble-learning"
+    },
+    {
+      "sourceId": "decomposition",
+      "domain": "ai",
+      "title": "scikit-learn: Matrix decomposition",
+      "url": "https://scikit-learn.org/stable/modules/decomposition.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "decomposition"
+    },
+    {
+      "sourceId": "probability-calibration",
+      "domain": "ai",
+      "title": "scikit-learn: Probability calibration",
+      "url": "https://scikit-learn.org/stable/modules/calibration.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "probability-calibration"
+    },
+    {
+      "sourceId": "anomaly-detection",
+      "domain": "ai",
+      "title": "scikit-learn: Novelty and outlier detection",
+      "url": "https://scikit-learn.org/stable/modules/outlier_detection.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "anomaly-detection"
+    },
+    {
+      "sourceId": "finance-fsb",
+      "domain": "finance",
+      "title": "FSB: AI and machine learning in financial services",
+      "url": "https://www.fsb.org/uploads/P011117.pdf",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "finance-fsb"
+    },
+    {
+      "sourceId": "finance-boe",
+      "domain": "finance",
+      "title": "Bank of England: AI in UK financial services 2024",
+      "url": "https://www.bankofengland.co.uk/report/2024/artificial-intelligence-in-uk-financial-services-2024",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "finance-boe"
+    },
+    {
+      "sourceId": "finance-bis",
+      "domain": "finance",
+      "title": "BIS: Intelligent financial system research",
+      "url": "https://www.bis.org/publ/work1194.htm",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "finance-bis"
+    },
+    {
+      "sourceId": "finance-time-series",
+      "domain": "finance",
+      "title": "scikit-learn: TimeSeriesSplit",
+      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "finance-time-series"
+    },
+    {
+      "sourceId": "robotics-kinematics",
+      "domain": "robotics",
+      "title": "Lynch and Park: Modern Robotics",
+      "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "robotics-kinematics"
+    },
+    {
+      "sourceId": "robotics-planning",
+      "domain": "robotics",
+      "title": "OMPL: Available motion planners",
+      "url": "https://ompl.kavrakilab.org/planners.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "robotics-planning"
+    },
+    {
+      "sourceId": "robotics-transformer",
+      "domain": "robotics",
+      "title": "RT-1: Robotics Transformer paper",
+      "url": "https://arxiv.org/abs/2212.06817",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "robotics-transformer"
+    },
+    {
+      "sourceId": "robotics-diffusion",
+      "domain": "robotics",
+      "title": "Diffusion Policy: Visuomotor learning paper",
+      "url": "https://arxiv.org/abs/2303.04137",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "robotics-diffusion"
+    },
+    {
+      "sourceId": "camera-geometry",
+      "domain": "vision",
+      "title": "OpenCV: Camera calibration and reconstruction",
+      "url": "https://docs.opencv.org/4.x/d9/d0c/group__calib3d.html",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "camera-geometry"
+    },
+    {
+      "sourceId": "residual-networks",
+      "domain": "vision",
+      "title": "Deep Residual Learning for Image Recognition",
+      "url": "https://arxiv.org/abs/1512.03385",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "residual-networks"
+    },
+    {
+      "sourceId": "neural-radiance-fields",
+      "domain": "vision",
+      "title": "NeRF: Neural radiance fields paper",
+      "url": "https://arxiv.org/abs/2003.08934",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "neural-radiance-fields"
+    },
+    {
+      "sourceId": "health-ai-ethics",
+      "domain": "healthcare",
+      "title": "WHO: Ethics and governance of AI for health",
+      "url": "https://www.who.int/news/item/28-06-2021-who-issues-first-global-report-on-ai-in-health-and-six-guiding-principles-for-its-design-and-use",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "health-ai-ethics"
+    },
+    {
+      "sourceId": "biomedical-segmentation",
+      "domain": "healthcare",
+      "title": "U-Net: Biomedical image segmentation paper",
+      "url": "https://arxiv.org/abs/1505.04597",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "biomedical-segmentation"
+    },
+    {
+      "sourceId": "protein-folding",
+      "domain": "science",
+      "title": "DeepMind: AlphaFold repository documentation",
+      "url": "https://github.com/google-deepmind/alphafold/blob/main/README.md",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "protein-folding"
+    },
+    {
+      "sourceId": "physics-informed-networks",
+      "domain": "science",
+      "title": "Raissi: Physics-informed neural networks",
+      "url": "https://maziarraissi.github.io/PINNs/",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "physics-informed-networks"
+    },
+    {
+      "sourceId": "weather-forecasting",
+      "domain": "science",
+      "title": "GraphCast: Global weather forecasting paper",
+      "url": "https://arxiv.org/abs/2212.12794",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "weather-forecasting"
+    },
+    {
+      "sourceId": "adversarial-ml",
+      "domain": "security",
+      "title": "NIST: Adversarial machine learning taxonomy",
+      "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-2e2025.pdf",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "adversarial-ml"
+    },
+    {
+      "sourceId": "ai-risk-management",
+      "domain": "security",
+      "title": "NIST: AI Risk Management Framework",
+      "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+      "checkedAt": "2026-10-05",
+      "facts": 10,
+      "accessResult": "Primary page or research full text reviewed",
+      "referenceId": "ai-risk-management"
+    },
+    {
+      "sourceId": "automatic-differentiation",
+      "referenceId": "automatic-differentiation-jvp",
+      "domain": "math",
+      "title": "PyTorch: torch.func.jvp Jacobian-vector products",
+      "url": "https://docs.pytorch.org/docs/2.14/generated/torch.func.jvp.html",
+      "checkedAt": "2026-10-05",
+      "facts": 1,
+      "accessResult": "Specific JVP API documentation reviewed; reference clarified after training without changing the fact sentence or input tokens."
+    }
+  ],
+  "secondaryAgentReview": {
+    "scope": "All 330 newly added facts",
+    "substantiveFactualBlockers": 0,
+    "citationCorrections": 1,
+    "independentHumanReview": false,
+    "note": "Independent agent review is not a human or clinical review."
+  },
+  "sourceGroups": 43,
+  "currentDisplayUniqueReferenceUrls": 44,
+  "trainingUniqueReferenceUrls": 43
+}

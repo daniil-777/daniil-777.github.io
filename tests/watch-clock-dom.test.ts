@@ -39,6 +39,12 @@ test('dial re-reads device time after suspension and disposes its only frame loo
     dial.setMotion('tick'); flush();
     assert.equal(root.dataset.watchTicking, 'true');
     assert.equal(root.querySelector('[data-watch-hand="second"]')!.getAttribute('transform'), 'rotate(0 220 220)');
+    media.matches = true;
+    dial.setMotion('system'); flush();
+    assert.equal(root.dataset.watchTicking, 'true', 'device preference applies automatically');
+    dial.setMotion('sweep'); flush();
+    assert.equal(root.dataset.watchTicking, 'false', 'explicit sweeping choice opts into animation');
+    assert.equal(root.querySelector('[data-watch-hand="second"]')!.getAttribute('transform'), 'rotate(3 220 220)');
     dial.suspend();
     assert.equal(callbacks.size, 0);
     now = new Date('2026-10-05T07:25:30.100Z');

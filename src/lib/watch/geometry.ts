@@ -1,9 +1,9 @@
 export const WATCH_GEOMETRY = Object.freeze({
   size: 440, center: 220, caseRadius: 214, dialRadius: 194,
   // Flight, indices, and typography each occupy a separate concentric band.
-  trackInner: 162, trackOuter: 195, trackMiddle: 178.5,
-  indexInner: 139, indexOuter: 151, numeralRadius: 120,
-  hourLength: 72, minuteLength: 86, secondLength: 132,
+  trackInner: 155, trackOuter: 198, trackMiddle: 176.5,
+  indexInner: 139, indexOuter: 148, numeralRadius: 120,
+  hourLength: 56.16, minuteLength: 67.08, secondLength: 132,
 });
 
 export interface DialPoint { x: number; y: number }
@@ -20,7 +20,7 @@ export function minuteIndex(index: number): { start: DialPoint; end: DialPoint; 
   const major = index % 5 === 0;
   const angle = index * Math.PI / 30;
   return {
-    start: pointOnDial(major ? WATCH_GEOMETRY.indexInner : 145, angle),
+    start: pointOnDial(major ? WATCH_GEOMETRY.indexInner : 143, angle),
     end: pointOnDial(WATCH_GEOMETRY.indexOuter, angle), major,
   };
 }

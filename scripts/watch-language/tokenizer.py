@@ -86,9 +86,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--used-vocabulary-target', type=int, default=4096, choices=[512, 1024, 2048, 4096])
     args = parser.parse_args()
     rows = [json.loads(line) for line in args.dataset.read_text().splitlines()]
     texts = [row['answer'] + ' ' + ' '.join(f['text'] for f in row['facts']) + ' ' + (row.get('question') or '') for row in rows if row['split'] == 'train']
-    tokenizer = Tokenizer.train(texts)
+    tokenizer = Tokenizer.train(texts, vocabulary=args.used_vocabulary_target)
     tokenizer.save(args.output)
     print(json.dumps({'configuredVocabulary': 4096, 'usedVocabulary': len(tokenizer.bytes), 'trainedSplit': 'train', 'trainTexts': len(texts), 'note': 'Unused vocabulary IDs remain reserved; a small corpus cannot supply 4096 useful merges.'}))

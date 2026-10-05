@@ -2,9 +2,44 @@ const ORIGIN = 'https://daniil-777.github.io';
 const PUBLIC_HOST = 'demtsev.com';
 const FORWARD_HEADERS = ['accept', 'accept-encoding', 'range', 'if-range', 'if-none-match', 'if-modified-since'];
 
+// One release state per isolate; a positive KV receipt survives future origin updates.
+let handoff;
+async function originReady(env) {
+  const release = env.FALLBACK_RELEASE;
+  if (!release || !env.ORIGIN_STATE) return false;
+  if (!handoff || handoff.release !== release) handoff = { release, ready: false, nextProbe: 0, pending: undefined };
+  const state = handoff;
+  if (state.ready) return true;
+  if (state.pending) return state.pending;
+  if (Date.now() < state.nextProbe) return false;
+  state.nextProbe = Date.now() + 60_000;
+  state.pending = (async () => {
+    try {
+      const key = `origin-ready:${release}`;
+      if (await env.ORIGIN_STATE.get(key) === 'true') return state.ready = true;
+      const probe = await fetch(`${ORIGIN}/watch/release.json`, {
+        method: 'GET', redirect: 'manual', headers: { 'Cache-Control': 'no-cache' },
+        signal: AbortSignal.timeout(3000),
+      });
+      if (!probe.ok || (await probe.json())?.release !== release) return false;
+      await env.ORIGIN_STATE.put(key, 'true');
+      return state.ready = true;
+    } catch { return false; }
+  })();
+  try { return await state.pending; }
+  finally { state.pending = undefined; }
+}
+
+function publicResponse(response) {
+  const outgoing = new Headers(response.headers);
+  outgoing.delete('set-cookie');
+  outgoing.set('Strict-Transport-Security', 'max-age=31536000');
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers: outgoing });
+}
+
 export default {
   /** @param {Request} request */
-  async fetch(request) {
+  async fetch(request, env = {}) {
     const url = new URL(request.url);
     if (![PUBLIC_HOST, `www.${PUBLIC_HOST}`].includes(url.hostname)) return new Response('Not found', { status: 404 });
     if (url.protocol !== 'https:' || url.hostname !== PUBLIC_HOST) {
@@ -23,6 +58,13 @@ export default {
       if (value !== null) headers.set(name, value);
     }
     try {
+      if (env.ASSETS && !await originReady(env)) {
+        const assetRequest = new Request(url.href, { method: request.method, headers });
+        try {
+          const asset = await env.ASSETS.fetch(assetRequest);
+          if (asset.status !== 404) return publicResponse(asset);
+        } catch { /* An asset binding failure leaves the static origin available. */ }
+      }
       const response = await fetch(upstream, { method: request.method, headers, redirect: 'manual' });
       const outgoing = new Headers(response.headers);
       outgoing.delete('set-cookie');

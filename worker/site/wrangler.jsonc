@@ -6,8 +6,32 @@
   "workers_dev": false,
   "preview_urls": false,
   "routes": [
-    { "pattern": "demtsev.com", "custom_domain": true },
-    { "pattern": "www.demtsev.com", "custom_domain": true }
+    {
+      "pattern": "demtsev.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.demtsev.com",
+      "custom_domain": true
+    }
   ],
-  "observability": { "enabled": false }
+  "observability": {
+    "enabled": false
+  },
+  "assets": {
+    "directory": "../../build",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "ORIGIN_STATE",
+      "id": "e5affd81b17545b6bfbdeb7b4e0e4fba"
+    }
+  ],
+  "vars": {
+    "FALLBACK_RELEASE": "smart-watch-three-faces-expanded-20261005-v1"
+  }
 }

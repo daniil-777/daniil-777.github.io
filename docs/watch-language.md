@@ -1,109 +1,103 @@
-# Chronos local language pipeline
+# Tiny local language pipeline
 
-The widget currently displays **reviewed source-backed sentences**, labelled as such. A genuine locally trained transformer exists, but its held-out generation failed the release gates. Its manifest is `experimental`; the browser loader reads that status and stops before downloading model weights, tokenizer, ONNX Runtime or WASM. No cloud model or random-weight substitute is used.
+The watch now has **364 original, source-reviewed sentences**, up from 34. It includes mathematics and AI in finance, robotics, vision, healthcare, science and security. The original 12 public profile and 10 WHO wellbeing facts remain unchanged. New answers contain 10–20 words and at most 125 characters; the interface measures their complete text before display. Finance content describes research and methods without personalized investment recommendations. Healthcare AI content describes research and governance without personal clinical advice.
 
-## Measured candidate
+The expanded neural model was **genuinely retrained and exported**, but its public release gate failed. The browser displays clearly labelled sentences selected from the reviewed pack. The experimental manifest is rejected before downloading its weights, tokenizer or ONNX inference runtime. No sentence selector is presented as neural generation, and there is no cloud substitute.
 
-`chronos-a-finetune-20261005-lr0003-step1500` is a single mode-conditioned, decoder-only transformer trained from random initialization. It uses four layers, width 192, SwiGLU width 512, six query heads, two KV heads, head dimension 32, RMSNorm, RoPE, bias-free projections, a 4,096-entry tied embedding/output matrix, and a 256-token context. Its exact parameter count is **2,361,024**. There was no broad English pretraining.
+## Data and provenance
 
-The source-reviewed pack `chronos-facts-2026-10-05.1` contains 34 facts. The canonical pilot produced 78 accepted rows and no schema rejections, spanning ten source groups. Source groups were split **before** ambient/question variations: 45 training rows, 15 validation rows, and 18 test rows. The tokenizer was trained exclusively on training text. Its small corpus produced 970 usable byte/BPE entries; the remaining entries in the configured 4,096-entry vocabulary are unused. Arbitrary names and Unicode remain encodable as bytes. This is a small feasibility corpus, **not** a 5,000-example teacher pilot or a diverse generic-profile corpus.
+[Fact pack](../public/watch/facts.v1.json): `chronos-facts-2026-10-05.2-expanded-citation1`. [Authoring catalog](../scripts/watch/fact-catalog.json) adds 330 distinct sentences across 33 source-group buckets, now citing 34 primary reference URLs. [Source audit](../public/watch/language/source-audit.json) retains their titles, links, domains and access dates. References include MIT mathematics, NIST statistics and AI risk publications, official scikit-learn/SciPy/PyTorch/OpenCV documentation, central-bank/FSB research and original robotics, vision and scientific-learning papers.
 
-Two measured configurations used seed `20261005`, CPU, two threads, microbatch one, gradient accumulation two, answer-only loss, AdamW, clipped gradients, warmup and cosine decay:
+| Domain | Facts |
+| --- | ---: |
+| General AI | 92 |
+| Mathematics | 70 |
+| AI in finance | 40 |
+| Robotics | 40 |
+| Computer vision | 30 |
+| AI in healthcare | 20 |
+| AI in science | 30 |
+| Security and AI governance | 20 |
+| Public profile | 12 |
+| General wellbeing | 10 |
 
-| Experiment | Result |
-| --- | --- |
-| Learning rate 0.0008, 500-step ceiling | Early stopping at 250 updates; 6.14 seconds; best validation loss 8.023 at step 50 |
-| Learning rate 0.0003, 1,500 updates | 37.66 seconds; 76,798 answer tokens; 2,039 answer tokens/second; training loss 0.000734; validation loss 13.470 |
-| Second experiment process peak RSS | 338,362,368 bytes, including Python, PyTorch, optimizer and training buffers |
-| Familiar canonical training rows | 45/45 exact matches; six additional adversarial cases failed |
-| Frozen unseen/adversarial suite | 2/24 complete outputs within twenty words; 2/24 canonical exact matches; release **failed** |
+The new sentences are original factual summaries checked against primary references by the authoring agent. They are **not independently reviewed human or clinical guidance**. Source passages, figures and full source corpora were not copied or ingested. Each new fact records `independentHumanReview: false`; its `sourceDateKind: accessed` makes clear that its date is an access date. Profile facts were explicitly supplied by the owner for public publication. The catalog builder preserves their wording and qualifications, including the distinction between a patent application and a granted patent. Initial OpenStax candidates were replaced after checking its stated AI-ingestion restrictions.
 
-The familiar/unseen gap demonstrates memorization and insufficient contextual generalization. Scaling the architecture would not resolve the missing dataset coverage by itself. The deployed artifact is the second experiment's last checkpoint to retain this measured comparison; it is an experimental artifact rather than the first experiment's lower-loss but largely blank early checkpoint.
+[Dataset statistics](../public/watch/language/dataset-statistics.json) record **2,720 accepted examples**, zero schema rejects, 364 distinct facts and **43 source-document groups**. There are seven deterministic prompt forms per fact and four missing-evidence forms per source. Prompt variants do not multiply independent facts. No paid teacher requests were made: spend **$0**. This is an expanded canonical corpus, not a claimed 5,000-example teacher pilot or broad English pretraining corpus.
 
-Reported supported-claim rate, serious-health failure count and unsupported-personal-achievement count are `null`: no independent entailment/safety review has established those metrics. Automated punctuation, word count, numerical and repetition checks cannot establish factual support. No 99%/98% release target, clinical review, broad language competence or crisis-counselling capability is claimed. Raw generation is measured without a hidden fallback. Reviewed UI output should be measured separately from these raw results.
+Connected source, fact, scenario and source-version groups are assigned to splits **before augmentation**, stratified by domain. Counts are **1,475 training / 536 validation / 709 test**. Every domain has training and held-out test source groups; domains with only two groups have no validation group. The validator checks source/fact/scenario separation. Documents from the same documentation family can appear in different splits; the unit of separation is a cited document or an explicitly linked source family, rather than an entire institution or library. The two PyTorch differentiation references share one bucket. [Fingerprints](../public/watch/language/dataset-fingerprint.json) bind the exact original training corpus and registry, current display registry, tokenizer and validation receipt separately.
 
-## Export and inference evidence
+A later independent **agent** review found no substantive factual blocker in the 330 additions, but identified one citation mismatch: the JVP sentence linked to a beginner tutorial demonstrating VJPs. Its current citation is the specific [PyTorch `torch.func.jvp` API](https://docs.pytorch.org/docs/2.14/generated/torch.func.jvp.html). The answer, topic, mode, source-group bucket and every training prompt/target token ID are unchanged. This is a post-training citation clarification, not a new training run. Training used 43 reference URLs; the corrected display registry has 44, still within the same 43 source groups. The review is not an independent human or clinical review.
 
-PyTorch 2.8.0 → ONNX 1.19.0 / opset 17 → ONNX Runtime 1.23.0 CPU → ONNX Runtime Web 1.23.0 single-threaded CPU/WASM was verified. The graph handles both prefill and cached one-token decoding in **one session**. The persistent cache stores grouped KV heads with dimensions `[4, 2, 1, 2, pastLength, 32]`; the maximum FP32 cache is 524,288 bytes, excluding activations and scratch buffers.
+The original training corpus hash remains `f6b8fd7a276f7874238dea8c2f8f0666758abe2f03d762523a7a6b36e979287d`, and its original registry hash remains `22fdbfa0a1a733d3ec6dcd3c080cebd5ee6f8a0d3f3396524cae3f0672d63198`. The provenance artifact records the corrected display hash separately and verifies equal hashes for all actual conditioning and answer token IDs. Rebuilding the corpus after this citation clarification changes reference metadata and its JSON hash; the neural inputs remain identical.
 
-Fifteen numerical cases include truly empty cache, cached versus uncached generation, padding masks and exact greedy continuation parity. Python/ONNX maximum absolute logit difference for the trained candidate was `0.000017166`; browser/ONNX difference was `0.000011444`, within the browser FP32 tolerance `0.0002`. The serialized graph has one tied embedding initializer. Runtime optimization may materialize a transposed output matrix; file size is not a resident-memory measurement.
+## Actual training and candidate selection
 
-On an ARM64 Mac running macOS 27.2 and isolated headless **Chrome 154.0.8037.98**, the trained candidate's reference benchmark measured:
+The architecture remains candidate A: four decoder layers, width 192, SwiGLU feed-forward width 512, six query heads, two KV heads of dimension 32, RoPE, RMSNorm and tied embeddings/output projection. It has **2,361,024 parameters**, a configured 4,096-ID byte-BPE vocabulary and a 256-token total context. Prompt/source/padding tokens are masked from answer loss; targets include EOS. The tokenizer only learns from training examples.
 
-| Measurement | Result |
-| --- | --- |
-| Cold runtime/model load and session initialization | 336 ms, local test server |
-| Initial reference prefill | 23.1 ms |
-| Subsequent short cached steps | 0.8–1.9 ms |
-| FP32 model artifact | 9,546,398 bytes |
-| Tokenizer | 7,124 bytes |
-| WASM binary | 11,815,498 bytes |
-| WASM module JS | 20,321 bytes |
-| ML GPU allocations | Zero: WASM execution provider only |
+Two fresh random-initialized CPU runs each completed **5,000 optimizer updates**, accumulating two examples per update. Both used seed 20261005, learning rate 0.0005, 100 warmup updates, AdamW, gradient clipping and a cosine schedule. No pretrained third-party model, paid teacher data or broad pretraining was used. The measured environment was Python 3.12.4, PyTorch 2.8.0, ONNX 1.19.0 and ONNX Runtime 1.23.0 on the local Apple M3 Pro Mac.
 
-The browser report separately records JavaScript heap bytes. These exclude WASM memory, native buffers, shared pages and total process resident memory. The under-96-MiB incremental resident-memory target is **unverified**. The fifteen short numerical prompts are not a benchmark of useful, quality-accepted sentence generation. Physical mobile hardware remains **untested**. No WebGPU, FP16, INT8 or INT4 deployment path is adopted without quality and backend comparisons; this release keeps only the tested FP32 reference.
+| Run | Used byte-BPE IDs | Wall time | Learned answer tokens including EOS | Answer tokens/s | Peak training-process RSS |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Comparison | 3,341 | 166.61 s | 242,768 | 1,457.12 | 365,084,672 bytes |
+| Selected tokenizer | 1,024 | 196.82 s | 360,962 | 1,834.01 | 359,235,584 bytes |
 
-ORT's JS and WASM are pinned, self-hosted, SHA-256 listed, and accompanied by the upstream MIT license and third-party notices. Hash-checked model/tokenizer/runtime downloads use byte ceilings, timeouts and bounded CacheStorage. ORT 1.23.0's Emscripten module cannot load from a Blob module URL because it constructs a URL relative to `import.meta.url`; the loader verifies its versioned same-origin JS file then imports that URL, and supplies verified WASM bytes through `wasmBinary`. No cross-origin isolation or SharedArrayBuffer is required.
+Curves and configuration are public in [comparison training](../public/watch/language/training-comparison.json) and [candidate training](../public/watch/language/training-candidate.json). All 1,475 training rows fit both tokenizers. Seven validation variants exceed the selected tokenizer's complete-target 64-token limit and are excluded from its training-loop validation loss; the remaining count is 529. The normalized comparison below evaluates all 536 complete validation targets, and all 709 test rows fit.
 
-## Browser API
+Each run's checkpoint was selected by minimum validation loss within its own tokenization. Per-token losses across different tokenizers are not directly comparable. [Validation-only comparison](../public/watch/language/validation-comparison.json) therefore uses identical answer targets, answer-plus-EOS negative log likelihood divided by UTF-8 answer bytes, and a frozen hash-selected 32-unique-fact greedy suite. The pre-test selection rule prioritizes exact canonical matches, then lower normalized loss on ties.
 
-```ts
-import { WatchLanguageClient } from '../src/lib/watch/language/runtime.ts';
+| Candidate checkpoint | Validation bits per UTF-8 answer byte | Exact matches / 32 | Complete within twenty words / 32 |
+| --- | ---: | ---: | ---: |
+| 3,341-ID tokenizer, update 250 | 3.7561 | 0 | 0 |
+| 1,024-ID tokenizer, update 1,000 | 2.5369 | 0 | 17 |
 
-const language = new WatchLanguageClient(event => {
-  // Tokens are internal diagnostics/cancellation events; display only a validated complete result.
-});
-const state = await language.init('/watch/language/manifest.json');
-// Current state.status === 'unavailable': reviewed UI content remains visible.
-// With a independently reviewed, released future checkpoint:
-if (state.status === 'ready') {
-  const result = await language.generate({
-    requestId: 'phrase-1', mode: 'ai', question: undefined,
-    factIds: ['reviewed-id'], facts: [{ id: 'reviewed-id', text: 'Reviewed fact context.' }],
-    maxNewTokens: 64,
-  });
-  // Run application factual/scope/sentence validators before displaying result.text.
-}
-language.cancel();
-await language.dispose();
-```
+The exported version is **`chronos-a-expanded-bpe1024-20261005-step1000`**. The selected checkpoint contains 1,000 updates, while both complete training runs contain 5,000. The remaining updates overfit validation data; they are reported rather than substituted into the release. Test generations were not used to select a candidate.
 
-Construction is lazy. Initialization creates a dedicated worker and checks metadata. Mode changes cancel the previous request; stale events cannot update the caller. Worker operations are serialized, pending superseded generations are skipped, cache resets between sentences, questions have a strict token budget, and only complete fitting facts enter the prompt. Dispose cancels pending work and terminates the worker, releasing the ORT backend as well as its session.
+## Frozen raw evaluation and failed release
 
-## Reproduce
+[Raw generations](../public/watch/language/evaluation-raw.json) and [summary](../public/watch/language/evaluation-candidate.json) contain **709 unseen-source examples plus 30 missing-context/adversarial cases**, including numerical invention, source instructions, conflicting evidence, profile embellishment, personalized finance and clinical questions. Evaluation uses actual cached greedy generation, not the reviewed fallback.
 
-Node 24 or later is used for TypeScript tests and browser tooling. Python 3.12 is used for offline training. All paths below are local; no credentials are needed for these commands.
+| Subset | Samples | Complete and at most twenty words | Exact canonical matches |
+| --- | ---: | ---: | ---: |
+| Held-out factual answers | 665 | 257 | **0** |
+| Source-bound missing evidence | 44 | 44 | 44 |
+| Adversarial/missing-context cases | 30 | 27 | 6 |
+| Entire finite suite | 739 | 328 | 50 |
+
+Overall syntax compliance is **44.38%**, with a descriptive Wilson interval of **40.84–47.99%**. Overall exact match is 6.77%, entirely accounted for by abstentions; **factual exact match is 0/665**. Repetition screening flags 87.82% of raw outputs. Numerical screening found no unsupported numerical output in this particular suite. Independent supported-claim rate, serious health failures and unsupported-achievement rates remain **unmeasured**, not zero.
+
+Per-domain results are in the public summary. Variants share facts and source groups, so counts and confidence intervals describe a correlated finite suite rather than independent population samples. Exact wording checks are not independent entailment review. The old 34-fact test used different data and cannot establish a direct quality improvement comparison. These results do not justify publishing open-ended neural answers, regardless of the larger dataset. The reviewed source sentences remain the public output path.
+
+## Export, browser parity and resources
+
+The actual FP32 ONNX artifact is **9,546,398 bytes**, gzip **8,766,018 bytes**, SHA-256 `bf721e58e5c4f5f230aa6113807a671d0eb1436b2a5acde1685ebf324df4d365`. Its tokenizer is 7,724 bytes, gzip 2,848. [Asset sizes](../public/watch/language/asset-sizes.json) bind all public files. The corrected display fact pack is 387,261 bytes, gzip 25,166. Bulky training corpora and optimizer checkpoints stay outside website assets.
+
+The export preserves one tied embedding initializer; it checks a genuinely empty grouped cache, padding masks and cached-versus-complete decoding. Fifteen Python/ONNX parity cases passed, maximum absolute logit error **7.63e-6**. [Isolated Chromium/WASM benchmark](../public/watch/language/benchmark-browser.json) passed all fifteen cached greedy cases with error **8.58e-6** on Chrome 154.0.8037.98, macOS/ARM64, single-threaded CPU/WASM. Runtime 1.23.0 hashes were checked.
+
+Reference cold load was **370.9 ms**, prefill **25.5 ms**, and cached numerical runs **0.8–2.5 ms**. These fixture timings do not establish useful-sentence quality or a successful full-answer latency. JavaScript heap was 27,392,389 bytes; it excludes WASM memory and total process resident memory. A full 256-token FP32 grouped KV cache is 524,288 bytes. ORT graph optimization may materialize a tied output transpose in memory. The 96 MiB incremental resident-memory target, physical mobile behavior, WebGPU and quantized-quality comparisons remain unverified. No ML GPU buffers are allocated by the CPU/WASM path.
+
+## Reproduction
+
+Use a Python environment with `scripts/watch-language/requirements.txt` and Node 24. Training requires only local CPU compute. The fact pack builder and canonical dataset generator are deterministic and make no teacher calls.
 
 ```sh
-python3 -m venv /tmp/chronos-lm-venv
-/tmp/chronos-lm-venv/bin/pip install -r scripts/watch-language/requirements.txt
 PY=/tmp/chronos-lm-venv/bin/python
-$PY scripts/watch-language/test_pipeline.py
-$PY scripts/watch-language/dataset.py pilot --facts public/watch/facts.v1.json --output /tmp/chronos-language-data/dataset.jsonl
-$PY scripts/watch-language/dataset.py validate --dataset /tmp/chronos-language-data/dataset.jsonl
-$PY scripts/watch-language/tokenizer.py --dataset /tmp/chronos-language-data/dataset.jsonl --output /tmp/chronos-language-data/tokenizer.json
+python3 scripts/watch/create-fact-pack.py
+mkdir -p /tmp/chronos-expanded-language-data
+$PY scripts/watch-language/dataset.py pilot --facts public/watch/facts.v1.json --output /tmp/chronos-expanded-language-data/dataset.jsonl
+$PY scripts/watch-language/dataset.py validate --dataset /tmp/chronos-expanded-language-data/dataset.jsonl > /tmp/chronos-expanded-language-data/validation.json
+$PY scripts/watch-language/tokenizer.py --dataset /tmp/chronos-expanded-language-data/dataset.jsonl --output /tmp/chronos-expanded-language-data/tokenizer.json
+$PY scripts/watch-language/tokenizer.py --dataset /tmp/chronos-expanded-language-data/dataset.jsonl --output /tmp/chronos-expanded-language-data/tokenizer-1024.json --used-vocabulary-target 1024
+$PY scripts/watch-language/train.py finetune --config scripts/watch-language/config.comparison.json
 $PY scripts/watch-language/train.py finetune --config scripts/watch-language/config.example.json
-$PY scripts/watch-language/evaluate.py --checkpoint /tmp/chronos-language-trained/last.pt --tokenizer /tmp/chronos-language-data/tokenizer.json --dataset /tmp/chronos-language-data/dataset.jsonl --output /tmp/chronos-language-trained/evaluation.json
-$PY scripts/watch-language/export.py --checkpoint /tmp/chronos-language-trained/last.pt --tokenizer /tmp/chronos-language-data/tokenizer.json --output /tmp/chronos-language-trained/export --dtype fp32
-node scripts/watch-language/benchmark-browser.mjs --model /tmp/chronos-language-trained/export --runtime node_modules/onnxruntime-web/dist --output /tmp/chronos-language-trained/browser.json
-node --test tests/watch-language*.test.ts
+$PY scripts/watch-language/compare_validation.py --dataset /tmp/chronos-expanded-language-data/dataset.jsonl --candidate bpe3341 /tmp/chronos-expanded-language-trained/best.pt /tmp/chronos-expanded-language-data/tokenizer.json --candidate bpe1024 /tmp/chronos-expanded-language-trained-1024/best.pt /tmp/chronos-expanded-language-data/tokenizer-1024.json --output /tmp/chronos-expanded-language-data/validation-comparison.json
+$PY scripts/watch-language/evaluate.py --checkpoint /tmp/chronos-expanded-language-trained-1024/best.pt --tokenizer /tmp/chronos-expanded-language-data/tokenizer-1024.json --dataset /tmp/chronos-expanded-language-data/dataset.jsonl --output /tmp/chronos-expanded-language-data/evaluation-test-raw.json
+$PY scripts/watch-language/export.py --checkpoint /tmp/chronos-expanded-language-trained-1024/best.pt --tokenizer /tmp/chronos-expanded-language-data/tokenizer-1024.json --output /tmp/chronos-expanded-language-export --dtype fp32
+node scripts/watch-language/benchmark-browser.mjs --model /tmp/chronos-expanded-language-export --runtime node_modules/onnxruntime-web/dist --output /tmp/chronos-expanded-browser-benchmark.json
+$PY scripts/watch-language/test_pipeline.py
+node --test tests/watch-facts.test.ts tests/watch-language*.test.ts
 ```
 
-`train.py pretrain --config ...` consumes licensed/public-allowed JSONL rows with `text`, `rights`, `publicAllowed`, `sourceGroup` and `split`; it trains all eligible sequence tokens. This optional 50–150-million-token experiment was **not run**. `finetune` masks prompt/source/padding tokens and includes EOS in the target. `--base <checkpoint>` supports fine-tuning from a pretrained checkpoint; a `specialistMode` configuration can restrict training to one mode. Specialist comparisons were not needed for the demonstrated data limitation. `--resume <checkpoint>` restores optimizer, shuffle order, random states, step and measurements. Checkpoints and bulky datasets remain outside browser assets.
+The publication checkpoint adds the descriptive expanded version string after selection without changing weights. `package_artifacts.py` collects the measured training, evaluation, export and browser reports, derives hashes/bytes, and preserves experimental status. `train.py --resume` restores optimizer and random state; `--base` supports an explicitly chosen pretrained checkpoint. Optional licensed narrow pretraining remains available but was not run.
 
-The two example configurations form the measured small sweep. To reproduce the second, set `learningRate` to `0.0003`, `steps` to `1500`, `warmupSteps` to `50`, `evaluateEvery` to `100`, and `earlyStoppingPatience` to `20`. Do not update `releaseStatus` merely because training completed.
-
-## Optional capped teacher generation
-
-`dataset.py generate --config <JSON> --output <JSONL> --budget 0` stops without reading a teacher credential or making a request. A positive explicit USD budget, endpoint, model, configured token prices, fact-pack path, accepted target, maximum attempts, seed and optional `batchSize` (one to eight) are required. Only then is `CHRONOS_TEACHER_KEY` read offline. It never appears in site assets.
-
-Each batch reserves a pessimistic UTF-8-based input-token bound and maximum output-token cost **before** the request. An append-only ledger survives resumption and includes reported usage/cost. The process stops if the provider exceeds a reserved bound. The cap relies on the configured provider prices and its advertised token limit; it does not replace a provider's billing meter. Retry attempts, pending data and rejection logs are bounded by configuration. Generated examples stay in `.pending.jsonl` until a separate entailment/safety verification pass.
-
-```sh
-$PY scripts/watch-language/dataset.py generate --config /path/to/reviewed-teacher-config.json --output /tmp/teacher.jsonl --budget 0
-$PY scripts/watch-language/dataset.py verify --dataset /tmp/teacher.pending.jsonl --verdicts /path/to/independent-verdicts.jsonl --output /tmp/verified.jsonl
-```
-
-Each verifier verdict names a reviewer/method and returns booleans for entailment, preserved qualifications, supported entities/numbers, safe scope, completeness, usefulness and word-count compliance. Missing or failing verdicts are rejected. Independent human sampling, all serious failures and the complete final wellbeing release set still require review; no automated judge proves those properties. Diverse permitted or explicitly fictional generic profiles belong in a separate, provenance-marked training corpus and must never be added to Daniil's public fact pack.
-
-Official technical references: [ORT Web deployment](https://onnxruntime.ai/docs/tutorials/web/deploy.html), [ORT 1.23.0 runtime flags](https://github.com/microsoft/onnxruntime/blob/v1.23.0/js/common/lib/env.ts), [PyTorch ONNX export](https://docs.pytorch.org/docs/stable/onnx.html).
+Paid teacher generation stays disabled unless a positive explicit USD cap, reviewed endpoint/model/prices and an offline credential are supplied. A zero budget stops before credential access or a network request. Requests reserve pessimistic costs before submission; generated examples remain pending until independent structured verification. No secret is embedded in website assets. See the implemented `generate` and `verify` subcommands in [dataset.py](../scripts/watch-language/dataset.py).

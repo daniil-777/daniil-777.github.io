@@ -112,7 +112,7 @@ def main():
     release = checkpoint.get('trained', False) and quality.get('releasePassed', False)
     manifest = {'schemaVersion': 1, 'version': checkpoint.get('version', 'a-fp32-feasibility'),
                 'releaseStatus': 'released' if release else 'experimental', 'trained': bool(checkpoint.get('trained')),
-                'reason': None if release else 'A trained candidate has not passed independently reviewed language release gates.',
+                'reason': None if release else ('The trained candidate failed held-out language gates; public inference remains disabled.' if checkpoint.get('trained') and quality.get('samples') else 'A trained candidate has not passed independently reviewed language release gates.'),
                 'runtimeVersion': '1.23.0', 'dtype': 'fp32', 'contextLength': 256, 'architecture': architecture,
                 'model': {'url': './model.fp32.onnx', 'sha256': sha(path), 'bytes': path.stat().st_size},
                 'wasmBaseUrl': './runtime/1.23.0/', 'dataVersion': checkpoint.get('dataVersion', 'unknown'),

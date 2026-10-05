@@ -1,7 +1,7 @@
 {
   "format": "chronos-plane-node-benchmark-v1",
-  "measuredAt": "2026-10-05T20:45:11.029Z",
-  "checkpointSha256": "30f4a150755847a0e2d5bee411849417ca141927398247ae975c6fd5444f82d4",
+  "measuredAt": "2026-10-05T21:31:56.558Z",
+  "checkpointSha256": "ee6a600993f853a741d987b6b0d82584aa45a6c6bc2b1d2881103042ffdcc9a6",
   "device": "Apple M3 Pro",
   "os": "darwin 27.2.0",
   "runtime": "v24.18.0",
@@ -9,19 +9,19 @@
   "gpuMlAllocationsBytes": 0,
   "methodology": "10,000 warmup forwards;50,000 timed reused-workspace forwards across1,000 real simulation observations. Includes per-call timer overhead. This is Node, not a browser/frame benchmark.",
   "samples": 50000,
-  "meanMicroseconds": 1.9818116800001873,
-  "p50Microseconds": 1.9169999999917309,
-  "p95Microseconds": 2.041999999988775,
-  "p99Microseconds": 2.9590000000041528,
+  "meanMicroseconds": 1.717999879999853,
+  "p50Microseconds": 1.7080000000078144,
+  "p95Microseconds": 1.7920000000088976,
+  "p99Microseconds": 2.083999999996422,
   "parameterBytes": 6796,
   "forwardWorkspaceBytes": 268,
   "processMemory": {
-    "rss": 98729984,
-    "heapTotal": 20856832,
-    "heapUsed": 14702592,
-    "external": 8959300,
-    "arrayBuffers": 185355
+    "rss": 98451456,
+    "heapTotal": 20922368,
+    "heapUsed": 13658520,
+    "external": 8959379,
+    "arrayBuffers": 185434
   },
-  "peakProcessRssKiB": 96416,
+  "peakProcessRssKiB": 96144,
   "memoryLimitations": "Whole-process Node memory includes TypeScript/runtime, benchmark states and timings; not incremental browser memory."
 }

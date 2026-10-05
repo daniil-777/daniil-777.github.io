@@ -1,47 +1,53 @@
 {
-  "version": "chronos-language-assets-v1",
+  "version": "chronos-language-expanded-assets-v2",
   "files": [
     {
       "path": "benchmark-browser.json",
-      "bytes": 1186,
-      "gzipBytes": 645,
-      "sha256": "837309f7a5d2b001c100337184ed12bfa459bbb079db0b0f2b94a0627d06d367"
+      "bytes": 1191,
+      "gzipBytes": 672,
+      "sha256": "8ab2e5d55eac7212d25c7803b51481adf4ef656874898a2517abd444e8086ffb"
+    },
+    {
+      "path": "dataset-fingerprint.json",
+      "bytes": 1974,
+      "gzipBytes": 982,
+      "sha256": "899ba5a54a14cc11f722c6a6b791294ea951de5ceb4a00c35580d62b5e11640e"
     },
     {
       "path": "dataset-statistics.json",
-      "bytes": 519,
-      "gzipBytes": 317,
-      "sha256": "964df43c29ed1bf66a99632db528013e8fcb7d885a09f2fc1c39c3d6e2b71ddf"
+      "bytes": 3495,
+      "gzipBytes": 1116,
+      "sha256": "33ae78804b9c4c625d23bd6c246431af677c63adeb092796307715d62707967a"
     },
     {
       "path": "evaluation-candidate.json",
-      "bytes": 614,
-      "gzipBytes": 372,
-      "sha256": "71e5b475ef85c7bdc90e67aa447e6f81b66f9d102dc9dd0ec7d6074b5532242b"
+      "bytes": 7643,
+      "gzipBytes": 1710,
+      "sha256": "4ff84585dab14a46e3e60042cd7ffaa581e47aa38eaa7bb66d072c93a37edafc"
     },
     {
-      "path": "evaluation-familiar.json",
-      "bytes": 598,
-      "gzipBytes": 377,
-      "sha256": "9c956babe26f919e4a2528421525841021217048da79b2597895e461f8ba890f"
+      "path": "evaluation-raw.json",
+      "bytes": 1404419,
+      "gzipBytes": 63612,
+      "sha256": "e21b9d1654f569c92bc3721317d67e6ba6396e7eb5a310a2bb81fd9675d4c00e"
     },
     {
       "path": "manifest.json",
-      "bytes": 3505,
-      "gzipBytes": 1544,
-      "sha256": "3b448277716c2bc4613412e9f2866d40df9d47dc7ca2fe1e01e812158db074ec"
+      "bytes": 10160,
+      "gzipBytes": 2545,
+      "sha256": "ed9f96d005a4a4ccbc7b943bc8cde334f6a57f77ab9ee6426494eb8e0244ade6"
     },
     {
       "path": "model-card.json",
-      "bytes": 6429,
-      "gzipBytes": 2623,
-      "sha256": "3dfedb17691f36c53fd3454b047a456a81750e1a3d0a40d75c4815912b0276bd"
+      "bytes": 21102,
+      "gzipBytes": 6017,
+      "sha256": "5c615c2013b6e014d24423af8dcd6a2ff681cc3fa8b3c2b397c59391483a2f67"
     },
     {
       "path": "model.fp32.onnx",
       "bytes": 9546398,
-      "gzipBytes": 8744733,
-      "sha256": "ea5f97d6b2131ef6d982b24a441add7a90891bfd8b7b0eb55d1548332cea1403"
+      "gzipBytes": 8766018,
+      "sha256": "bf721e58e5c4f5f230aa6113807a671d0eb1436b2a5acde1685ebf324df4d365"
     },
     {
       "path": "runtime/1.23.0/LICENSE",
@@ -74,29 +80,41 @@
       "sha256": "46c201d1045998f3a434bfa2bb3f244bf11ceacf1128ce6546aeae96c710e709"
     },
     {
+      "path": "source-audit.json",
+      "bytes": 13415,
+      "gzipBytes": 2554,
+      "sha256": "a5eb26be5bfe7ee18519194ee7dc06aae32813adb1267beec9b542e8391c1f83"
+    },
+    {
       "path": "tokenizer-parity.json",
-      "bytes": 1268,
-      "gzipBytes": 422,
-      "sha256": "4076b7c1463790250ae1e52a378b0ad34c8e17064f37b94aad31e3e5733cafc9"
+      "bytes": 1349,
+      "gzipBytes": 426,
+      "sha256": "ec881949da97ef128eecc4aa8f8986c96ff73441940a88038d14d959bb57e71c"
     },
     {
       "path": "tokenizer.json",
-      "bytes": 7124,
-      "gzipBytes": 2664,
-      "sha256": "74fb461231574e34b090b8859970ae1a923b18f2ea2d82c9dc81417c05e4db02"
+      "bytes": 7724,
+      "gzipBytes": 2848,
+      "sha256": "c0971d6b360b0998084748abb1ef1446f1216ba3629671672778fa81b5ee1ddc"
     },
     {
       "path": "training-candidate.json",
-      "bytes": 4181,
-      "gzipBytes": 1380,
-      "sha256": "bda2388d57d8c6a615475ddee919f5c1457d43e9aa898f48d46920cd24e24974"
+      "bytes": 19203,
+      "gzipBytes": 5230,
+      "sha256": "2547ea81b0a31612d6351162a8ab61b5d27c82ca26bb42a2035561c605496a5a"
     },
     {
-      "path": "training-initial.json",
-      "bytes": 2147,
-      "gzipBytes": 876,
-      "sha256": "a9e9ab08c946f07458ccd27df0330658682097c6b4fd29224bdd98e7d883307b"
+      "path": "training-comparison.json",
+      "bytes": 19140,
+      "gzipBytes": 5207,
+      "sha256": "cd4f9603ca60b9ad8376df85026d723c9b911eef4746e26ef8ba4631cd135120"
+    },
+    {
+      "path": "validation-comparison.json",
+      "bytes": 44323,
+      "gzipBytes": 5981,
+      "sha256": "48538fc2ecaea32fc43e0b3386f249b754a4dda83b54a05072e27dbc836f4407"
     }
   ],
-  "note": "Download/artifact bytes only; not browser memory or initial-widget bytes."
+  "note": "Artifact/gzip bytes only; these experimental weights are not fetched by public watch inference and bytes do not measure browser memory."
 }

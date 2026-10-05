@@ -1,0 +1,996 @@
+{
+  "method": "Each candidate checkpoint chosen by minimum validation token cross-entropy within its own tokenizer; candidates compared on identical validation targets by answer+EOS negative log likelihood per UTF-8 answer byte and a fixed hash-selected unique-fact greedy-generation suite. Test generations are not consulted.",
+  "datasetSha256": "f6b8fd7a276f7874238dea8c2f8f0666758abe2f03d762523a7a6b36e979287d",
+  "results": [
+    {
+      "candidate": "bpe3341",
+      "checkpointStep": 250,
+      "validationRows": 536,
+      "answerBytes": 49628,
+      "answerTokensIncludingEOS": 18222,
+      "answerNllNatsIncludingEOS": 129207.36784267426,
+      "bitsPerUtf8AnswerByteIncludingEosNll": 3.75608182544012,
+      "frozenValidationGenerations": 32,
+      "exactMatches": 0,
+      "completeWithin20": 0,
+      "generations": [
+        {
+          "id": "ea536d27268c947cbd56",
+          "sourceGroup": "robotics-transformer",
+          "domain": "robotics",
+          "expected": "A visuomotor robot policy chooses control actions using information from visual observations.",
+          "text": "A can can can can and and and and and and and and and and and and and and and and and the the the the to to to to to to ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.2587909954600036,
+          "totalMs": 95.81441598129459,
+          "includedFactIds": [
+            "ai-253"
+          ]
+        },
+        {
+          "id": "222be79f694adb306d8c",
+          "sourceGroup": "neural-radiance-fields",
+          "domain": "vision",
+          "expected": "NeRF's hierarchical sampling focuses additional ray samples on regions likely to affect rendering.",
+          "text": "The policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.136459010420367,
+          "totalMs": 97.70141702028923,
+          "includedFactIds": [
+            "ai-293"
+          ]
+        },
+        {
+          "id": "6ea3cf433a466367e797",
+          "sourceGroup": "linear-algebra",
+          "domain": "math",
+          "expected": "An eigenvector keeps its direction under a matrix transformation, apart from possible reversal.",
+          "text": "A policies can can policies policies policies policies policies can policies policies",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 23,
+          "firstTokenMs": 4.924375010887161,
+          "totalMs": 40.579209016868845,
+          "includedFactIds": [
+            "ai-040"
+          ]
+        },
+        {
+          "id": "b07d5dd3b9552b53e8d9",
+          "sourceGroup": "anomaly-detection",
+          "domain": "ai",
+          "expected": "Isolation forests flag observations that become isolated through relatively few random partitions.",
+          "text": "A policies can can can can policies policies policies policies policies",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 21,
+          "firstTokenMs": 3.104250004980713,
+          "totalMs": 34.646499989321455,
+          "includedFactIds": [
+            "ai-178"
+          ]
+        },
+        {
+          "id": "ffdd3818000c05e25be0",
+          "sourceGroup": "robotics-transformer",
+          "domain": "robotics",
+          "expected": "RT-1 compresses visual information into tokens before applying its Transformer control model.",
+          "text": "The policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.984707989729941,
+          "totalMs": 95.97387499525212,
+          "includedFactIds": [
+            "ai-248"
+          ]
+        },
+        {
+          "id": "1e11188f55b329b03318",
+          "sourceGroup": "anomaly-detection",
+          "domain": "ai",
+          "expected": "Local outlier factor compares an observation's density with densities around its neighbors.",
+          "text": "A policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.3204169885721058,
+          "totalMs": 97.00949999387376,
+          "includedFactIds": [
+            "ai-179"
+          ]
+        },
+        {
+          "id": "f13c221601f50a4bdf93",
+          "sourceGroup": "physics-informed-networks",
+          "domain": "science",
+          "expected": "Physics-informed predictions still require evaluation against the equations, conditions and relevant observed behavior.",
+          "text": "A policies policies policies policies policies policies policies policies policies policies policies policies can policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 4.016083024907857,
+          "totalMs": 99.30037500453182,
+          "includedFactIds": [
+            "ai-334"
+          ]
+        },
+        {
+          "id": "cc44f973658944d06d47",
+          "sourceGroup": "robotics-transformer",
+          "domain": "robotics",
+          "expected": "RT-1 investigates whether diverse demonstration data supports generalization across robotic manipulation tasks.",
+          "text": "The policies policies policies policies policies policies policies policies policies policies policies can can policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 2.9062920075375587,
+          "totalMs": 92.80741700786166,
+          "includedFactIds": [
+            "ai-249"
+          ]
+        },
+        {
+          "id": "1881fbf287e130fe2d4e",
+          "sourceGroup": "linear-algebra",
+          "domain": "math",
+          "expected": "A linear system asks which variable values satisfy several linear equations together.",
+          "text": "A policies policies policies policies policies policies policies policies policies policies policies policies can policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 2.8505829977802932,
+          "totalMs": 97.95212501194328,
+          "includedFactIds": [
+            "ai-035"
+          ]
+        },
+        {
+          "id": "bfedd8022162c8ca9ab7",
+          "sourceGroup": "anomaly-detection",
+          "domain": "ai",
+          "expected": "A contamination setting influences the threshold used to label observations as outliers.",
+          "text": "A policies policies policies policies policies policies policies policies can policies can can can can policies",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 31,
+          "firstTokenMs": 3.508833993691951,
+          "totalMs": 49.953959009144455,
+          "includedFactIds": [
+            "ai-181"
+          ]
+        },
+        {
+          "id": "a945e5a0185af187a70b",
+          "sourceGroup": "neural-radiance-fields",
+          "domain": "vision",
+          "expected": "Viewing-direction inputs let a neural radiance field represent appearance that changes with viewpoint.",
+          "text": "The policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.678292006952688,
+          "totalMs": 97.79341699322686,
+          "includedFactIds": [
+            "ai-291"
+          ]
+        },
+        {
+          "id": "2d6012ea4c2deaace815",
+          "sourceGroup": "linear-models",
+          "domain": "ai",
+          "expected": "Elastic net combines ridge and lasso penalties when fitting a linear prediction model.",
+          "text": "A policies policies policies policies policies policies can can policies policies can can policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.5399999760556966,
+          "totalMs": 95.90941699570976,
+          "includedFactIds": [
+            "ai-108"
+          ]
+        },
+        {
+          "id": "7a482ea402737f303e28",
+          "sourceGroup": "robotics-transformer",
+          "domain": "robotics",
+          "expected": "Robotic task generalization is measured on evaluation tasks beyond the training demonstrations.",
+          "text": "A policies policies policies policies policies policies policies policies policies policies can can policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.061791998334229,
+          "totalMs": 93.53008298785426,
+          "includedFactIds": [
+            "ai-251"
+          ]
+        },
+        {
+          "id": "f97d411db29b1f2eb2aa",
+          "sourceGroup": "finance-time-series",
+          "domain": "finance",
+          "expected": "Comparable time-based fold durations require observations sampled at a consistent time interval.",
+          "text": "A policies can can can policies policies policies policies",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 17,
+          "firstTokenMs": 5.997416010359302,
+          "totalMs": 30.792832985753193,
+          "includedFactIds": [
+            "ai-220"
+          ]
+        },
+        {
+          "id": "e75a54e10bcbb486cb7c",
+          "sourceGroup": "finance-time-series",
+          "domain": "finance",
+          "expected": "A fixed test-window size can keep chronological evaluation periods comparable across splits.",
+          "text": "Acan policies policies policies policies policies policies policies can can can can can can can can can policies",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 36,
+          "firstTokenMs": 4.179291019681841,
+          "totalMs": 55.644583015237004,
+          "includedFactIds": [
+            "ai-221"
+          ]
+        },
+        {
+          "id": "981fd56d392ddce8d448",
+          "sourceGroup": "finance-time-series",
+          "domain": "finance",
+          "expected": "Training on future observations can make historical financial forecasting results appear misleadingly strong.",
+          "text": "A policies policies policies policies policies policies policies policies policies policies policies policies can policies policies policies can can policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.389292018255219,
+          "totalMs": 91.88445800100453,
+          "includedFactIds": [
+            "ai-216"
+          ]
+        },
+        {
+          "id": "820d253000888fe720e0",
+          "sourceGroup": "anomaly-detection",
+          "domain": "ai",
+          "expected": "A one-class support vector machine learns a boundary around the training distribution.",
+          "text": "A policies policies policies policies policies can policies policies policies",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 19,
+          "firstTokenMs": 3.3084580209106207,
+          "totalMs": 34.43616701406427,
+          "includedFactIds": [
+            "ai-180"
+          ]
+        },
+        {
+          "id": "ab26d0ec83a4f1139327",
+          "sourceGroup": "physics-informed-networks",
+          "domain": "science",
+          "expected": "Automatic differentiation can compute derivatives needed to evaluate a neural model's physical equation residuals.",
+          "text": "A can can can can can can can can can can can can and and can can and can can can and and and the a and and and and and a ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.870040993206203,
+          "totalMs": 98.49845801363699,
+          "includedFactIds": [
+            "ai-331"
+          ]
+        },
+        {
+          "id": "8435fcdef5936cbb3259",
+          "sourceGroup": "robotics-transformer",
+          "domain": "robotics",
+          "expected": "A demonstration-trained robot policy learns action patterns from recorded examples of task execution.",
+          "text": "A can can can can can can can can policies",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 19,
+          "firstTokenMs": 3.265458013629541,
+          "totalMs": 30.923583020921797,
+          "includedFactIds": [
+            "ai-250"
+          ]
+        },
+        {
+          "id": "b551db0dda918560f209",
+          "sourceGroup": "physics-informed-networks",
+          "domain": "science",
+          "expected": "An inverse problem estimates unknown model properties from available observations of its behavior.",
+          "text": "A policies policies policies policies policies can can can policies",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 19,
+          "firstTokenMs": 3.3083329908549786,
+          "totalMs": 33.63925000303425,
+          "includedFactIds": [
+            "ai-329"
+          ]
+        },
+        {
+          "id": "8082fc09a0f282017a41",
+          "sourceGroup": "finance-time-series",
+          "domain": "finance",
+          "expected": "Successive chronological splits expand earlier training observations while holding later observations aside for testing.",
+          "text": "A policies can policies policies policies policies policies policies policies policies policies can can policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 2.7017499960493296,
+          "totalMs": 94.59166700253263,
+          "includedFactIds": [
+            "ai-223"
+          ]
+        },
+        {
+          "id": "32244fb334ad7bcc32f4",
+          "sourceGroup": "linear-algebra",
+          "domain": "math",
+          "expected": "An invertible matrix has an inverse that reverses its linear transformation.",
+          "text": "A policies policies policies policies policies policies policies policies policies policies can policies can can policies policies can policies policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.483916021650657,
+          "totalMs": 98.18208302021958,
+          "includedFactIds": [
+            "ai-038"
+          ]
+        },
+        {
+          "id": "a5d194068484bc737ba4",
+          "sourceGroup": "neural-radiance-fields",
+          "domain": "vision",
+          "expected": "A radiance field's density controls how strongly a spatial region contributes along a ray.",
+          "text": "A can can policies policies policies policies policies policies policies can can can can can can policies policies policies policies policies can can policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.3877500100061297,
+          "totalMs": 98.2285000209231,
+          "includedFactIds": [
+            "ai-290"
+          ]
+        },
+        {
+          "id": "4e1d421b209271999310",
+          "sourceGroup": "physics-informed-networks",
+          "domain": "science",
+          "expected": "Physical equations provide prior structure that complements observations during model training.",
+          "text": "A policies policies policies can policies policies policies can policies policies policies can can policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.612000000430271,
+          "totalMs": 98.1177499925252,
+          "includedFactIds": [
+            "ai-332"
+          ]
+        },
+        {
+          "id": "f2b9459f583f1a7d40ae",
+          "sourceGroup": "finance-time-series",
+          "domain": "finance",
+          "expected": "Chronological validation checks forecasting behavior under a specific historical sampling and evaluation setup.",
+          "text": "Afacts policies policies policies policies policies policies can policies policies policies can can policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 2.9964169953018427,
+          "totalMs": 93.20558301988058,
+          "includedFactIds": [
+            "ai-224"
+          ]
+        },
+        {
+          "id": "873959304ec0298c52d1",
+          "sourceGroup": "robotics-transformer",
+          "domain": "robotics",
+          "expected": "RT-1 studies a Transformer policy trained from demonstrations of real-world robotic tasks.",
+          "text": "Acan policies policies policies policies policies policies policies policies policies policies policies can can policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.849708999041468,
+          "totalMs": 95.51891699084081,
+          "includedFactIds": [
+            "ai-245"
+          ]
+        },
+        {
+          "id": "3b6c447a51ae4a799421",
+          "sourceGroup": "physics-informed-networks",
+          "domain": "science",
+          "expected": "Physics-informed networks include known physical equations in the objectives used to train neural models.",
+          "text": "The can policies policies policies policies policies policies policies policies can can can policies policies policies policies policies policies policies policies can policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.5574579960666597,
+          "totalMs": 95.74170800624415,
+          "includedFactIds": [
+            "ai-325"
+          ]
+        },
+        {
+          "id": "3ff67a64aee28acf72b8",
+          "sourceGroup": "neural-radiance-fields",
+          "domain": "vision",
+          "expected": "A neural radiance field maps spatial positions and viewing directions to scene properties.",
+          "text": "Acan policies policies policies policies policies policies policies can can policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 5.191125004785135,
+          "totalMs": 99.55587500007823,
+          "includedFactIds": [
+            "ai-286"
+          ]
+        },
+        {
+          "id": "6390bcc67ffff6f8983d",
+          "sourceGroup": "linear-models",
+          "domain": "ai",
+          "expected": "Logistic regression models class probabilities rather than directly predicting an unrestricted numerical target.",
+          "text": "A policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies policies ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 4.049124981975183,
+          "totalMs": 94.45904099266045,
+          "includedFactIds": [
+            "ai-109"
+          ]
+        },
+        {
+          "id": "c5d588707a3023551052",
+          "sourceGroup": "linear-models",
+          "domain": "ai",
+          "expected": "Coordinate descent updates one parameter at a time while optimizing a larger objective.",
+          "text": "A can can can can policies policies policies",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 15,
+          "firstTokenMs": 3.131208010017872,
+          "totalMs": 24.040292017161846,
+          "includedFactIds": [
+            "ai-114"
+          ]
+        },
+        {
+          "id": "13cf02d78a47bc50bc08",
+          "sourceGroup": "research",
+          "domain": "profile",
+          "expected": "Daniil co-authored a WACV 2021 paper on dynamic-plane convolutional occupancy networks for neural reconstruction.",
+          "text": "Acancancancan can can policies policies policies policies can can can can can can policies policies policies policies policies policies can can can can policies policies policies policies policies can can ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 5.807374982396141,
+          "totalMs": 101.33216698886827,
+          "includedFactIds": [
+            "profile-019"
+          ]
+        },
+        {
+          "id": "f2af94f14088e4bde611",
+          "sourceGroup": "linear-algebra",
+          "domain": "math",
+          "expected": "A square matrix has an inverse exactly when its determinant is nonzero.",
+          "text": "A can policies can policies policies can can can policies policies",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 21,
+          "firstTokenMs": 2.9329590033739805,
+          "totalMs": 39.06854198430665,
+          "includedFactIds": [
+            "ai-039"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate": "bpe1024",
+      "checkpointStep": 1000,
+      "validationRows": 536,
+      "answerBytes": 49628,
+      "answerTokensIncludingEOS": 22478,
+      "answerNllNatsIncludingEOS": 87268.62948866189,
+      "bitsPerUtf8AnswerByteIncludingEosNll": 2.5369150275745316,
+      "frozenValidationGenerations": 32,
+      "exactMatches": 0,
+      "completeWithin20": 17,
+      "generations": [
+        {
+          "id": "ea536d27268c947cbd56",
+          "sourceGroup": "robotics-transformer",
+          "domain": "robotics",
+          "expected": "A visuomotor robot policy chooses control actions using information from visual observations.",
+          "text": "A a robot a a robot robot robot to a to to to to to to to from of observations.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 39,
+          "firstTokenMs": 2.9418340127449483,
+          "totalMs": 60.42095899465494,
+          "includedFactIds": [
+            "ai-253"
+          ]
+        },
+        {
+          "id": "222be79f694adb306d8c",
+          "sourceGroup": "neural-radiance-fields",
+          "domain": "vision",
+          "expected": "NeRF's hierarchical sampling focuses additional ray samples on regions likely to affect rendering.",
+          "text": "A curve curve and and and and and to to to to to to to and and and and to to to to to and.",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 52,
+          "firstTokenMs": 5.430291988886893,
+          "totalMs": 81.63400000194088,
+          "includedFactIds": [
+            "ai-293"
+          ]
+        },
+        {
+          "id": "6ea3cf433a466367e797",
+          "sourceGroup": "linear-algebra",
+          "domain": "math",
+          "expected": "An eigenvector keeps its direction under a matrix transformation, apart from possible reversal.",
+          "text": "A its its its a a a a a a a a a re re re re a its its its its a its its its its its its its.",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 60,
+          "firstTokenMs": 4.378165991511196,
+          "totalMs": 89.66174998204224,
+          "includedFactIds": [
+            "ai-040"
+          ]
+        },
+        {
+          "id": "b07d5dd3b9552b53e8d9",
+          "sourceGroup": "anomaly-detection",
+          "domain": "ai",
+          "expected": "Isolation forests flag observations that become isolated through relatively few random partitions.",
+          "text": "A termen observations observations observations observations reviewers of through that differentiation approximations approximations claim.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 35,
+          "firstTokenMs": 3.442250017542392,
+          "totalMs": 58.592457993654534,
+          "includedFactIds": [
+            "ai-178"
+          ]
+        },
+        {
+          "id": "ffdd3818000c05e25be0",
+          "sourceGroup": "robotics-transformer",
+          "domain": "robotics",
+          "expected": "RT-1 compresses visual information into tokens before applying its Transformer control model.",
+          "text": "Cybergutions to to to to its its its its model model model models.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 31,
+          "firstTokenMs": 6.188083003507927,
+          "totalMs": 51.897124998504296,
+          "includedFactIds": [
+            "ai-248"
+          ]
+        },
+        {
+          "id": "1e11188f55b329b03318",
+          "sourceGroup": "anomaly-detection",
+          "domain": "ai",
+          "expected": "Local outlier factor compares an observation's density with densities around its neighbors.",
+          "text": "A clusters clusters can with with with with with its its its its its reply its its its its reply.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 46,
+          "firstTokenMs": 4.2775839974638075,
+          "totalMs": 77.87300000200048,
+          "includedFactIds": [
+            "ai-179"
+          ]
+        },
+        {
+          "id": "f13c221601f50a4bdf93",
+          "sourceGroup": "physics-informed-networks",
+          "domain": "science",
+          "expected": "Physics-informed predictions still require evaluation against the equations, conditions and relevant observed behavior.",
+          "text": "A can can can the the the the the the the and and and and and and and and and and can to moreply and and the the the the the",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 4.418416996486485,
+          "totalMs": 98.91549998428673,
+          "includedFactIds": [
+            "ai-334"
+          ]
+        },
+        {
+          "id": "cc44f973658944d06d47",
+          "sourceGroup": "robotics-transformer",
+          "domain": "robotics",
+          "expected": "RT-1 investigates whether diverse demonstration data supports generalization across robotic manipulation tasks.",
+          "text": "A de de an to reply reviewers across across reply to to to to to to to reply re to to to to to to to to to",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 6.038583000190556,
+          "totalMs": 95.46641597989947,
+          "includedFactIds": [
+            "ai-249"
+          ]
+        },
+        {
+          "id": "1881fbf287e130fe2d4e",
+          "sourceGroup": "linear-algebra",
+          "domain": "math",
+          "expected": "A linear system asks which variable values satisfy several linear equations together.",
+          "text": "A decision decision for for for for for to to to to to to to to to to to to to to to to to to to to to to to to ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.700959001434967,
+          "totalMs": 95.49508400959894,
+          "includedFactIds": [
+            "ai-035"
+          ]
+        },
+        {
+          "id": "bfedd8022162c8ca9ab7",
+          "sourceGroup": "anomaly-detection",
+          "domain": "ai",
+          "expected": "A contamination setting influences the threshold used to label observations as outliers.",
+          "text": "A paper p the the the the the to to to to observations observations the the pand pas to to in in in the the the the the the the ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.15762497484684,
+          "totalMs": 98.85062498506159,
+          "includedFactIds": [
+            "ai-181"
+          ]
+        },
+        {
+          "id": "a945e5a0185af187a70b",
+          "sourceGroup": "neural-radiance-fields",
+          "domain": "vision",
+          "expected": "Viewing-direction inputs let a neural radiance field represent appearance that changes with viewpoint.",
+          "text": "A a a a a reviewers its its reviewers its its its its its its its its replace.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 44,
+          "firstTokenMs": 4.329917021095753,
+          "totalMs": 68.01441701827571,
+          "includedFactIds": [
+            "ai-291"
+          ]
+        },
+        {
+          "id": "2d6012ea4c2deaace815",
+          "sourceGroup": "linear-models",
+          "domain": "ai",
+          "expected": "Elastic net combines ridge and lasso penalties when fitting a linear prediction model.",
+          "text": "Station combines a a and and and and and and a a a a model.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 32,
+          "firstTokenMs": 3.51391700678505,
+          "totalMs": 46.53712501749396,
+          "includedFactIds": [
+            "ai-108"
+          ]
+        },
+        {
+          "id": "7a482ea402737f303e28",
+          "sourceGroup": "robotics-transformer",
+          "domain": "robotics",
+          "expected": "Robotic task generalization is measured on evaluation tasks beyond the training demonstrations.",
+          "text": "A task to a to a a a a a the the the the to reviewer data.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 36,
+          "firstTokenMs": 3.5086249990854412,
+          "totalMs": 58.93108400050551,
+          "includedFactIds": [
+            "ai-251"
+          ]
+        },
+        {
+          "id": "f97d411db29b1f2eb2aa",
+          "sourceGroup": "finance-time-series",
+          "domain": "finance",
+          "expected": "Comparable time-based fold durations require observations sampled at a consistent time interval.",
+          "text": "Cy curve and and observations observations observations and and and and and and and and and and.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 36,
+          "firstTokenMs": 5.320790980476886,
+          "totalMs": 55.48054099199362,
+          "includedFactIds": [
+            "ai-220"
+          ]
+        },
+        {
+          "id": "e75a54e10bcbb486cb7c",
+          "sourceGroup": "finance-time-series",
+          "domain": "finance",
+          "expected": "A fixed test-window size can keep chronological evaluation periods comparable across splits.",
+          "text": "A reply can can can can can reply and compar compar compar across across across across across can can can can can can can can can can can can",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 5.522791994735599,
+          "totalMs": 100.05770801217295,
+          "includedFactIds": [
+            "ai-221"
+          ]
+        },
+        {
+          "id": "981fd56d392ddce8d448",
+          "sourceGroup": "finance-time-series",
+          "domain": "finance",
+          "expected": "Training on future observations can make historical financial forecasting results appear misleadingly strong.",
+          "text": "Cying can financial financial financial a re re re re re and re re re re re re re re re re re re re re re re re re can.",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 4.839959001401439,
+          "totalMs": 95.64262500498444,
+          "includedFactIds": [
+            "ai-216"
+          ]
+        },
+        {
+          "id": "820d253000888fe720e0",
+          "sourceGroup": "anomaly-detection",
+          "domain": "ai",
+          "expected": "A one-class support vector machine learns a boundary around the training distribution.",
+          "text": "A around a a a a a the the the the the the the the the the of instantan its its of instantaneous of the instantan instantan",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.246083011617884,
+          "totalMs": 98.96229198784567,
+          "includedFactIds": [
+            "ai-180"
+          ]
+        },
+        {
+          "id": "ab26d0ec83a4f1139327",
+          "sourceGroup": "physics-informed-networks",
+          "domain": "science",
+          "expected": "Automatic differentiation can compute derivatives needed to evaluate a neural model's physical equation residuals.",
+          "text": "A differentiation can protein to to to to a a a a a a a a its its its its its its its its a a its its its its its to",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.6654169962275773,
+          "totalMs": 96.77862501121126,
+          "includedFactIds": [
+            "ai-331"
+          ]
+        },
+        {
+          "id": "8435fcdef5936cbb3259",
+          "sourceGroup": "robotics-transformer",
+          "domain": "robotics",
+          "expected": "A demonstration-trained robot policy learns action patterns from recorded examples of task execution.",
+          "text": "A robot's robot changes reviewers from from its its its of of of to to of of its its its a a re a a a a its its its ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 5.602542019914836,
+          "totalMs": 98.0086250056047,
+          "includedFactIds": [
+            "ai-250"
+          ]
+        },
+        {
+          "id": "b551db0dda918560f209",
+          "sourceGroup": "physics-informed-networks",
+          "domain": "science",
+          "expected": "An inverse problem estimates unknown model properties from available observations of its behavior.",
+          "text": "Cal a model a a a a from to to its its its its a a its its its its its a a a a a a a a a a a",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 4.200249997666106,
+          "totalMs": 96.21675001108088,
+          "includedFactIds": [
+            "ai-329"
+          ]
+        },
+        {
+          "id": "8082fc09a0f282017a41",
+          "sourceGroup": "finance-time-series",
+          "domain": "finance",
+          "expected": "Successive chronological splits expand earlier training observations while holding later observations aside for testing.",
+          "text": "Con and and and observations observations and and observations observations and and and and and.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 31,
+          "firstTokenMs": 6.033957994077355,
+          "totalMs": 51.08620799728669,
+          "includedFactIds": [
+            "ai-223"
+          ]
+        },
+        {
+          "id": "32244fb334ad7bcc32f4",
+          "sourceGroup": "linear-algebra",
+          "domain": "math",
+          "expected": "An invertible matrix has an inverse that reverses its linear transformation.",
+          "text": "A inance inance inance inance inance inance inance its its its insurance inance ining inance.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 43,
+          "firstTokenMs": 3.005415986990556,
+          "totalMs": 64.49458299903199,
+          "includedFactIds": [
+            "ai-038"
+          ]
+        },
+        {
+          "id": "a5d194068484bc737ba4",
+          "sourceGroup": "neural-radiance-fields",
+          "domain": "vision",
+          "expected": "A radiance field's density controls how strongly a spatial region contributes along a ray.",
+          "text": "A claim.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 3,
+          "firstTokenMs": 5.192957993131131,
+          "totalMs": 9.609000000637025,
+          "includedFactIds": [
+            "ai-290"
+          ]
+        },
+        {
+          "id": "4e1d421b209271999310",
+          "sourceGroup": "physics-informed-networks",
+          "domain": "science",
+          "expected": "Physical equations provide prior structure that complements observations during model training.",
+          "text": "Cycutions for for for al al and and to to to and observations and model.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 34,
+          "firstTokenMs": 3.481416992144659,
+          "totalMs": 54.40008398727514,
+          "includedFactIds": [
+            "ai-332"
+          ]
+        },
+        {
+          "id": "f2b9459f583f1a7d40ae",
+          "sourceGroup": "finance-time-series",
+          "domain": "finance",
+          "expected": "Chronological validation checks forecasting behavior under a specific historical sampling and evaluation setup.",
+          "text": "Cy a a a a a a re re and and and and and and.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 31,
+          "firstTokenMs": 6.1090839735697955,
+          "totalMs": 53.21049998747185,
+          "includedFactIds": [
+            "ai-224"
+          ]
+        },
+        {
+          "id": "873959304ec0298c52d1",
+          "sourceGroup": "robotics-transformer",
+          "domain": "robotics",
+          "expected": "RT-1 studies a Transformer policy trained from demonstrations of real-world robotic tasks.",
+          "text": "A reviewers reviewers reviewers from from from reviewers of its reviewers to task.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 41,
+          "firstTokenMs": 3.5410000127740204,
+          "totalMs": 66.12645901623182,
+          "includedFactIds": [
+            "ai-245"
+          ]
+        },
+        {
+          "id": "3b6c447a51ae4a799421",
+          "sourceGroup": "physics-informed-networks",
+          "domain": "science",
+          "expected": "Physics-informed networks include known physical equations in the objectives used to train neural models.",
+          "text": "Cy-deocuidance inform inform to to to to to to inform inform inform to to to recuidance.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 49,
+          "firstTokenMs": 6.4150000107474625,
+          "totalMs": 75.04487500409596,
+          "includedFactIds": [
+            "ai-325"
+          ]
+        },
+        {
+          "id": "3ff67a64aee28acf72b8",
+          "sourceGroup": "neural-radiance-fields",
+          "domain": "vision",
+          "expected": "A neural radiance field maps spatial positions and viewing directions to scene properties.",
+          "text": "A distan can and and and and and and to to to to to to and and and and to to to to to and.",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 51,
+          "firstTokenMs": 5.576833005761728,
+          "totalMs": 82.67729199724272,
+          "includedFactIds": [
+            "ai-286"
+          ]
+        },
+        {
+          "id": "6390bcc67ffff6f8983d",
+          "sourceGroup": "linear-models",
+          "domain": "ai",
+          "expected": "Logistic regression models class probabilities rather than directly predicting an unrestricted numerical target.",
+          "text": "A prediction facts can that a that that that that that reviewers protein and protein reply protein.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 39,
+          "firstTokenMs": 4.858166998019442,
+          "totalMs": 61.67679198551923,
+          "includedFactIds": [
+            "ai-109"
+          ]
+        },
+        {
+          "id": "c5d588707a3023551052",
+          "sourceGroup": "linear-models",
+          "domain": "ai",
+          "expected": "Coordinate descent updates one parameter at a time while optimizing a larger objective.",
+          "text": "Cying al buidance a a a a a a a a a a a a a a a a a a in in a a a a a a a",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 3.017666022060439,
+          "totalMs": 95.77625000383705,
+          "includedFactIds": [
+            "ai-114"
+          ]
+        },
+        {
+          "id": "13cf02d78a47bc50bc08",
+          "sourceGroup": "research",
+          "domain": "profile",
+          "expected": "Daniil co-authored a WACV 2021 paper on dynamic-plane convolutional occupancy networks for neural reconstruction.",
+          "text": "A re re re re re re re for for for re re re re re re re re re re re re re re re re re re re re re ",
+          "exactMatch": false,
+          "completeWithin20": false,
+          "tokens": 64,
+          "firstTokenMs": 6.270707992371172,
+          "totalMs": 106.28670800360851,
+          "includedFactIds": [
+            "profile-019"
+          ]
+        },
+        {
+          "id": "f2af94f14088e4bde611",
+          "sourceGroup": "linear-algebra",
+          "domain": "math",
+          "expected": "A square matrix has an inverse exactly when its determinant is nonzero.",
+          "text": "A decision decision can instantan a of its its its a a its replace replace replace replace replace replace.",
+          "exactMatch": false,
+          "completeWithin20": true,
+          "tokens": 52,
+          "firstTokenMs": 3.307874983875081,
+          "totalMs": 80.90345797245391,
+          "includedFactIds": [
+            "ai-039"
+          ]
+        }
+      ]
+    }
+  ],
+  "selectionRule": "Prioritize canonical exact match on the fixed validation generation suite, then lower normalized bits per byte when exact counts tie.",
+  "selected": "bpe1024"
+}

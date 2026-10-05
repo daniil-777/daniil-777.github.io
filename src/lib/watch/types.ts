@@ -1,5 +1,7 @@
 export type LanguageMode = 'ai' | 'profile' | 'wellbeing';
-export type WatchMotion = 'sweep' | 'tick';
+export type WatchMotion = 'system' | 'sweep' | 'tick';
+export type WatchThoughtStyle = 'dial' | 'arc' | 'card';
+export type WatchKnowledgeDomain = 'all' | 'math' | 'ai' | 'finance' | 'robotics' | 'vision' | 'healthcare' | 'science' | 'security';
 export type InferenceBackend = 'wasm' | 'webgpu';
 
 export interface WatchSettings {
@@ -13,6 +15,8 @@ export interface WatchSettings {
   languageMode: LanguageMode;
   inferenceBackend: InferenceBackend;
   motion: WatchMotion;
+  thoughtStyle: WatchThoughtStyle;
+  knowledgeDomain: WatchKnowledgeDomain;
 }
 
 export interface ClockParts {

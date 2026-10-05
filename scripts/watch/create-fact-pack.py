@@ -66,7 +66,25 @@ for index, (mode, topic, source_id, answer) in enumerate(rows, 1):
         'rights': 'Original factual paraphrase with attribution; profile facts supplied for public publication by the owner.',
         'publicAllowed': True, 'reviewStatus': 'reviewed',
     })
+# New catalog entries are original factual summaries, not copied source passages.
+# Source pages are references for verification; full source text is never ingested.
+catalog = json.loads((Path(__file__).parent / 'fact-catalog.json').read_text())
+for source in catalog['sources']:
+    for item in source['rows']:
+        answer = item['answer']
+        assert 10 <= len(answer.split()) <= 20 and len(answer) <= 125, answer
+        assert not any(term in answer.lower().split() for term in ['diagnose', 'dosage', 'cure', 'guarantee'])
+        facts.append({
+            'id': f"ai-{len(facts) + 1:03d}", 'mode': 'ai', 'domain': source['domain'], 'topic': item['topic'],
+            'text': answer, 'answer': answer, 'sourceId': source['sourceId'],
+            'sourceTitle': item.get('sourceTitle', source['sourceTitle']), 'sourceUrl': item.get('sourceUrl', source['sourceUrl']),
+            'sourceDate': source['sourceDate'], 'sourceDateKind': source['sourceDateKind'],
+            'reviewedAt': AS_OF, 'freshnessPolicy': 'Re-review annually or when the cited source changes.',
+            'rights': 'Original agent-authored factual sentence with attribution; no source passage, figure or source corpus was copied.',
+            'reviewMethod': source['reviewMethod'], 'independentHumanReview': False,
+            'publicAllowed': True, 'reviewStatus': 'reviewed',
+        })
 target = Path(__file__).resolve().parents[2] / 'public/watch/facts.v1.json'
 target.parent.mkdir(parents=True, exist_ok=True)
-target.write_text(json.dumps({'version': 'chronos-facts-2026-10-05.1', 'asOf': AS_OF, 'language': 'en', 'facts': facts}, indent=2) + '\n')
+target.write_text(json.dumps({'version': 'chronos-facts-2026-10-05.2-expanded-citation1', 'asOf': AS_OF, 'language': 'en', 'facts': facts}, indent=2) + '\n')
 print(f'{len(facts)} reviewed public facts → {target}')

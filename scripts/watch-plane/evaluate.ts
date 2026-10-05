@@ -5,6 +5,7 @@ import { ANGULAR_SPEED, DEFAULT_SETTINGS, PHYSICS_DT, PlaneEnvironment, isAction
 import { argmax, forward, validateCheckpoint, workspace } from '../../src/lib/watch/plane/network.ts';
 const args = Object.fromEntries(process.argv.slice(2).map((value, i, values) => value.startsWith('--') ? [value.slice(2), values[i + 1]] : null).filter(Boolean) as [string, string][]);
 const input = args.checkpoint ?? 'public/watch/plane/policy.json'; const count = Number(args.episodes ?? 1000); const seedStart = Number(args.seed ?? 500000);
+if (!Number.isSafeInteger(count) || count < 1 || count > 10000 || !Number.isSafeInteger(seedStart) || seedStart < 0 || seedStart + count > 0xffffffff) throw new Error('Invalid evaluation count/seed range');
 const raw = readFileSync(input, 'utf8'); const checkpoint = validateCheckpoint(JSON.parse(raw)); const weights = new Float32Array(checkpoint.weights); const work = workspace();
 function wilson(success: number, total: number): [number, number] { const z = 1.959963984540054; const p = success / total; const d = 1 + z * z / total; const center = (p + z * z / (2 * total)) / d; const radius = z * Math.sqrt(p * (1 - p) / total + z * z / (4 * total * total)) / d; return [center - radius, center + radius]; }
 const started = performance.now(); const results = [];
@@ -31,6 +32,7 @@ for (const name of (args.only ? [args.only] : ['fixed-middle', 'random', 'look-a
   results.push(result); console.log(JSON.stringify(result));
 }
 const report = { format: 'chronos-plane-evaluation-v1', evaluatedAt: new Date().toISOString(), checkpointSha256: createHash('sha256').update(raw).digest('hex'),
+  environmentVersion: checkpoint.environmentVersion,
   trainingSteps: checkpoint.trainingSteps, seedStart, seedEnd: seedStart + count - 1, windowSeconds: 60, physicsHz: 1 / PHYSICS_DT, angularSpeed: ANGULAR_SPEED,
   settings: DEFAULT_SETTINGS, device: cpus()[0]?.model, node: process.version, totalSeconds: (performance.now() - started) / 1000, targetCollisionFreeRate: 0.95,
   targetAchieved: results.some(r => r.name === 'learned-unshielded' && r.collisionFreeRate >= 0.95), results, shieldUsed: results.some(r => r.shieldInterventions > 0),

@@ -42,16 +42,44 @@
   z-index: 0;
 }
 .chronos__numerals { font-size: var(--watch-numeral-size); font-weight: 450; font-variant-numeric: tabular-nums; letter-spacing: -.8px; }
-.chronos__signature { font-family: var(--watch-font); font-weight: 450; }
-.chronos__dial-phrase { fill: #dbe3df; font-weight: 400; letter-spacing: 0; }
+.chronos [data-watch-hand='hour'], .chronos [data-watch-hand='minute'] { opacity: .45; }
+.chronos [data-watch-hand='second'] { opacity: .65; }
+.chronos__dial-phrase { fill: #edf2ed; font-weight: 400; letter-spacing: .015em; }
+.chronos__dial-phrase[data-watch-thought-style='arc'] { fill: #e8efeb; }
+.chronos__small-clock-bezel, .chronos__card-controls, .chronos__card-output, .chronos__card-source { display: none; }
+.chronos[data-watch-thought-style='card'] .chronos__clock-mechanism { transform: translate(189.6px, 37.6px) scale(.42); }
+.chronos[data-watch-thought-style='card'] .chronos__small-clock-bezel { display: block; }
+.chronos[data-watch-thought-style='card'] .chronos__dial-phrase { display: none; }
+.chronos[data-watch-thought-style='card'] .chronos__card-controls {
+  display: flex; flex-direction: column; gap: 4px; position: absolute; z-index: 2;
+  left: 19%; top: 20%; width: 20%; color: #edf1ea; font-size: clamp(8px, 2.5cqi, 11px);
+}
+.chronos__card-controls p { margin: 0 0 3px; color: #cdb79a; font-size: .7em; line-height: 1.4; letter-spacing: .1em; text-transform: uppercase; }
+.chronos__card-controls button { padding: .35em .4em; border: 1px solid #ffffff22; border-radius: 20px; background: #f0f5ef08; color: #c5d0cb; font: inherit; }
+.chronos__card-controls button[aria-pressed='true'] { color: #f7f2e8; border-color: #d9bda966; background: #d9bda916; }
+.chronos[data-watch-thought-style='card'] .chronos__card-output {
+  display: block; position: absolute; z-index: 2; left: 19%; top: 51%; width: 62%; margin: 0;
+  color: #f3f1e9; text-align: center; font-size: 18px; font-weight: 450; line-height: 1.26;
+  letter-spacing: -.025em; text-wrap: pretty;
+}
+.chronos[data-watch-thought-style='card'] .chronos__card-source {
+  display: block; position: absolute; z-index: 2; top: 85%; left: 31%; width: 38%; margin: 0;
+  font-size: clamp(6px, 1.8cqi, 9px); color: #c7b196; text-align: center; line-height: 1.3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .03em;
+}
+.chronos__plane { filter: drop-shadow(0 0 3px #e8fff9a6); }
 .chronos__time { font-size: 13px; color: var(--text-2); font-variant-numeric: tabular-nums; letter-spacing: .015em; }
-.chronos__edition { margin-top: 9px; font-size: 9px; letter-spacing: .22em; color: var(--text-3); }
+.chronos__layout-control { display: flex; align-items: center; gap: 12px; margin-top: 16px; color: var(--text-2); font-size: 11px; }
+.chronos .chronos__layout-control select { width: auto; min-width: 135px; border-color: var(--watch-line); background: transparent; padding: 8px 10px; font-size: 12px; }
 .chronos__overline { font-size: 10px; letter-spacing: .19em; font-weight: 600; color: var(--text-2); margin-bottom: 13px; }
 .chronos__companion h3 { font-size: clamp(34px, 3.6vw, 48px); font-weight: 500; letter-spacing: -.055em; line-height: 1.04; margin: 0 0 17px; }
 .chronos__intro { font-size: 15px; line-height: 1.5; color: var(--text-2); max-width: 340px; margin: 0 0 25px; }
 .chronos__modes { display: flex; padding: 4px; gap: 2px; border: 1px solid var(--watch-line); border-radius: 11px; width: max-content; }
 .chronos__modes button { padding: 8px 16px; border-radius: 7px; font-size: 12px; font-weight: 550; color: var(--text-2); transition: background .2s, color .2s; }
 .chronos__modes button[aria-pressed='true'] { background: var(--text); color: var(--bg); }
+.chronos__knowledge { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; color: var(--text-2); font-size: 11px; }
+.chronos__knowledge[hidden] { display: none; }
+.chronos .chronos__knowledge select { width: min(190px, 60%); border-color: var(--watch-line); font-size: 12px; }
 .chronos__thought { margin-top: 23px; }
 .chronos__status { color: var(--text-2); font-size: 10px; letter-spacing: .04em; }
 .chronos__caption { margin-top: 8px; min-height: 58px; font-size: 18px; font-weight: 450; letter-spacing: -.015em; line-height: 1.5; }
@@ -91,7 +119,7 @@
 .chronos__question > p { font-size: 12px; line-height: 1.5; color: var(--text-2); margin-top: 8px; }
 .chronos__question > p:empty { display: none; }
 .chronos__privacy { font-size: 10px; color: var(--text-3); margin-top: 12px; line-height: 1.5; }
-.chronos[data-watch-ticking='true'] .chronos__plane, .chronos[data-watch-ticking='true'] .chronos__clouds { display: none; }
+.chronos[data-watch-ticking='true'] .chronos__clouds { display: none; }
 .chronos__launcher { width: 96px; height: 96px; border-radius: 50%; box-shadow: 0 3px 12px #0002; }
 .chronos__launcher svg { width: 100%; height: 100%; }
 .chronos__dialog { width: min(940px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); position: fixed; margin: auto; overflow-y: auto; box-shadow: 0 25px 90px #0004; container-type: inline-size; }
@@ -117,7 +145,6 @@
   .chronos__companion h3 { font-size: 28px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .chronos__plane, .chronos__clouds { display: none; }
   .chronos *, .chronos *::after { transition: none !important; }
 }
 @media (max-width: 760px) {

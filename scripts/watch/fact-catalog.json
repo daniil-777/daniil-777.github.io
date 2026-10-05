@@ -1,0 +1,1690 @@
+{
+  "asOf": "2026-10-05",
+  "sources": [
+    {
+      "domain": "math",
+      "sourceId": "linear-algebra",
+      "sourceTitle": "MIT: Some Linear Algebra",
+      "sourceUrl": "https://ocw.mit.edu/ans7870/18/18.013a/textbook/HTML/chapter32/contents.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "linear systems",
+          "answer": "A linear system asks which variable values satisfy several linear equations together."
+        },
+        {
+          "topic": "matrix multiplication",
+          "answer": "Matrix multiplication represents applying one linear transformation after another to a vector."
+        },
+        {
+          "topic": "identity matrix",
+          "answer": "The identity matrix leaves every vector unchanged when used in matrix multiplication."
+        },
+        {
+          "topic": "matrix inverse",
+          "answer": "An invertible matrix has an inverse that reverses its linear transformation."
+        },
+        {
+          "topic": "determinant",
+          "answer": "A square matrix has an inverse exactly when its determinant is nonzero."
+        },
+        {
+          "topic": "eigenvectors",
+          "answer": "An eigenvector keeps its direction under a matrix transformation, apart from possible reversal."
+        },
+        {
+          "topic": "eigenvalues",
+          "answer": "An eigenvalue is the scaling factor associated with a particular matrix eigenvector."
+        },
+        {
+          "topic": "matrix trace",
+          "answer": "The trace of a square matrix adds the entries on its main diagonal."
+        },
+        {
+          "topic": "diagonalization",
+          "answer": "Diagonalization represents a matrix in an eigenvector basis when enough independent eigenvectors exist."
+        },
+        {
+          "topic": "linear equations elimination",
+          "answer": "Elimination solves linear equations by combining rows without changing their solution set."
+        }
+      ]
+    },
+    {
+      "domain": "math",
+      "sourceId": "calculus",
+      "sourceTitle": "MIT: Single Variable Calculus differentiation",
+      "sourceUrl": "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/pages/1.-differentiation/",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "calculus derivatives",
+          "answer": "A derivative measures the instantaneous rate at which a function changes locally."
+        },
+        {
+          "topic": "calculus tangent",
+          "answer": "For a differentiable curve, its derivative gives the slope of the tangent line."
+        },
+        {
+          "topic": "calculus differentiability",
+          "answer": "Differentiability at a point implies continuity there, but continuity alone is insufficient."
+        },
+        {
+          "topic": "calculus chain rule",
+          "answer": "The chain rule differentiates a composition by multiplying derivatives of its component functions."
+        },
+        {
+          "topic": "calculus product rule",
+          "answer": "The product rule combines two derivative terms when differentiating multiplied functions."
+        },
+        {
+          "topic": "calculus quotient rule",
+          "answer": "The quotient rule differentiates a ratio where the denominator remains nonzero."
+        },
+        {
+          "topic": "calculus power rule",
+          "answer": "For suitable powers and domains, the power rule reduces the exponent when differentiating."
+        },
+        {
+          "topic": "calculus constant",
+          "answer": "The derivative of a constant function is zero throughout its domain."
+        },
+        {
+          "topic": "calculus sum rule",
+          "answer": "The derivative of a sum equals the sum of the individual derivatives."
+        },
+        {
+          "topic": "calculus implicit differentiation",
+          "answer": "Implicit differentiation finds derivatives from equations without first isolating the dependent variable."
+        }
+      ]
+    },
+    {
+      "domain": "math",
+      "sourceId": "statistics",
+      "sourceTitle": "NIST/SEMATECH: Statistical handbook quantitative techniques",
+      "sourceUrl": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda35.htm",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "statistics mean",
+          "answer": "The arithmetic mean adds numerical observations and divides by the number of observations."
+        },
+        {
+          "topic": "statistics median",
+          "answer": "The median marks the middle of ordered data, balancing observations on either side."
+        },
+        {
+          "topic": "statistics mode",
+          "answer": "The mode identifies an observed value that occurs most often in a dataset."
+        },
+        {
+          "topic": "statistics range",
+          "answer": "The range measures spread by subtracting the smallest observation from the largest."
+        },
+        {
+          "topic": "statistics quartiles",
+          "answer": "Quartiles divide ordered data into sections containing approximately equal numbers of observations."
+        },
+        {
+          "topic": "statistics interquartile range",
+          "answer": "The interquartile range measures the spread between the first and third quartiles."
+        },
+        {
+          "topic": "statistics standard deviation",
+          "answer": "Standard deviation measures data spread using the same units as the observations."
+        },
+        {
+          "topic": "statistics variance",
+          "answer": "Variance describes spread through squared deviations from the mean of the data."
+        },
+        {
+          "topic": "statistics percentile",
+          "answer": "A percentile locates a value relative to the proportion of observations below it."
+        },
+        {
+          "topic": "statistics outliers",
+          "answer": "Outliers are observations unusually far from the main pattern of a dataset."
+        }
+      ]
+    },
+    {
+      "domain": "math",
+      "sourceId": "convex-optimization",
+      "sourceTitle": "Boyd and Vandenberghe: Convex Optimization",
+      "sourceUrl": "https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "convex sets",
+          "answer": "A convex set contains every line segment joining any two of its points."
+        },
+        {
+          "topic": "convex functions",
+          "answer": "A convex function lies below the chords connecting pairs of points on its graph."
+        },
+        {
+          "topic": "convex local minimum",
+          "answer": "For convex optimization, every local minimum is also a global minimum."
+        },
+        {
+          "topic": "strict convexity",
+          "answer": "A strictly convex objective has at most one minimizer on a convex feasible set."
+        },
+        {
+          "topic": "optimization constraints",
+          "answer": "Constraints define which candidate solutions are permitted in an optimization problem."
+        },
+        {
+          "topic": "optimization objective",
+          "answer": "An objective function assigns the quantity an optimization method tries to minimize or maximize."
+        },
+        {
+          "topic": "linear programming",
+          "answer": "Linear programming combines a linear objective with linear equality and inequality constraints."
+        },
+        {
+          "topic": "least squares optimization",
+          "answer": "Least squares minimizes the sum of squared differences between predictions and observations."
+        },
+        {
+          "topic": "gradient descent math",
+          "answer": "Gradient descent moves against a differentiable objective's gradient to reduce its value locally."
+        },
+        {
+          "topic": "Newton optimization",
+          "answer": "Newton's method uses curvature information to construct a local quadratic approximation."
+        }
+      ]
+    },
+    {
+      "domain": "math",
+      "sourceId": "numerical-integration",
+      "sourceTitle": "SciPy: Numerical integration",
+      "sourceUrl": "https://docs.scipy.org/doc/scipy/tutorial/integrate.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "numerical quadrature",
+          "answer": "Numerical quadrature approximates a definite integral using weighted evaluations of its integrand."
+        },
+        {
+          "topic": "quadrature error",
+          "answer": "Adaptive quadrature refines its estimate until requested error tolerances are approached."
+        },
+        {
+          "topic": "numerical integration limits",
+          "answer": "Numerical integration can evaluate functions over finite intervals or suitable infinite limits."
+        },
+        {
+          "topic": "double integration",
+          "answer": "Double integration accumulates a function over two variables and their integration bounds."
+        },
+        {
+          "topic": "Gaussian quadrature",
+          "answer": "Gaussian quadrature chooses evaluation nodes and weights to integrate polynomial approximations efficiently."
+        },
+        {
+          "topic": "Romberg integration",
+          "answer": "Romberg integration combines trapezoidal estimates through extrapolation to improve integral approximations."
+        },
+        {
+          "topic": "trapezoidal integration",
+          "answer": "The trapezoidal rule approximates area using trapezoids between adjacent sampled function values."
+        },
+        {
+          "topic": "Simpson integration",
+          "answer": "Simpson's rule approximates integration using quadratic curves fitted across sampled values."
+        },
+        {
+          "topic": "differential equation solver",
+          "answer": "An initial-value solver approximates a differential equation starting from specified initial conditions."
+        },
+        {
+          "topic": "stiff differential equations",
+          "answer": "Stiff differential equations can require implicit solvers for practical numerical stability."
+        }
+      ]
+    },
+    {
+      "domain": "math",
+      "sourceId": "automatic-differentiation",
+      "sourceTitle": "PyTorch: Automatic differentiation",
+      "sourceUrl": "https://docs.pytorch.org/tutorials/beginner/basics/autogradqs_tutorial.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "automatic differentiation",
+          "answer": "Automatic differentiation computes derivatives by following operations recorded in a computational graph."
+        },
+        {
+          "topic": "autograd chain rule",
+          "answer": "Autograd applies the chain rule through a graph to obtain parameter gradients."
+        },
+        {
+          "topic": "autograd backward",
+          "answer": "Calling backward computes gradients for relevant tensors that request gradient tracking."
+        },
+        {
+          "topic": "autograd gradient accumulation",
+          "answer": "Repeated backward calls accumulate gradients, so training loops usually clear them explicitly."
+        },
+        {
+          "topic": "autograd dynamic graphs",
+          "answer": "PyTorch builds computational graphs dynamically as operations run during each forward pass."
+        },
+        {
+          "topic": "autograd leaf tensors",
+          "answer": "Gradients are normally stored on leaf tensors whose gradient tracking is enabled."
+        },
+        {
+          "topic": "autograd no grad",
+          "answer": "Disabling gradient tracking reduces graph bookkeeping when only forward inference is needed."
+        },
+        {
+          "topic": "autograd detach",
+          "answer": "Detaching a tensor produces a view disconnected from its existing gradient history."
+        },
+        {
+          "topic": "autograd scalar loss",
+          "answer": "A scalar training loss provides a starting point for computing parameter gradients."
+        },
+        {
+          "topic": "Jacobian vector products",
+          "answer": "Jacobian vector products compute directional derivative information without explicitly storing a full Jacobian.",
+          "sourceTitle": "PyTorch: torch.func.jvp Jacobian-vector products",
+          "sourceUrl": "https://docs.pytorch.org/docs/2.14/generated/torch.func.jvp.html"
+        }
+      ]
+    },
+    {
+      "domain": "math",
+      "sourceId": "graph-mathematics",
+      "sourceTitle": "NetworkX: Graph tutorial",
+      "sourceUrl": "https://networkx.org/documentation/stable/tutorial.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "graph vertices",
+          "answer": "A graph represents entities as vertices and relationships between them as edges."
+        },
+        {
+          "topic": "directed graphs",
+          "answer": "Directed graphs distinguish the direction of each relationship between connected vertices."
+        },
+        {
+          "topic": "undirected graphs",
+          "answer": "An undirected edge connects two vertices without assigning a direction to that connection."
+        },
+        {
+          "topic": "graph degree",
+          "answer": "A vertex's degree counts the edges incident to it in an undirected graph."
+        },
+        {
+          "topic": "weighted graphs",
+          "answer": "Weighted graphs attach numerical values to edges, such as distances or costs."
+        },
+        {
+          "topic": "graph paths",
+          "answer": "A path follows a sequence of edges connecting one vertex to another."
+        },
+        {
+          "topic": "graph connected components",
+          "answer": "A connected component groups vertices linked by paths within an undirected graph."
+        },
+        {
+          "topic": "multigraphs",
+          "answer": "Multigraphs permit several distinct edges between the same pair of vertices."
+        },
+        {
+          "topic": "graph attributes",
+          "answer": "Graph attributes can store information about the graph, its vertices or its edges."
+        },
+        {
+          "topic": "graph floating point",
+          "answer": "Floating-point edge weights can introduce small numerical errors in graph algorithm results."
+        }
+      ]
+    },
+    {
+      "domain": "ai",
+      "sourceId": "linear-models",
+      "sourceTitle": "scikit-learn: Linear models",
+      "sourceUrl": "https://scikit-learn.org/stable/modules/linear_model.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "linear regression AI",
+          "answer": "Linear regression predicts a numerical target using a weighted combination of input features."
+        },
+        {
+          "topic": "ridge regression",
+          "answer": "Ridge regression penalizes large coefficients, helping stabilize models with correlated input features."
+        },
+        {
+          "topic": "lasso regression",
+          "answer": "Lasso penalizes coefficient magnitudes and can set some learned coefficients exactly to zero."
+        },
+        {
+          "topic": "elastic net",
+          "answer": "Elastic net combines ridge and lasso penalties when fitting a linear prediction model."
+        },
+        {
+          "topic": "logistic regression",
+          "answer": "Logistic regression models class probabilities rather than directly predicting an unrestricted numerical target."
+        },
+        {
+          "topic": "multicollinearity",
+          "answer": "Strongly correlated features can make ordinary least-squares coefficient estimates sensitive to small changes."
+        },
+        {
+          "topic": "linear model intercept",
+          "answer": "An intercept supplies a constant offset alongside the weighted input features."
+        },
+        {
+          "topic": "regularization strength",
+          "answer": "Increasing regularization strength generally places more pressure on learned coefficient magnitudes."
+        },
+        {
+          "topic": "sparse coefficients",
+          "answer": "Sparse coefficients let a linear model depend on fewer active input features."
+        },
+        {
+          "topic": "coordinate descent",
+          "answer": "Coordinate descent updates one parameter at a time while optimizing a larger objective."
+        }
+      ]
+    },
+    {
+      "domain": "ai",
+      "sourceId": "decision-trees",
+      "sourceTitle": "scikit-learn: Decision trees",
+      "sourceUrl": "https://scikit-learn.org/stable/modules/tree.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "decision trees",
+          "answer": "A decision tree predicts by following feature-based branches to a terminal leaf."
+        },
+        {
+          "topic": "classification trees",
+          "answer": "Classification trees assign categories using feature thresholds learned from labelled training examples."
+        },
+        {
+          "topic": "regression trees",
+          "answer": "Regression trees predict numerical values from observations reaching the same terminal leaf."
+        },
+        {
+          "topic": "tree depth",
+          "answer": "Limiting tree depth restricts model complexity and can reduce fitting to noise."
+        },
+        {
+          "topic": "tree overfitting",
+          "answer": "An unrestricted decision tree can fit training details that generalize poorly to new data."
+        },
+        {
+          "topic": "tree feature scaling",
+          "answer": "Decision trees usually do not require feature standardization before threshold-based learning."
+        },
+        {
+          "topic": "tree pruning",
+          "answer": "Pruning removes selected branches to trade training fit for a simpler tree."
+        },
+        {
+          "topic": "tree instability",
+          "answer": "Small changes in training data can sometimes produce substantially different decision trees."
+        },
+        {
+          "topic": "tree interpretability",
+          "answer": "Small decision trees expose their branching rules in a form people can inspect."
+        },
+        {
+          "topic": "tree leaves",
+          "answer": "A tree leaf summarizes the predictions for samples following the same branch sequence."
+        }
+      ]
+    },
+    {
+      "domain": "ai",
+      "sourceId": "clustering",
+      "sourceTitle": "scikit-learn: Clustering",
+      "sourceUrl": "https://scikit-learn.org/stable/modules/clustering.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "clustering AI",
+          "answer": "Clustering groups observations using similarity without requiring a target label for every example."
+        },
+        {
+          "topic": "k means",
+          "answer": "K-means alternates assigning points to centroids and updating those centroids from assignments."
+        },
+        {
+          "topic": "k means initialization",
+          "answer": "K-means initialization affects which local solution the iterative algorithm eventually finds."
+        },
+        {
+          "topic": "DBSCAN",
+          "answer": "DBSCAN identifies dense groups of points and can label isolated observations as noise."
+        },
+        {
+          "topic": "clustering distance",
+          "answer": "A distance metric determines what similarity means for a particular clustering algorithm."
+        },
+        {
+          "topic": "hierarchical clustering",
+          "answer": "Agglomerative clustering repeatedly merges smaller groups into progressively larger clusters of observations."
+        },
+        {
+          "topic": "spectral clustering",
+          "answer": "Spectral clustering uses eigenvectors derived from a similarity graph to separate observations."
+        },
+        {
+          "topic": "clustering scale",
+          "answer": "Feature scaling can strongly influence clusters when distances combine differently scaled measurements."
+        },
+        {
+          "topic": "silhouette score",
+          "answer": "A silhouette score compares within-cluster cohesion with separation from nearby alternative clusters."
+        },
+        {
+          "topic": "clustering interpretation",
+          "answer": "Useful clusters require interpretation because mathematical grouping alone does not establish their meaning."
+        }
+      ]
+    },
+    {
+      "domain": "ai",
+      "sourceId": "prediction-metrics",
+      "sourceTitle": "scikit-learn: Prediction metrics",
+      "sourceUrl": "https://scikit-learn.org/stable/modules/model_evaluation.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "classification accuracy",
+          "answer": "Accuracy measures the fraction of predictions that match their observed class labels."
+        },
+        {
+          "topic": "precision",
+          "answer": "Precision measures how often a predicted positive corresponds to an actual positive."
+        },
+        {
+          "topic": "recall",
+          "answer": "Recall measures how many actual positives a classifier successfully identifies as positive."
+        },
+        {
+          "topic": "F1 score",
+          "answer": "The F1 score combines precision and recall using their harmonic mean."
+        },
+        {
+          "topic": "confusion matrix",
+          "answer": "A confusion matrix counts how observed classes are distributed across predicted classes."
+        },
+        {
+          "topic": "mean absolute error",
+          "answer": "Mean absolute error averages the absolute distances between numerical predictions and observations."
+        },
+        {
+          "topic": "mean squared error",
+          "answer": "Mean squared error averages squared prediction errors, giving larger mistakes greater influence."
+        },
+        {
+          "topic": "log loss",
+          "answer": "Log loss evaluates predicted probabilities and strongly penalizes confident incorrect class predictions."
+        },
+        {
+          "topic": "balanced accuracy",
+          "answer": "Balanced accuracy averages recall across classes, reducing dominance by a frequent class."
+        },
+        {
+          "topic": "ROC curve",
+          "answer": "A ROC curve compares true-positive and false-positive rates across different classification thresholds."
+        }
+      ]
+    },
+    {
+      "domain": "ai",
+      "sourceId": "ensemble-learning",
+      "sourceTitle": "scikit-learn: Ensemble learning",
+      "sourceUrl": "https://scikit-learn.org/stable/modules/ensemble.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "ensemble learning",
+          "answer": "An ensemble combines several fitted models to produce a joint prediction."
+        },
+        {
+          "topic": "random forests",
+          "answer": "Random forests combine decision trees trained using random sampling and feature selection."
+        },
+        {
+          "topic": "bagging",
+          "answer": "Bagging fits models on resampled training sets and combines their resulting predictions."
+        },
+        {
+          "topic": "gradient boosting",
+          "answer": "Gradient boosting adds successive models that improve a shared prediction objective."
+        },
+        {
+          "topic": "voting ensemble",
+          "answer": "A voting classifier combines individual classifiers through class votes or averaged probabilities."
+        },
+        {
+          "topic": "stacking",
+          "answer": "Stacking trains a final model using predictions produced by several base models."
+        },
+        {
+          "topic": "boosting learning rate",
+          "answer": "A boosting learning rate controls how strongly each newly added model contributes."
+        },
+        {
+          "topic": "extra trees",
+          "answer": "Extra trees introduce randomized split thresholds while constructing a collection of decision trees."
+        },
+        {
+          "topic": "ensemble diversity",
+          "answer": "Different base-model errors can make combining predictions more useful than repeating identical models."
+        },
+        {
+          "topic": "forest feature importance",
+          "answer": "Impurity-based forest importance can favor features with many possible split values."
+        }
+      ]
+    },
+    {
+      "domain": "ai",
+      "sourceId": "decomposition",
+      "sourceTitle": "scikit-learn: Matrix decomposition",
+      "sourceUrl": "https://scikit-learn.org/stable/modules/decomposition.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "principal components",
+          "answer": "Principal component analysis finds orthogonal directions that capture successive amounts of data variance."
+        },
+        {
+          "topic": "PCA centering",
+          "answer": "Standard principal component analysis centers the data before finding its principal directions."
+        },
+        {
+          "topic": "PCA scaling",
+          "answer": "Feature scales influence principal components, so preprocessing choices affect the resulting representation."
+        },
+        {
+          "topic": "explained variance",
+          "answer": "Explained variance describes how much variability a principal component captures in the data."
+        },
+        {
+          "topic": "truncated SVD",
+          "answer": "Truncated singular value decomposition retains selected components without requiring centered input data."
+        },
+        {
+          "topic": "nonnegative factorization",
+          "answer": "Nonnegative matrix factorization represents nonnegative data using nonnegative components and coefficients."
+        },
+        {
+          "topic": "independent components",
+          "answer": "Independent component analysis seeks source components that are statistically independent of one another."
+        },
+        {
+          "topic": "sparse PCA",
+          "answer": "Sparse principal component analysis encourages components with fewer active feature contributions."
+        },
+        {
+          "topic": "latent components",
+          "answer": "Matrix decomposition represents observations through latent components rather than their original feature coordinates."
+        },
+        {
+          "topic": "incremental PCA",
+          "answer": "Incremental principal component analysis processes batches instead of requiring all data simultaneously."
+        }
+      ]
+    },
+    {
+      "domain": "ai",
+      "sourceId": "probability-calibration",
+      "sourceTitle": "scikit-learn: Probability calibration",
+      "sourceUrl": "https://scikit-learn.org/stable/modules/calibration.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "probability calibration",
+          "answer": "Calibration checks whether predicted probabilities align with how often outcomes actually occur."
+        },
+        {
+          "topic": "reliability diagram",
+          "answer": "A reliability diagram compares predicted probability bins with observed positive outcome frequencies."
+        },
+        {
+          "topic": "calibration data",
+          "answer": "Probability calibration should use data separate from the data fitting the classifier."
+        },
+        {
+          "topic": "sigmoid calibration",
+          "answer": "Sigmoid calibration fits a smooth parametric mapping from classifier scores to probabilities."
+        },
+        {
+          "topic": "isotonic calibration",
+          "answer": "Isotonic calibration fits a monotonic mapping without assuming a sigmoid shape."
+        },
+        {
+          "topic": "calibration small datasets",
+          "answer": "Isotonic calibration can overfit when the available calibration dataset is too small."
+        },
+        {
+          "topic": "Brier score",
+          "answer": "The Brier score measures squared differences between predicted probabilities and observed outcomes."
+        },
+        {
+          "topic": "confidence versus accuracy",
+          "answer": "High classification accuracy alone does not establish that a model's probabilities are calibrated."
+        },
+        {
+          "topic": "calibration cross validation",
+          "answer": "Cross-validation can separate classifier fitting from calibration while using limited data efficiently."
+        },
+        {
+          "topic": "calibration curve bins",
+          "answer": "Calibration curves group similar predicted probabilities before comparing them with observed outcomes."
+        }
+      ]
+    },
+    {
+      "domain": "ai",
+      "sourceId": "anomaly-detection",
+      "sourceTitle": "scikit-learn: Novelty and outlier detection",
+      "sourceUrl": "https://scikit-learn.org/stable/modules/outlier_detection.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "anomaly detection",
+          "answer": "Anomaly detection identifies observations that differ from the main pattern of available data."
+        },
+        {
+          "topic": "novelty detection",
+          "answer": "Novelty detection learns from relatively clean training data to flag unfamiliar future observations."
+        },
+        {
+          "topic": "outlier detection",
+          "answer": "Outlier detection estimates unusual observations within training data that may already contain anomalies."
+        },
+        {
+          "topic": "isolation forest",
+          "answer": "Isolation forests flag observations that become isolated through relatively few random partitions."
+        },
+        {
+          "topic": "local outlier factor",
+          "answer": "Local outlier factor compares an observation's density with densities around its neighbors."
+        },
+        {
+          "topic": "one class SVM",
+          "answer": "A one-class support vector machine learns a boundary around the training distribution."
+        },
+        {
+          "topic": "contamination parameter",
+          "answer": "A contamination setting influences the threshold used to label observations as outliers."
+        },
+        {
+          "topic": "anomaly interpretation",
+          "answer": "An unusual observation can reflect a real event, measurement error or distribution change."
+        },
+        {
+          "topic": "high dimensional anomalies",
+          "answer": "Anomaly detection becomes difficult when high-dimensional distances provide weak notions of similarity."
+        },
+        {
+          "topic": "novelty training boundaries",
+          "answer": "Novelty detectors should be evaluated on new observations rather than reused training examples."
+        }
+      ]
+    },
+    {
+      "domain": "finance",
+      "sourceId": "finance-fsb",
+      "sourceTitle": "FSB: AI and machine learning in financial services",
+      "sourceUrl": "https://www.fsb.org/uploads/P011117.pdf",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "finance credit scoring",
+          "answer": "Financial institutions study machine learning to estimate credit risk from available borrower information."
+        },
+        {
+          "topic": "finance fraud detection",
+          "answer": "Machine learning can flag unusual financial transactions for further investigation by human reviewers."
+        },
+        {
+          "topic": "finance insurance",
+          "answer": "Insurers explore machine learning for pricing, customer analysis and operational risk assessment."
+        },
+        {
+          "topic": "finance execution",
+          "answer": "Trading-execution research studies how algorithms can reduce costs when placing market orders."
+        },
+        {
+          "topic": "finance market impact",
+          "answer": "Market-impact models estimate how executing large trades may affect available prices."
+        },
+        {
+          "topic": "finance compliance",
+          "answer": "Financial compliance tools can use machine learning to prioritize suspicious records for review."
+        },
+        {
+          "topic": "finance model opacity",
+          "answer": "Opaque financial models can make auditing and explaining their decisions more difficult."
+        },
+        {
+          "topic": "finance shared providers",
+          "answer": "Shared AI providers can create dependencies across otherwise separate financial institutions."
+        },
+        {
+          "topic": "finance interconnectedness",
+          "answer": "Widespread use of similar financial models may create unexpected links between institutions."
+        },
+        {
+          "topic": "finance risk oversight",
+          "answer": "Financial AI systems need testing, data-quality checks and oversight suited to their risks."
+        }
+      ]
+    },
+    {
+      "domain": "finance",
+      "sourceId": "finance-boe",
+      "sourceTitle": "Bank of England: AI in UK financial services 2024",
+      "sourceUrl": "https://www.bankofengland.co.uk/report/2024/artificial-intelligence-in-uk-financial-services-2024",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "finance governance",
+          "answer": "Financial AI governance assigns responsibility for model decisions, monitoring and incident handling."
+        },
+        {
+          "topic": "finance data quality",
+          "answer": "Poor data quality can weaken financial AI predictions even when the model is complex."
+        },
+        {
+          "topic": "finance privacy",
+          "answer": "Financial AI development must consider privacy when using personal or sensitive customer data."
+        },
+        {
+          "topic": "finance cybersecurity",
+          "answer": "Cybersecurity risks matter when financial institutions integrate AI into their operational systems."
+        },
+        {
+          "topic": "finance third parties",
+          "answer": "Financial firms can depend on external providers for models, infrastructure and AI services."
+        },
+        {
+          "topic": "finance explainability",
+          "answer": "Explaining a financial model helps reviewers understand how its outputs are produced."
+        },
+        {
+          "topic": "finance human oversight",
+          "answer": "Human oversight remains relevant when financial AI decisions affect customers or business operations."
+        },
+        {
+          "topic": "finance model robustness",
+          "answer": "Robustness testing examines whether financial model behavior remains acceptable under changed conditions."
+        },
+        {
+          "topic": "finance skills",
+          "answer": "Financial firms need relevant technical expertise to assess and monitor their AI systems."
+        },
+        {
+          "topic": "finance adoption surveys",
+          "answer": "AI adoption surveys describe respondents' practices rather than proving effectiveness for every financial firm."
+        }
+      ]
+    },
+    {
+      "domain": "finance",
+      "sourceId": "finance-bis",
+      "sourceTitle": "BIS: Intelligent financial system research",
+      "sourceUrl": "https://www.bis.org/publ/work1194.htm",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "finance information processing",
+          "answer": "AI can change financial information processing by extracting patterns from large datasets."
+        },
+        {
+          "topic": "finance central banks",
+          "answer": "Central-bank researchers study AI applications alongside implications for the broader financial system."
+        },
+        {
+          "topic": "finance AI competition",
+          "answer": "AI adoption can affect competition by changing access to information and analytical capabilities."
+        },
+        {
+          "topic": "finance AI risks",
+          "answer": "Research on financial AI considers possible benefits together with new operational and systemic risks."
+        },
+        {
+          "topic": "finance data importance",
+          "answer": "Data availability shapes which financial questions an AI system can meaningfully address."
+        },
+        {
+          "topic": "finance system functions",
+          "answer": "Financial AI analysis examines intermediation, insurance, asset management and payments as distinct functions."
+        },
+        {
+          "topic": "finance technological change",
+          "answer": "Financial AI research examines how new technology can reshape intermediation and information flows."
+        },
+        {
+          "topic": "finance concentration",
+          "answer": "Concentrated access to AI infrastructure can affect dependencies within the financial sector."
+        },
+        {
+          "topic": "finance economic analysis",
+          "answer": "Economic analysis studies how financial AI changes incentives, market structure and policy questions."
+        },
+        {
+          "topic": "finance research scope",
+          "answer": "A financial AI research paper provides analysis rather than personalized investment recommendations."
+        }
+      ]
+    },
+    {
+      "domain": "finance",
+      "sourceId": "finance-time-series",
+      "sourceTitle": "scikit-learn: TimeSeriesSplit",
+      "sourceUrl": "https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "finance chronological testing",
+          "answer": "Chronological testing evaluates financial forecasting models using observations that occur after their training data."
+        },
+        {
+          "topic": "finance future leakage",
+          "answer": "Training on future observations can make historical financial forecasting results appear misleadingly strong."
+        },
+        {
+          "topic": "finance expanding window",
+          "answer": "An expanding training window includes earlier observations as successive evaluation periods move forward."
+        },
+        {
+          "topic": "finance rolling window",
+          "answer": "A limited training window can restrict forecasting fits to more recent historical observations."
+        },
+        {
+          "topic": "finance validation gap",
+          "answer": "A validation gap separates training observations from the beginning of a test period."
+        },
+        {
+          "topic": "finance equal spacing",
+          "answer": "Comparable time-based fold durations require observations sampled at a consistent time interval."
+        },
+        {
+          "topic": "finance test windows",
+          "answer": "A fixed test-window size can keep chronological evaluation periods comparable across splits."
+        },
+        {
+          "topic": "finance test ordering",
+          "answer": "A time-series test period follows the corresponding training period in chronological evaluation."
+        },
+        {
+          "topic": "finance successive splits",
+          "answer": "Successive chronological splits expand earlier training observations while holding later observations aside for testing."
+        },
+        {
+          "topic": "finance validation assumptions",
+          "answer": "Chronological validation checks forecasting behavior under a specific historical sampling and evaluation setup."
+        }
+      ]
+    },
+    {
+      "domain": "robotics",
+      "sourceId": "robotics-kinematics",
+      "sourceTitle": "Lynch and Park: Modern Robotics",
+      "sourceUrl": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "robotics configuration",
+          "answer": "A robot's configuration specifies the variables needed to describe its current physical arrangement."
+        },
+        {
+          "topic": "robotics forward kinematics",
+          "answer": "Forward kinematics computes an end-effector pose from a robot's joint configuration."
+        },
+        {
+          "topic": "robotics inverse kinematics",
+          "answer": "Inverse kinematics seeks joint configurations that achieve a requested end-effector pose."
+        },
+        {
+          "topic": "robotics Jacobian",
+          "answer": "A robot Jacobian maps joint velocities to the instantaneous motion of its end effector."
+        },
+        {
+          "topic": "robotics singularity",
+          "answer": "At a kinematic singularity, a robot loses some instantaneous motion capability."
+        },
+        {
+          "topic": "robotics workspace",
+          "answer": "A robot's workspace describes end-effector poses reachable under its physical joint constraints."
+        },
+        {
+          "topic": "robotics rotation matrix",
+          "answer": "Rotation matrices describe orientation while preserving vector lengths and angles between vectors."
+        },
+        {
+          "topic": "robotics homogeneous transform",
+          "answer": "A homogeneous transformation combines a rigid body's rotation and translation in one matrix."
+        },
+        {
+          "topic": "robotics trajectories",
+          "answer": "A robot trajectory specifies how its configuration changes over a chosen time interval."
+        },
+        {
+          "topic": "robotics dynamics",
+          "answer": "Robot dynamics relates forces and torques to the resulting accelerations and motion."
+        }
+      ]
+    },
+    {
+      "domain": "robotics",
+      "sourceId": "robotics-planning",
+      "sourceTitle": "OMPL: Available motion planners",
+      "sourceUrl": "https://ompl.kavrakilab.org/planners.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "robotics motion planning",
+          "answer": "Motion planning searches for a feasible route between configurations while respecting obstacles."
+        },
+        {
+          "topic": "robotics RRT",
+          "answer": "Rapidly exploring random trees expand sampled states toward new regions of configuration space."
+        },
+        {
+          "topic": "robotics roadmap",
+          "answer": "A probabilistic roadmap connects sampled valid configurations into a graph of feasible motions."
+        },
+        {
+          "topic": "robotics RRT connect",
+          "answer": "RRT-Connect grows trees from both ends to seek a connecting feasible path."
+        },
+        {
+          "topic": "robotics RRT star",
+          "answer": "RRT-star rewires sampled connections to improve path cost as planning continues."
+        },
+        {
+          "topic": "robotics collision checking",
+          "answer": "Collision checking determines whether a candidate configuration or connecting motion intersects obstacles."
+        },
+        {
+          "topic": "robotics planning objective",
+          "answer": "A planning objective specifies the path property an optimizing planner tries to improve."
+        },
+        {
+          "topic": "robotics control planning",
+          "answer": "Control-based planning considers how available inputs produce feasible changes in robot state."
+        },
+        {
+          "topic": "robotics planning termination",
+          "answer": "A planner's termination condition limits how long it searches for a solution."
+        },
+        {
+          "topic": "robotics planner choice",
+          "answer": "Planner performance depends on the problem's geometry, constraints and available computational budget."
+        }
+      ]
+    },
+    {
+      "domain": "robotics",
+      "sourceId": "robotics-transformer",
+      "sourceTitle": "RT-1: Robotics Transformer paper",
+      "sourceUrl": "https://arxiv.org/abs/2212.06817",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "robotics RT1",
+          "answer": "RT-1 studies a Transformer policy trained from demonstrations of real-world robotic tasks."
+        },
+        {
+          "topic": "robotics language instructions",
+          "answer": "RT-1 conditions robot actions on camera observations and a natural-language task instruction."
+        },
+        {
+          "topic": "robotics action tokens",
+          "answer": "RT-1 represents its robot-control outputs using discrete tokens for action dimensions."
+        },
+        {
+          "topic": "robotics visual tokenization",
+          "answer": "RT-1 compresses visual information into tokens before applying its Transformer control model."
+        },
+        {
+          "topic": "robotics demonstration diversity",
+          "answer": "RT-1 investigates whether diverse demonstration data supports generalization across robotic manipulation tasks."
+        },
+        {
+          "topic": "robotics imitation learning",
+          "answer": "A demonstration-trained robot policy learns action patterns from recorded examples of task execution."
+        },
+        {
+          "topic": "robotics task generalization",
+          "answer": "Robotic task generalization is measured on evaluation tasks beyond the training demonstrations."
+        },
+        {
+          "topic": "robotics real world evaluation",
+          "answer": "Real-world robot evaluation tests behavior under physical conditions absent from purely simulated experiments."
+        },
+        {
+          "topic": "robotics policy observations",
+          "answer": "A visuomotor robot policy chooses control actions using information from visual observations."
+        },
+        {
+          "topic": "robotics learning evidence",
+          "answer": "A robot learning paper's reported results apply to its studied tasks and evaluation conditions."
+        }
+      ]
+    },
+    {
+      "domain": "robotics",
+      "sourceId": "robotics-diffusion",
+      "sourceTitle": "Diffusion Policy: Visuomotor learning paper",
+      "sourceUrl": "https://arxiv.org/abs/2303.04137",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "robotics diffusion policy",
+          "answer": "Diffusion Policy learns robot action sequences through a conditional denoising diffusion process."
+        },
+        {
+          "topic": "robotics action denoising",
+          "answer": "Action diffusion iteratively transforms noisy candidate actions into a predicted robot action sequence."
+        },
+        {
+          "topic": "robotics multimodal actions",
+          "answer": "Diffusion policies can represent multiple plausible action choices for the same observation."
+        },
+        {
+          "topic": "robotics receding horizon",
+          "answer": "Receding-horizon control executes part of a planned sequence before planning again."
+        },
+        {
+          "topic": "robotics policy conditioning",
+          "answer": "Diffusion Policy conditions action generation on observations available to the robot controller."
+        },
+        {
+          "topic": "robotics action sequence",
+          "answer": "Predicting an action sequence can capture dependencies among several future control decisions."
+        },
+        {
+          "topic": "robotics diffusion training",
+          "answer": "Diffusion-policy training teaches a model to recover demonstrated actions from noisy versions."
+        },
+        {
+          "topic": "robotics visuomotor learning",
+          "answer": "Visuomotor learning connects visual observations with actions needed to perform a robot task."
+        },
+        {
+          "topic": "robotics manipulation benchmarks",
+          "answer": "Manipulation benchmarks compare learned policies on defined robot tasks and measured success criteria."
+        },
+        {
+          "topic": "robotics policy limitations",
+          "answer": "A learned robot policy still needs evaluation under the conditions where it will operate."
+        }
+      ]
+    },
+    {
+      "domain": "vision",
+      "sourceId": "camera-geometry",
+      "sourceTitle": "OpenCV: Camera calibration and reconstruction",
+      "sourceUrl": "https://docs.opencv.org/4.x/d9/d0c/group__calib3d.html",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "vision camera intrinsics",
+          "answer": "Camera intrinsics describe image formation parameters such as focal lengths and principal-point coordinates."
+        },
+        {
+          "topic": "vision camera extrinsics",
+          "answer": "Camera extrinsics describe the rotation and translation linking world coordinates to camera coordinates."
+        },
+        {
+          "topic": "vision lens distortion",
+          "answer": "Lens distortion can shift image points away from an ideal pinhole-camera projection."
+        },
+        {
+          "topic": "vision calibration",
+          "answer": "Camera calibration estimates projection parameters from observed points with known geometric relationships."
+        },
+        {
+          "topic": "vision pose estimation",
+          "answer": "Pose estimation seeks a camera's orientation and position from corresponding geometric observations."
+        },
+        {
+          "topic": "vision epipolar geometry",
+          "answer": "Epipolar geometry restricts corresponding image points to related lines across a stereo pair."
+        },
+        {
+          "topic": "vision triangulation",
+          "answer": "Triangulation estimates a spatial point from corresponding observations in multiple camera views."
+        },
+        {
+          "topic": "vision stereo depth",
+          "answer": "Stereo depth estimation uses differences between corresponding image locations in two camera views."
+        },
+        {
+          "topic": "vision reprojection error",
+          "answer": "Reprojection error measures differences between observed image points and projected geometric estimates."
+        },
+        {
+          "topic": "vision RANSAC",
+          "answer": "RANSAC fits geometric models using repeated subsets while identifying observations consistent with each model."
+        }
+      ]
+    },
+    {
+      "domain": "vision",
+      "sourceId": "residual-networks",
+      "sourceTitle": "Deep Residual Learning for Image Recognition",
+      "sourceUrl": "https://arxiv.org/abs/1512.03385",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "vision residual learning",
+          "answer": "Residual learning trains a network block to modify an input rather than replace it entirely."
+        },
+        {
+          "topic": "vision skip connections",
+          "answer": "A residual skip connection adds a block's input to its learned transformation."
+        },
+        {
+          "topic": "vision deep networks",
+          "answer": "Residual networks address optimization difficulties that can arise when stacking many learned layers."
+        },
+        {
+          "topic": "vision identity shortcuts",
+          "answer": "Identity shortcuts pass information through compatible residual blocks without adding learned shortcut parameters."
+        },
+        {
+          "topic": "vision projection shortcuts",
+          "answer": "Projection shortcuts adapt dimensions when a residual block changes its feature representation."
+        },
+        {
+          "topic": "vision residual blocks",
+          "answer": "A residual network builds its representation through a sequence of connected residual blocks."
+        },
+        {
+          "topic": "vision degradation problem",
+          "answer": "The ResNet paper studies increasing training error when plain networks become deeper."
+        },
+        {
+          "topic": "vision image classification",
+          "answer": "Image classification assigns an image to one of the categories defined by its task."
+        },
+        {
+          "topic": "vision residual hypothesis",
+          "answer": "Residual learning assumes a block can learn useful changes around an identity mapping."
+        },
+        {
+          "topic": "vision benchmark evidence",
+          "answer": "ResNet evaluations compare specific trained architectures on established image-recognition datasets and tasks."
+        }
+      ]
+    },
+    {
+      "domain": "vision",
+      "sourceId": "neural-radiance-fields",
+      "sourceTitle": "NeRF: Neural radiance fields paper",
+      "sourceUrl": "https://arxiv.org/abs/2003.08934",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "vision NeRF",
+          "answer": "NeRF represents a scene using a neural function for density and view-dependent color."
+        },
+        {
+          "topic": "vision NeRF coordinates",
+          "answer": "A neural radiance field maps spatial positions and viewing directions to scene properties."
+        },
+        {
+          "topic": "vision volume rendering",
+          "answer": "NeRF forms an image by integrating predicted colors and densities along camera rays."
+        },
+        {
+          "topic": "vision novel views",
+          "answer": "Novel-view synthesis renders a scene from viewpoints different from the supplied training images."
+        },
+        {
+          "topic": "vision NeRF training",
+          "answer": "NeRF optimizes scene parameters by comparing rendered images with observed training photographs."
+        },
+        {
+          "topic": "vision radiance density",
+          "answer": "A radiance field's density controls how strongly a spatial region contributes along a ray."
+        },
+        {
+          "topic": "vision viewing direction",
+          "answer": "Viewing-direction inputs let a neural radiance field represent appearance that changes with viewpoint."
+        },
+        {
+          "topic": "vision positional encoding",
+          "answer": "NeRF uses positional encoding to help its network represent high-frequency scene detail."
+        },
+        {
+          "topic": "vision hierarchical sampling",
+          "answer": "NeRF's hierarchical sampling focuses additional ray samples on regions likely to affect rendering."
+        },
+        {
+          "topic": "vision scene reconstruction",
+          "answer": "A fitted radiance field provides a scene representation for rendering rather than a direct photograph collection."
+        }
+      ]
+    },
+    {
+      "domain": "healthcare",
+      "sourceId": "health-ai-ethics",
+      "sourceTitle": "WHO: Ethics and governance of AI for health",
+      "sourceUrl": "https://www.who.int/news/item/28-06-2021-who-issues-first-global-report-on-ai-in-health-and-six-guiding-principles-for-its-design-and-use",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "health AI autonomy",
+          "answer": "WHO's health AI guidance emphasizes protecting human autonomy when designing and using systems."
+        },
+        {
+          "topic": "health AI safety",
+          "answer": "Health AI systems need attention to safety, public benefit and human well-being."
+        },
+        {
+          "topic": "health AI transparency",
+          "answer": "Transparency helps people understand the purpose and limitations of a health AI system."
+        },
+        {
+          "topic": "health AI accountability",
+          "answer": "Health AI accountability requires clear responsibility for how systems are developed and used."
+        },
+        {
+          "topic": "health AI inclusion",
+          "answer": "Inclusive health AI development considers people who might be underserved by available data."
+        },
+        {
+          "topic": "health AI sustainability",
+          "answer": "WHO identifies responsive and sustainable AI as part of responsible health-system development."
+        },
+        {
+          "topic": "health AI oversight",
+          "answer": "Health AI should support informed human decisions within appropriate oversight and governance arrangements."
+        },
+        {
+          "topic": "health AI public interest",
+          "answer": "Public-interest goals matter alongside technical performance when evaluating AI applications in health."
+        },
+        {
+          "topic": "health AI bias",
+          "answer": "Bias in health AI can create unequal outcomes across affected populations."
+        },
+        {
+          "topic": "health AI limits",
+          "answer": "Technical promise alone does not establish that a health AI system is ready for clinical use."
+        }
+      ]
+    },
+    {
+      "domain": "healthcare",
+      "sourceId": "biomedical-segmentation",
+      "sourceTitle": "U-Net: Biomedical image segmentation paper",
+      "sourceUrl": "https://arxiv.org/abs/1505.04597",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "health U Net",
+          "answer": "U-Net combines a contracting pathway with an expanding pathway for biomedical image segmentation."
+        },
+        {
+          "topic": "health image segmentation",
+          "answer": "Image segmentation assigns labels to image regions or pixels according to a defined task."
+        },
+        {
+          "topic": "health U Net context",
+          "answer": "U-Net's contracting pathway gathers contextual information while reducing the spatial size of features."
+        },
+        {
+          "topic": "health U Net localization",
+          "answer": "U-Net's expanding pathway combines context with spatial detail for precise output localization."
+        },
+        {
+          "topic": "health skip features",
+          "answer": "U-Net connections transfer earlier feature information to later stages of the expanding pathway."
+        },
+        {
+          "topic": "health segmentation augmentation",
+          "answer": "The U-Net paper uses data augmentation to learn from limited annotated biomedical images."
+        },
+        {
+          "topic": "health segmentation labels",
+          "answer": "Supervised biomedical segmentation requires examples linking image content with the desired region labels."
+        },
+        {
+          "topic": "health dense predictions",
+          "answer": "A segmentation network produces spatially dense predictions rather than a single image label."
+        },
+        {
+          "topic": "health segmentation evaluation",
+          "answer": "Segmentation evaluation compares predicted regions with annotated reference regions under defined metrics."
+        },
+        {
+          "topic": "health research scope",
+          "answer": "A biomedical segmentation benchmark measures a research task rather than patient-specific clinical readiness."
+        }
+      ]
+    },
+    {
+      "domain": "science",
+      "sourceId": "protein-folding",
+      "sourceTitle": "DeepMind: AlphaFold repository documentation",
+      "sourceUrl": "https://github.com/google-deepmind/alphafold/blob/main/README.md",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "science AlphaFold",
+          "answer": "AlphaFold predicts protein structures using a learned model and information related to protein sequences."
+        },
+        {
+          "topic": "science structure confidence",
+          "answer": "AlphaFold confidence measures help users assess uncertainty in its predicted protein structure."
+        },
+        {
+          "topic": "science sequence alignments",
+          "answer": "Multiple sequence alignments provide evolutionary information that can support protein structure prediction."
+        },
+        {
+          "topic": "science structural templates",
+          "answer": "Structural templates can supply information about proteins with related known structures."
+        },
+        {
+          "topic": "science protein multimers",
+          "answer": "AlphaFold-Multimer extends the framework to predict structures involving multiple interacting protein chains."
+        },
+        {
+          "topic": "science protein prediction limits",
+          "answer": "A predicted protein structure needs interpretation and does not replace every experimental measurement."
+        },
+        {
+          "topic": "science model parameters",
+          "answer": "Running AlphaFold requires model parameters alongside software and relevant biological input data."
+        },
+        {
+          "topic": "science database inputs",
+          "answer": "Protein prediction pipelines use biological databases that can be larger than the model software."
+        },
+        {
+          "topic": "science structure relaxation",
+          "answer": "A relaxation stage can adjust predicted structures using a molecular mechanics procedure."
+        },
+        {
+          "topic": "science research software",
+          "answer": "Reproducing protein predictions depends on the chosen model version, inputs and pipeline settings."
+        }
+      ]
+    },
+    {
+      "domain": "science",
+      "sourceId": "physics-informed-networks",
+      "sourceTitle": "Raissi: Physics-informed neural networks",
+      "sourceUrl": "https://maziarraissi.github.io/PINNs/",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "science physics informed AI",
+          "answer": "Physics-informed networks include known physical equations in the objectives used to train neural models."
+        },
+        {
+          "topic": "science PDE residual",
+          "answer": "A differential-equation residual measures how closely a model's prediction satisfies the specified equation."
+        },
+        {
+          "topic": "science boundary conditions",
+          "answer": "Boundary conditions constrain a physical model's behavior at the edges of its domain."
+        },
+        {
+          "topic": "science initial conditions",
+          "answer": "Initial conditions specify the system state from which a time-dependent model begins."
+        },
+        {
+          "topic": "science inverse problems",
+          "answer": "An inverse problem estimates unknown model properties from available observations of its behavior."
+        },
+        {
+          "topic": "science forward problems",
+          "answer": "A forward problem predicts system behavior from a chosen model and specified conditions."
+        },
+        {
+          "topic": "science automatic derivatives",
+          "answer": "Automatic differentiation can compute derivatives needed to evaluate a neural model's physical equation residuals."
+        },
+        {
+          "topic": "science physical priors",
+          "answer": "Physical equations provide prior structure that complements observations during model training."
+        },
+        {
+          "topic": "science sparse observations",
+          "answer": "Physics-informed learning studies how equation constraints can help when observations are limited."
+        },
+        {
+          "topic": "science physical validation",
+          "answer": "Physics-informed predictions still require evaluation against the equations, conditions and relevant observed behavior."
+        }
+      ]
+    },
+    {
+      "domain": "science",
+      "sourceId": "weather-forecasting",
+      "sourceTitle": "GraphCast: Global weather forecasting paper",
+      "sourceUrl": "https://arxiv.org/abs/2212.12794",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "science GraphCast",
+          "answer": "GraphCast studies global weather prediction using a learned model built on graph neural networks."
+        },
+        {
+          "topic": "science weather training",
+          "answer": "GraphCast learns weather dynamics from historical reanalysis data rather than hand-written forecasting rules alone."
+        },
+        {
+          "topic": "science weather graphs",
+          "answer": "Graph-based representations allow a weather model to exchange information between connected spatial locations."
+        },
+        {
+          "topic": "science forecast rollout",
+          "answer": "Autoregressive weather forecasting feeds predicted atmospheric states into successive future prediction steps."
+        },
+        {
+          "topic": "science weather evaluation",
+          "answer": "Weather forecast evaluation compares predictions with reference data across variables, locations and forecast times."
+        },
+        {
+          "topic": "science medium range forecasts",
+          "answer": "GraphCast's study focuses on medium-range global forecasts using learned atmospheric state transitions."
+        },
+        {
+          "topic": "science weather resolution",
+          "answer": "A weather model's spatial resolution determines the geographic detail represented in its predictions."
+        },
+        {
+          "topic": "science reanalysis data",
+          "answer": "Reanalysis combines observations and modeling to estimate past atmospheric states consistently."
+        },
+        {
+          "topic": "science forecast comparisons",
+          "answer": "A forecasting benchmark compares particular model configurations under a specified evaluation setup."
+        },
+        {
+          "topic": "science weather uncertainty",
+          "answer": "Forecast skill varies across atmospheric variables, geographic regions and the length of the forecast horizon."
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "sourceId": "adversarial-ml",
+      "sourceTitle": "NIST: Adversarial machine learning taxonomy",
+      "sourceUrl": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-2e2025.pdf",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "security data poisoning",
+          "answer": "Data poisoning attacks alter training information to influence a learned model's later behavior."
+        },
+        {
+          "topic": "security evasion attacks",
+          "answer": "Evasion attacks manipulate deployment inputs to make a trained model produce undesirable predictions."
+        },
+        {
+          "topic": "security backdoors",
+          "answer": "A model backdoor links a particular trigger pattern with attacker-chosen behavior."
+        },
+        {
+          "topic": "security membership inference",
+          "answer": "Membership inference attacks try to determine whether a record appeared in training data."
+        },
+        {
+          "topic": "security model extraction",
+          "answer": "Model extraction attacks attempt to recover model information through access to its outputs."
+        },
+        {
+          "topic": "security prompt injection",
+          "answer": "Prompt injection tries to make a language system follow instructions outside its intended authority."
+        },
+        {
+          "topic": "security indirect injection",
+          "answer": "Indirect prompt injection places hostile instructions inside external content consumed by an AI system."
+        },
+        {
+          "topic": "security threat models",
+          "answer": "A threat model specifies an attacker's objectives, knowledge and access to the system."
+        },
+        {
+          "topic": "security model poisoning",
+          "answer": "Model poisoning directly manipulates learned parameters or training updates rather than only input data."
+        },
+        {
+          "topic": "security defense evaluation",
+          "answer": "AI security defenses need evaluation against relevant attacks and their stated threat models."
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "sourceId": "ai-risk-management",
+      "sourceTitle": "NIST: AI Risk Management Framework",
+      "sourceUrl": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+      "sourceDate": "2026-10-05",
+      "sourceDateKind": "accessed",
+      "reviewMethod": "Agent-authored original paraphrase checked against the cited primary source; not independent human or clinical review.",
+      "rows": [
+        {
+          "topic": "security AI governance",
+          "answer": "AI governance defines responsibilities and processes for identifying and managing system risks."
+        },
+        {
+          "topic": "security AI mapping",
+          "answer": "Risk mapping examines an AI system's context, intended use and affected people."
+        },
+        {
+          "topic": "security AI measurement",
+          "answer": "Risk measurement assesses AI behavior using evidence appropriate to its intended context."
+        },
+        {
+          "topic": "security AI management",
+          "answer": "Risk management prioritizes and addresses identified risks throughout an AI system's lifecycle."
+        },
+        {
+          "topic": "security trustworthy AI",
+          "answer": "Trustworthy AI includes considerations such as validity, reliability, safety, privacy and accountability."
+        },
+        {
+          "topic": "security AI documentation",
+          "answer": "Documentation helps reviewers understand an AI system's design, operation and known limitations."
+        },
+        {
+          "topic": "security continuous monitoring",
+          "answer": "Ongoing monitoring can reveal changing risks after an AI system enters use."
+        },
+        {
+          "topic": "security AI stakeholders",
+          "answer": "Feedback from affected people can inform how AI risks are identified and addressed."
+        },
+        {
+          "topic": "security AI tradeoffs",
+          "answer": "AI risk decisions involve tradeoffs that depend on the system's purpose and deployment context."
+        },
+        {
+          "topic": "security AI retirement",
+          "answer": "Responsible AI management includes planning how systems are changed, replaced or retired."
+        }
+      ]
+    }
+  ]
+}

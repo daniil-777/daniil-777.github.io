@@ -1,0 +1,30 @@
+{
+  "datasetVersion": "chronos-grounded-v2-expanded",
+  "factPackVersion": "chronos-facts-2026-10-05.2-expanded",
+  "corpusSha256": "f6b8fd7a276f7874238dea8c2f8f0666758abe2f03d762523a7a6b36e979287d",
+  "validationSha256": "9aeb43de2aa20d13c0e4ac2ad4d40c4fe863bc9ff9d5781d6879d3ea337e4395",
+  "factPackSha256": "22fdbfa0a1a733d3ec6dcd3c080cebd5ee6f8a0d3f3396524cae3f0672d63198",
+  "factPackHashScope": "Original fact registry embedded in the frozen training corpus, before the citation-only display correction.",
+  "trainingFactPackSha256": "22fdbfa0a1a733d3ec6dcd3c080cebd5ee6f8a0d3f3396524cae3f0672d63198",
+  "currentDisplayFactPackVersion": "chronos-facts-2026-10-05.2-expanded-citation1",
+  "currentDisplayFactPackSha256": "b826ab376c3ee7c4d5d2e673472e0e4eb38fd0e4f188002cf3c1b0d4d9ffc186",
+  "tokenizedTrainingInputsAndTargetsSha256": "e2755400f01d8b3d25063b1b179fccc0c993fcd01f03f8f54eea1b2ed6d3b8be",
+  "currentDisplayConditionedInputsAndTargetsSha256": "e2755400f01d8b3d25063b1b179fccc0c993fcd01f03f8f54eea1b2ed6d3b8be",
+  "postTrainingCitationCorrection": {
+    "factId": "ai-094",
+    "topic": "Jacobian vector products",
+    "currentSourceUrl": "https://docs.pytorch.org/docs/2.14/generated/torch.func.jvp.html",
+    "note": "Reference corrected after training from the beginner VJP tutorial to the specific JVP API. Answer, text, topic, mode, source-group bucket and every prompt/target token ID are unchanged. No retraining is represented by this metadata correction.",
+    "independentAgentReview": true,
+    "independentHumanReview": false
+  },
+  "tokenizerSha256": "c0971d6b360b0998084748abb1ef1446f1216ba3629671672778fa81b5ee1ddc",
+  "splitMethod": "Connected source/fact/scenario/version components stratified by domain before all prompt augmentation.",
+  "rows": 2720,
+  "originalFacts": 364,
+  "sourceGroups": 43,
+  "promptVariantsAreIndependentFacts": false,
+  "sourcePassagesIngested": false,
+  "independentHumanReview": false,
+  "teacherSpendUsd": 0
+}

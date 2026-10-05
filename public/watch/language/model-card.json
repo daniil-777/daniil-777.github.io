@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "name": "Chronos A grounded language experiment",
-  "version": "chronos-a-finetune-20261005-lr0003-step1500",
+  "name": "Smart watch expanded grounded language experiment",
+  "version": "chronos-a-expanded-bpe1024-20261005-step1000",
   "releaseStatus": "experimental",
   "trained": true,
-  "deployment": "Not used for public inference; loader blocks experimental model before downloads. Widget displays labelled reviewed source sentences.",
+  "deployment": "Experimental model blocked before public weight/runtime downloads. Watch shows labelled source-reviewed sentences.",
   "architecture": {
     "layers": 4,
     "width": 192,
@@ -18,78 +18,483 @@
   "contextLength": 256,
   "dtype": "fp32",
   "training": {
+    "method": "Two fresh random-initialized answer-masked CPU runs on the expanded corpus; no pretrained model or paid teacher.",
     "seed": 20261005,
-    "steps": 1500,
-    "learningRate": 0.0003,
+    "optimizerUpdatesPerRun": 5000,
+    "totalMeasuredOptimizerUpdates": 10000,
+    "selectedCheckpointStep": 1000,
+    "learningRate": 0.0005,
+    "gradientAccumulation": 2,
     "device": "CPU",
-    "trainRows": 45,
-    "validationRows": 15,
-    "testRows": 18,
-    "sourceGroups": 10,
-    "acceptedRows": 78,
-    "teacherSpendUsd": 0,
-    "independentReview": false,
+    "trainRows": 1475,
+    "validationRowsWithinTokenBudget": 529,
+    "validationRowsRejectedTokenBudget": 7,
+    "testRows": 709,
+    "acceptedRows": 2720,
+    "sourceGroups": 43,
+    "tokenizerUsedTokens": 1024,
+    "configuredVocabulary": 4096,
+    "wallSecondsSelectedRun": 196.81545179200475,
+    "wallSecondsComparisonRun": 166.6077577919932,
     "pretrainingPerformed": false,
-    "tokenizerUsedTokens": 970,
-    "configuredVocabulary": 4096
+    "teacherSpendUsd": 0,
+    "independentReview": false
   },
   "dataset": {
-    "datasetVersion": "chronos-grounded-v1",
-    "factPackVersion": "chronos-facts-2026-10-05.1",
+    "datasetVersion": "chronos-grounded-v2-expanded",
+    "factPackVersion": "chronos-facts-2026-10-05.2-expanded",
     "seed": 20261005,
-    "accepted": 78,
+    "accepted": 2720,
     "rejected": 0,
-    "distinctFacts": 34,
-    "sourceGroups": 10,
+    "distinctFacts": 364,
+    "sourceGroups": 43,
     "splits": {
-      "train": 45,
-      "validation": 15,
-      "test": 18
+      "train": 1475,
+      "validation": 536,
+      "test": 709
     },
     "modes": {
-      "ai": 29,
-      "profile": 27,
-      "wellbeing": 22
+      "ai": 2546,
+      "profile": 96,
+      "wellbeing": 78
     },
+    "domains": {
+      "ai": 696,
+      "finance": 296,
+      "healthcare": 148,
+      "math": 518,
+      "profile": 96,
+      "robotics": 296,
+      "science": 222,
+      "security": 148,
+      "vision": 222,
+      "wellbeing": 78
+    },
+    "domainFacts": {
+      "ai": 92,
+      "finance": 40,
+      "healthcare": 20,
+      "math": 70,
+      "profile": 12,
+      "robotics": 40,
+      "science": 30,
+      "security": 20,
+      "vision": 30,
+      "wellbeing": 10
+    },
+    "sourceSplitMap": {
+      "rope": "train",
+      "prediction-metrics": "train",
+      "probability-calibration": "train",
+      "dqn": "train",
+      "ensemble-learning": "train",
+      "decision-trees": "train",
+      "gqa": "train",
+      "validation": "train",
+      "clustering": "train",
+      "anomaly-detection": "validation",
+      "linear-models": "validation",
+      "attention": "test",
+      "decomposition": "test",
+      "finance-boe": "train",
+      "finance-bis": "train",
+      "finance-time-series": "validation",
+      "finance-fsb": "test",
+      "biomedical-segmentation": "train",
+      "health-ai-ethics": "test",
+      "calculus": "train",
+      "numerical-integration": "train",
+      "automatic-differentiation": "train",
+      "statistics": "train",
+      "convex-optimization": "train",
+      "linear-algebra": "validation",
+      "graph-mathematics": "test",
+      "journey": "train",
+      "research": "validation",
+      "portfolio": "test",
+      "robotics-kinematics": "train",
+      "robotics-diffusion": "train",
+      "robotics-transformer": "validation",
+      "robotics-planning": "test",
+      "protein-folding": "train",
+      "physics-informed-networks": "validation",
+      "weather-forecasting": "test",
+      "ai-risk-management": "train",
+      "adversarial-ml": "test",
+      "residual-networks": "train",
+      "neural-radiance-fields": "validation",
+      "camera-geometry": "test",
+      "activity": "train",
+      "stress": "test"
+    },
+    "splitMethod": "Connected source/fact/scenario/version components stratified by domain before all prompt augmentation.",
+    "domainSplits": {
+      "ai": {
+        "train": 435,
+        "validation": 148,
+        "test": 113
+      },
+      "finance": {
+        "train": 148,
+        "validation": 74,
+        "test": 74
+      },
+      "healthcare": {
+        "train": 74,
+        "validation": 0,
+        "test": 74
+      },
+      "math": {
+        "train": 370,
+        "validation": 74,
+        "test": 74
+      },
+      "profile": {
+        "train": 53,
+        "validation": 18,
+        "test": 25
+      },
+      "robotics": {
+        "train": 148,
+        "validation": 74,
+        "test": 74
+      },
+      "science": {
+        "train": 74,
+        "validation": 74,
+        "test": 74
+      },
+      "security": {
+        "train": 74,
+        "validation": 0,
+        "test": 74
+      },
+      "vision": {
+        "train": 74,
+        "validation": 74,
+        "test": 74
+      },
+      "wellbeing": {
+        "train": 25,
+        "validation": 0,
+        "test": 53
+      }
+    },
+    "promptVariantsPerFact": 7,
+    "missingEvidenceVariantsPerSource": 4,
     "pilotQuotaReached": false,
     "teacherSpendUsd": 0,
-    "note": "Small reviewed canonical feasibility corpus; not a 5,000-example teacher pilot or independent clinical review."
+    "note": "Expanded original canonical fact corpus with deterministic prompt variants; variants are not new independent facts or paid teacher examples. No independent clinical review."
+  },
+  "provenance": {
+    "datasetVersion": "chronos-grounded-v2-expanded",
+    "factPackVersion": "chronos-facts-2026-10-05.2-expanded",
+    "corpusSha256": "f6b8fd7a276f7874238dea8c2f8f0666758abe2f03d762523a7a6b36e979287d",
+    "validationSha256": "9aeb43de2aa20d13c0e4ac2ad4d40c4fe863bc9ff9d5781d6879d3ea337e4395",
+    "factPackSha256": "22fdbfa0a1a733d3ec6dcd3c080cebd5ee6f8a0d3f3396524cae3f0672d63198",
+    "factPackHashScope": "Original fact registry embedded in the frozen training corpus, before the citation-only display correction.",
+    "trainingFactPackSha256": "22fdbfa0a1a733d3ec6dcd3c080cebd5ee6f8a0d3f3396524cae3f0672d63198",
+    "currentDisplayFactPackVersion": "chronos-facts-2026-10-05.2-expanded-citation1",
+    "currentDisplayFactPackSha256": "b826ab376c3ee7c4d5d2e673472e0e4eb38fd0e4f188002cf3c1b0d4d9ffc186",
+    "tokenizedTrainingInputsAndTargetsSha256": "e2755400f01d8b3d25063b1b179fccc0c993fcd01f03f8f54eea1b2ed6d3b8be",
+    "currentDisplayConditionedInputsAndTargetsSha256": "e2755400f01d8b3d25063b1b179fccc0c993fcd01f03f8f54eea1b2ed6d3b8be",
+    "postTrainingCitationCorrection": {
+      "factId": "ai-094",
+      "topic": "Jacobian vector products",
+      "currentSourceUrl": "https://docs.pytorch.org/docs/2.14/generated/torch.func.jvp.html",
+      "note": "Reference corrected after training from the beginner VJP tutorial to the specific JVP API. Answer, text, topic, mode, source-group bucket and every prompt/target token ID are unchanged. No retraining is represented by this metadata correction.",
+      "independentAgentReview": true,
+      "independentHumanReview": false
+    },
+    "tokenizerSha256": "c0971d6b360b0998084748abb1ef1446f1216ba3629671672778fa81b5ee1ddc",
+    "splitMethod": "Connected source/fact/scenario/version components stratified by domain before all prompt augmentation.",
+    "rows": 2720,
+    "originalFacts": 364,
+    "sourceGroups": 43,
+    "promptVariantsAreIndependentFacts": false,
+    "sourcePassagesIngested": false,
+    "independentHumanReview": false,
+    "teacherSpendUsd": 0
+  },
+  "selection": {
+    "method": "Each candidate checkpoint chosen by minimum validation token cross-entropy within its own tokenizer; candidates compared on identical validation targets by answer+EOS negative log likelihood per UTF-8 answer byte and a fixed hash-selected unique-fact greedy-generation suite. Test generations are not consulted.",
+    "rule": "Prioritize canonical exact match on the fixed validation generation suite, then lower normalized bits per byte when exact counts tie.",
+    "candidate": "bpe1024",
+    "testUsedForSelection": false,
+    "candidateValidation": [
+      {
+        "candidate": "bpe3341",
+        "checkpointStep": 250,
+        "validationRows": 536,
+        "answerBytes": 49628,
+        "answerTokensIncludingEOS": 18222,
+        "answerNllNatsIncludingEOS": 129207.36784267426,
+        "bitsPerUtf8AnswerByteIncludingEosNll": 3.75608182544012,
+        "frozenValidationGenerations": 32,
+        "exactMatches": 0,
+        "completeWithin20": 0
+      },
+      {
+        "candidate": "bpe1024",
+        "checkpointStep": 1000,
+        "validationRows": 536,
+        "answerBytes": 49628,
+        "answerTokensIncludingEOS": 22478,
+        "answerNllNatsIncludingEOS": 87268.62948866189,
+        "bitsPerUtf8AnswerByteIncludingEosNll": 2.5369150275745316,
+        "frozenValidationGenerations": 32,
+        "exactMatches": 0,
+        "completeWithin20": 17
+      }
+    ]
   },
   "quality": {
-    "version": "chronos-a-finetune-20261005",
+    "version": "chronos-a-expanded-bpe1024-20261005-step1000",
     "split": "test",
-    "samples": 24,
+    "samples": 739,
     "releasePassed": false,
-    "completeWithinWordLimitRate": 0.08333333333333333,
-    "canonicalExactMatchRate": 0.08333333333333333,
-    "repetitionRate": 0.9166666666666666,
+    "completeWithinWordLimitRate": 0.4438430311231394,
+    "canonicalExactMatchRate": 0.06765899864682003,
+    "repetitionRate": 0.878213802435724,
     "unsupportedNumericalOutputCount": 0,
     "supportedClaimRate": null,
     "seriousHealthFailures": null,
     "unsupportedPersonalAchievements": null,
     "reviewMethod": "Automated syntax/numeric screening only; independent entailment/safety review remains required.",
-    "rawVersusAccepted": "Raw candidate outputs; no reviewed fallback is used in this evaluation."
+    "rawVersusAccepted": "Raw candidate outputs; no reviewed fallback is used in this evaluation.",
+    "byDomain": {
+      "ai": {
+        "samples": 117,
+        "completeWithinWordLimit": 56,
+        "completeWithinWordLimitRate": 0.47863247863247865,
+        "wilson95Interval": [
+          0.39024289320810457,
+          0.5683805788287645
+        ],
+        "canonicalExactMatches": 8,
+        "canonicalExactMatchRate": 0.06837606837606838,
+        "repetitionRate": 0.8205128205128205,
+        "unsupportedNumericalOutputCount": 0,
+        "independentlyReviewedSupportRate": null
+      },
+      "finance": {
+        "samples": 78,
+        "completeWithinWordLimit": 45,
+        "completeWithinWordLimitRate": 0.5769230769230769,
+        "wilson95Interval": [
+          0.4662155558337249,
+          0.6804093965182452
+        ],
+        "canonicalExactMatches": 4,
+        "canonicalExactMatchRate": 0.05128205128205128,
+        "repetitionRate": 0.9230769230769231,
+        "unsupportedNumericalOutputCount": 0,
+        "independentlyReviewedSupportRate": null
+      },
+      "healthcare": {
+        "samples": 77,
+        "completeWithinWordLimit": 54,
+        "completeWithinWordLimitRate": 0.7012987012987013,
+        "wilson95Interval": [
+          0.5915055578793433,
+          0.7919610501238326
+        ],
+        "canonicalExactMatches": 6,
+        "canonicalExactMatchRate": 0.07792207792207792,
+        "repetitionRate": 0.8831168831168831,
+        "unsupportedNumericalOutputCount": 0,
+        "independentlyReviewedSupportRate": null
+      },
+      "math": {
+        "samples": 76,
+        "completeWithinWordLimit": 16,
+        "completeWithinWordLimitRate": 0.21052631578947367,
+        "wilson95Interval": [
+          0.1339514670987436,
+          0.31495639793896757
+        ],
+        "canonicalExactMatches": 5,
+        "canonicalExactMatchRate": 0.06578947368421052,
+        "repetitionRate": 0.9342105263157895,
+        "unsupportedNumericalOutputCount": 0,
+        "independentlyReviewedSupportRate": null
+      },
+      "profile": {
+        "samples": 29,
+        "completeWithinWordLimit": 15,
+        "completeWithinWordLimitRate": 0.5172413793103449,
+        "wilson95Interval": [
+          0.34431021881994717,
+          0.6861390984731652
+        ],
+        "canonicalExactMatches": 4,
+        "canonicalExactMatchRate": 0.13793103448275862,
+        "repetitionRate": 0.7586206896551724,
+        "unsupportedNumericalOutputCount": 0,
+        "independentlyReviewedSupportRate": null
+      },
+      "robotics": {
+        "samples": 77,
+        "completeWithinWordLimit": 25,
+        "completeWithinWordLimitRate": 0.3246753246753247,
+        "wilson95Interval": [
+          0.23059379328779073,
+          0.4354191610320238
+        ],
+        "canonicalExactMatches": 4,
+        "canonicalExactMatchRate": 0.05194805194805195,
+        "repetitionRate": 0.922077922077922,
+        "unsupportedNumericalOutputCount": 0,
+        "independentlyReviewedSupportRate": null
+      },
+      "science": {
+        "samples": 76,
+        "completeWithinWordLimit": 18,
+        "completeWithinWordLimitRate": 0.23684210526315788,
+        "wilson95Interval": [
+          0.15539330268790585,
+          0.3436138473463769
+        ],
+        "canonicalExactMatches": 4,
+        "canonicalExactMatchRate": 0.05263157894736842,
+        "repetitionRate": 0.9078947368421053,
+        "unsupportedNumericalOutputCount": 0,
+        "independentlyReviewedSupportRate": null
+      },
+      "security": {
+        "samples": 76,
+        "completeWithinWordLimit": 38,
+        "completeWithinWordLimitRate": 0.5,
+        "wilson95Interval": [
+          0.39032595445464624,
+          0.6096740455453538
+        ],
+        "canonicalExactMatches": 4,
+        "canonicalExactMatchRate": 0.05263157894736842,
+        "repetitionRate": 0.9078947368421053,
+        "unsupportedNumericalOutputCount": 0,
+        "independentlyReviewedSupportRate": null
+      },
+      "vision": {
+        "samples": 76,
+        "completeWithinWordLimit": 31,
+        "completeWithinWordLimitRate": 0.40789473684210525,
+        "wilson95Interval": [
+          0.30443802768639416,
+          0.5202144748256049
+        ],
+        "canonicalExactMatches": 6,
+        "canonicalExactMatchRate": 0.07894736842105263,
+        "repetitionRate": 0.8947368421052632,
+        "unsupportedNumericalOutputCount": 0,
+        "independentlyReviewedSupportRate": null
+      },
+      "wellbeing": {
+        "samples": 57,
+        "completeWithinWordLimit": 30,
+        "completeWithinWordLimitRate": 0.5263157894736842,
+        "wilson95Interval": [
+          0.3991801621874118,
+          0.6501283201887471
+        ],
+        "canonicalExactMatches": 5,
+        "canonicalExactMatchRate": 0.08771929824561403,
+        "repetitionRate": 0.7543859649122807,
+        "unsupportedNumericalOutputCount": 0,
+        "independentlyReviewedSupportRate": null
+      }
+    },
+    "heldOutCanonical": {
+      "samples": 709,
+      "completeWithinWordLimit": 301,
+      "completeWithinWordLimitRate": 0.4245416078984485,
+      "wilson95Interval": [
+        0.3886616732438872,
+        0.46123482382992514
+      ],
+      "canonicalExactMatches": 44,
+      "canonicalExactMatchRate": 0.06205923836389281,
+      "repetitionRate": 0.9026798307475318,
+      "unsupportedNumericalOutputCount": 0,
+      "independentlyReviewedSupportRate": null
+    },
+    "adversarial": {
+      "samples": 30,
+      "completeWithinWordLimit": 27,
+      "completeWithinWordLimitRate": 0.9,
+      "wilson95Interval": [
+        0.7437891742081593,
+        0.9654001112526658
+      ],
+      "canonicalExactMatches": 6,
+      "canonicalExactMatchRate": 0.2,
+      "repetitionRate": 0.3,
+      "unsupportedNumericalOutputCount": 0,
+      "independentlyReviewedSupportRate": null
+    },
+    "finiteSuite": {
+      "samples": 739,
+      "completeWithinWordLimit": 328,
+      "completeWithinWordLimitRate": 0.4438430311231394,
+      "wilson95Interval": [
+        0.40840386797213757,
+        0.47986300376147906
+      ],
+      "canonicalExactMatches": 50,
+      "canonicalExactMatchRate": 0.06765899864682003,
+      "repetitionRate": 0.878213802435724,
+      "unsupportedNumericalOutputCount": 0,
+      "independentlyReviewedSupportRate": null
+    },
+    "suiteLimitations": "Prompt variants share facts and sources; rates and Wilson intervals are descriptive, not independent population estimates. No independent human or clinical review.",
+    "checkpointSelection": "Minimum validation loss within tokenizer, then validation-only normalized NLL and fixed generation comparison across tokenizers; no test-based selection.",
+    "selectedOptimizerStep": 1000,
+    "heldOutFactual": {
+      "samples": 665,
+      "completeWithinWordLimit": 257,
+      "completeWithinWordLimitRate": 0.38646616541353385,
+      "wilson95Interval": [
+        0.3502094959390552,
+        0.424026987148814
+      ],
+      "canonicalExactMatches": 0,
+      "canonicalExactMatchRate": 0.0,
+      "repetitionRate": 0.9624060150375939,
+      "unsupportedNumericalOutputCount": 0,
+      "independentlyReviewedSupportRate": null
+    },
+    "heldOutMissingEvidence": {
+      "samples": 44,
+      "completeWithinWordLimit": 44,
+      "completeWithinWordLimitRate": 1.0,
+      "wilson95Interval": [
+        0.9197043962415192,
+        1
+      ],
+      "canonicalExactMatches": 44,
+      "canonicalExactMatchRate": 1.0,
+      "repetitionRate": 0.0,
+      "unsupportedNumericalOutputCount": 0,
+      "independentlyReviewedSupportRate": null
+    }
   },
   "finiteSuite": {
-    "completeWithinTwentyWords": {
-      "successes": 2,
-      "samples": 24,
-      "rate": 0.08333333333333333,
-      "wilson95Interval": [
-        0.023158815297043306,
-        0.25848802193210685
-      ],
-      "method": "Automated punctuation/word counting; correlated small suite, not a population guarantee."
-    },
-    "independentlyReviewedSupportedClaimRate": null,
-    "unsupportedPersonalAchievements": null,
-    "seriousUnsafeHealthOutputs": null,
-    "releasePassed": false,
-    "unseenConditioning": "Failed; familiar canonical rows memorized, insufficient unseen-context generalization."
+    "samples": 739,
+    "completeWithinWordLimit": 328,
+    "completeWithinWordLimitRate": 0.4438430311231394,
+    "wilson95Interval": [
+      0.40840386797213757,
+      0.47986300376147906
+    ],
+    "canonicalExactMatches": 50,
+    "canonicalExactMatchRate": 0.06765899864682003,
+    "repetitionRate": 0.878213802435724,
+    "unsupportedNumericalOutputCount": 0,
+    "independentlyReviewedSupportRate": null
   },
   "numericalParity": {
     "passed": true,
-    "maxLogitAbsoluteError": 1.71661376953125e-05,
+    "maxLogitAbsoluteError": 7.62939453125e-06,
     "cases": 15,
     "cachedGreedyParity": true,
     "emptyCache": true,
@@ -131,21 +536,21 @@
     "runtimeWeightDuplication": "ORT graph optimization may materialize the output transpose; total resident memory must be measured separately.",
     "runtime": "1.23.0",
     "greedyTokenIds": [
-      3471,
-      3471,
-      3471,
-      3471,
-      3471,
-      533,
-      533,
-      533,
-      533,
-      533,
-      533,
-      533,
-      533,
-      533,
-      533
+      408,
+      408,
+      408,
+      408,
+      408,
+      408,
+      408,
+      408,
+      408,
+      408,
+      408,
+      408,
+      408,
+      408,
+      408
     ]
   },
   "browserBenchmark": {
@@ -155,32 +560,32 @@
     "backend": "single-threaded CPU/WASM",
     "runtimeHashesVerified": true,
     "cases": 15,
-    "maximumError": 1.1444091796875e-05,
+    "maximumError": 8.58306884765625e-06,
     "greedyParity": true,
-    "coldLoadMs": 336,
+    "coldLoadMs": 370.89999997615814,
     "runMs": [
-      23.099999994039536,
-      1.199999988079071,
-      1,
-      1,
-      1,
-      1.9000000059604645,
-      0.9000000059604645,
-      0.9000000059604645,
-      0.800000011920929,
-      0.800000011920929,
-      1.7999999821186066,
-      0.9000000059604645,
+      25.5,
       1.5,
-      0.9000000059604645,
-      0.800000011920929
+      1.2999999821186066,
+      1.0999999940395355,
+      1.100000023841858,
+      2.5,
+      1.0999999940395355,
+      0.8999999761581421,
+      1.5999999940395355,
+      1,
+      1.800000011920929,
+      0.7999999821186066,
+      1.0999999940395355,
+      1,
+      0.9000000059604645
     ],
     "modelBytes": 9546398,
     "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
     "hardwareConcurrency": 12,
     "jsHeap": {
-      "used": 27240288,
-      "total": 30351668
+      "used": 27392389,
+      "total": 30731497
     },
     "residentMemory": "Not measurable using standard browser APIs; JS heap excludes WASM and total resident memory.",
     "gpuMlBytes": 0,
@@ -191,7 +596,7 @@
   },
   "resources": {
     "modelBytes": 9546398,
-    "tokenizerBytes": 7124,
+    "tokenizerBytes": 7724,
     "wasmBytes": 11815498,
     "runtimeModuleBytes": 20321,
     "maximumFp32KvBytes": 524288,
@@ -200,16 +605,17 @@
     "gpuMlBytes": 0
   },
   "rights": {
-    "modelWeights": "Original weights trained from scratch locally for this repository; no pretrained third-party weights or teacher data used.",
-    "factPack": "Concise original summaries of supplied public portfolio material and primary authoritative sources; pack retains per-fact rights/provenance.",
-    "runtime": "Microsoft ONNX Runtime 1.23.0, MIT; bundled license and ThirdPartyNotices.txt."
+    "modelWeights": "Original weights trained from scratch locally on original authored factual sentences; no third-party pretrained weights.",
+    "factPack": "Original short summaries with per-fact primary attribution; no source passages or complete source corpora were ingested.",
+    "runtime": "Microsoft ONNX Runtime 1.23.0, MIT; bundled LICENSE and ThirdPartyNotices.txt."
   },
   "limits": [
-    "Small canonical feasibility corpus; no broad English pretraining.",
-    "970 used byteBPE entries within configured 4096 vocabulary.",
-    "No independent entailment or wellbeing clinical review.",
-    "No supported FP16, INT8, INT4 or WebGPU deployment claim.",
-    "Browser heap and artifact bytes do not measure total resident memory."
+    "Release failed: no independent source-entailment or clinical review; public neural generation remains disabled.",
+    "Prompt variants are correlated examples; dataset growth does not multiply independent source facts.",
+    "Fixed test rates and Wilson intervals describe this finite correlated suite, not population guarantees.",
+    "Token-budget exclusions and tokenizer choice are reported; no broad English pretraining was performed.",
+    "No FP16, INT8, INT4 or WebGPU release claim; physical mobile and total resident memory unmeasured.",
+    "Earlier 34-fact evaluation uses different data and cannot establish a direct quality improvement comparison."
   ],
   "documentation": "https://github.com/daniil-777/daniil-777.github.io/blob/main/docs/watch-language.md",
   "teacherSpendUsd": 0
