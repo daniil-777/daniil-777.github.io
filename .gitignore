@@ -33,6 +33,7 @@ agentdb.rvf*
 worker/.dev.vars*
 !worker/.dev.vars.example
 worker/.wrangler/
+worker/site/.wrangler/
 worker/node_modules/
 # The embedding model downloaded by the build.
 .cache/

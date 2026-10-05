@@ -1,6 +1,6 @@
 # Public hosting
 
-This publication copy serves https://demtsev.com/ from GitHub Pages, with DNS managed by Cloudflare. Push to `main` runs the tested Pages workflow. Provider keys are never part of this repository. The optional chat Worker is configured separately; without a public endpoint the portfolio assistant uses its on-device/site search modes.
+The portfolio is published at https://demtsev.com/ through the Cloudflare gateway in `worker/site/`. GitHub Pages serves the static origin at https://daniil-777.github.io/; pushes to `main` run the tested Pages workflow and update the public site. Keep the GitHub Pages custom-domain setting empty to avoid a redirect loop. Cloudflare manages DNS and HTTPS for the apex domain and `www`, which redirects to the apex. Deploy gateway changes with `worker/node_modules/.bin/wrangler deploy --config worker/site/wrangler.jsonc` after signing in to Cloudflare. Provider keys are never part of this repository. The optional chat Worker is configured separately; without a public endpoint the portfolio assistant uses its on-device/site search modes.
 
 # demtsev.com
 
@@ -289,27 +289,22 @@ https://developers.openai.com/api/docs/models/gpt-6-luna.
 
 ## Deploy to demtsev.com
 
-The repository ships a GitHub Actions workflow that tests, builds and publishes to GitHub Pages on every push to `main`.
+The public repository is https://github.com/daniil-777/daniil-777.github.io. Its GitHub Actions workflow tests, builds and publishes the static origin on every push to `main`. Cloudflare's gateway serves that origin on the registered custom domain.
 
-1. Create a repository on GitHub and push this folder to its `main` branch. Run `git init` here, inside this folder,
-   not in a parent folder: the `.gitignore` allowlist that keeps the raw documents and recordings out of the repository
-   only works from this root.
-2. In the repository: Settings → Pages → Source: **GitHub Actions**.
-3. Still under Pages, set the custom domain to `demtsev.com` (already declared in `public/CNAME`) and tick
-   *Enforce HTTPS* once the certificate is issued.
-4. At your domain registrar, point the domain at GitHub Pages:
+1. Push website changes to the public repository's `main` branch. Keep the repository's allowlist and never stage raw source documents or recordings.
+2. In GitHub Settings → Pages, keep Source set to **GitHub Actions** and leave **Custom domain empty**. Setting a custom domain there would redirect the gateway back to itself.
+3. Cloudflare manages `demtsev.com` and `www.demtsev.com` through the custom-domain routes in `worker/site/wrangler.jsonc`, including DNS and HTTPS. The gateway redirects `www` and HTTP to `https://demtsev.com`, streams video ranges and forwards only public resource headers.
+4. For gateway changes, run `npm ci --prefix worker`, sign in with `worker/node_modules/.bin/wrangler login` if necessary, then run:
 
-   | Type | Name | Value |
-   |---|---|---|
-   | A | `@` | `185.199.108.153` |
-   | A | `@` | `185.199.109.153` |
-   | A | `@` | `185.199.110.153` |
-   | A | `@` | `185.199.111.153` |
-   | CNAME | `www` | `<your-github-username>.github.io` |
+   ```sh
+   worker/node_modules/.bin/wrangler deploy --config worker/site/wrangler.jsonc
+   ```
 
-The output is plain static files, so any other static host works as well. Point it at `npm run build` and the `build/`
-directory. The output directory is `build/` rather than Astro's default `dist/`, because `dist/` in this folder holds
-unrelated files and Astro empties its output directory on each build.
+5. Verify the homepage, project pages and video playback at https://demtsev.com/. Ordinary portfolio updates only need a GitHub push; gateway redeployment is needed when its code or configuration changes.
+
+The optional AI chat Worker in `worker/wrangler.jsonc` is deployed separately. The domain gateway does not call an AI provider.
+
+The Astro output is plain static files in `build/`. This directory is used rather than Astro's default `dist/`, because `dist/` in the local source folder holds unrelated files and Astro empties its output directory on each build.
 
 ## Layout
 
@@ -322,6 +317,7 @@ src/pages/              index.astro, work/[slug].astro, ask.astro, chat/ (knowle
 src/lib/                filter.ts (catalog filtering), projects.ts, documents.ts, qr.ts, chat/ (search, prompt, checks)
 src/scripts/chat/       the assistant's interface, loaded when it is opened
 worker/                 the endpoint for "AI answer" (Cloudflare Worker), deployed separately
+worker/site/            custom-domain gateway to the GitHub Pages static origin
 src/assets/             images optimised at build time
 public/media/           transcoded videos, served as they are
 public/papers/          the PDFs of the documents
