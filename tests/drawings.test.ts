@@ -54,7 +54,12 @@ test('the 2D and 3D previews use separate channels and pages', async () => {
   const { ARCHITECTURE, DRAWING } = await import('../src/lib/architecture/preview.ts');
   assert.notEqual(DRAWING.channel, ARCHITECTURE.channel);
   assert.equal(DRAWING.src('session=a', true, false), '/drawings/?session=a&play=1');
-  assert.match(ARCHITECTURE.src('session=a', false, false), /^\/architecture\/\?session=a&.*&hd=1&neural=1&.*&play=0$/);
-  // touch devices: no 256^3 HD grid and no per-pixel network pass, the GPU memory that crashed iOS Safari
-  assert.match(ARCHITECTURE.src('session=a', false, true), /&hd=0&neural=0&/);
+  assert.equal(DRAWING.src('session=a', false, true), '/drawings/?session=a&play=0&backend=webgl');
+  const desktop = new URL(ARCHITECTURE.src('session=a', false, false), 'https://x.test').searchParams;
+  assert.equal(desktop.get('play'), '0'); assert.equal(desktop.get('hd'), '1');
+  assert.equal(desktop.get('tfjsflags'), 'WEBGL_DELETE_TEXTURE_THRESHOLD:134217728', 'the texture pool is capped (it grew past 2 GB)');
+  // touch devices: WebGL with a capped pool and half floats, no HD grid or per-pixel pass (~130 MB, from 2.1 GB)
+  const touch = new URL(ARCHITECTURE.src('session=a', false, true), 'https://x.test').searchParams;
+  assert.equal(touch.get('backend'), 'webgl'); assert.equal(touch.get('hd'), '0'); assert.equal(touch.get('neural'), '0');
+  assert.equal(touch.get('tfjsflags'), 'WEBGL_DELETE_TEXTURE_THRESHOLD:50331648,WEBGL_FORCE_F16_TEXTURES:true');
 });

@@ -30,14 +30,14 @@ const id = kind === '3d' ? 'architecture' : 'drawing';
   import { activateWhenVisible } from '../lib/architecture/activation';
   type Preview = { start(manual?: boolean): void; stop(): void };
   // Touch devices have little GPU memory, and iOS Safari reloads a tab that runs out ("A problem repeatedly occurred"):
-  // there only one preview runs at a time, only the first one starts by itself, and none does after such a crash.
+  // there only one preview runs at a time, only the light 2D one starts by itself, and none does after such a crash.
   const touch = matchMedia('(pointer: coarse)').matches;
   const RUNNING = 'portfolio-live-preview-running';
   let crashed = false;
   try { crashed = sessionStorage.getItem(RUNNING) === '1'; sessionStorage.removeItem(RUNNING); } catch { /* storage blocked */ }
   addEventListener('pagehide', () => { try { sessionStorage.removeItem(RUNNING); } catch { /* storage blocked */ } });
   const controllers = new Map<HTMLElement, Promise<Preview>>();
-  [...document.querySelectorAll<HTMLElement>('[data-live-preview]')].forEach((root, index) => {
+  for (const root of document.querySelectorAll<HTMLElement>('[data-live-preview]')) {
     const play = root.querySelector<HTMLAnchorElement>('[data-play]')!;
     const drawing = root.dataset.livePreview === '2d';
     let stopAuto = () => {};
@@ -52,8 +52,8 @@ const id = kind === '3d' ? 'architecture' : 'drawing';
       if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
       event.preventDefault(); activate(true);
     });
-    if (!crashed && (!touch || index === 0)) stopAuto = activateWhenVisible(root, () => activate(false));
-  });
+    if (!crashed && (!touch || drawing)) stopAuto = activateWhenVisible(root, () => activate(false));
+  }
 </script>
 
 <style>
