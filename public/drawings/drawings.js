@@ -34,7 +34,7 @@
   const get = (name) => fetch('model/' + name).then((response) => { if (!response.ok) throw new Error(name + ' ' + response.status); return response; });
   const files = { meta: get('meta.json').then((r) => r.json()), decoder: get('decoder.bin.gz').then((r) => r.arrayBuffer()), a0: get('anchors-0.bin.gz').then((r) => r.arrayBuffer()) };
   for (const promise of Object.values(files)) promise.catch(() => {});
-  const firstBackend = navigator.gpu ? 'webgpu' : 'webgl';
+  const firstBackend = navigator.gpu && qs.get('backend') !== 'webgl' ? 'webgpu' : 'webgl'; // touch devices ask for WebGL: its texture pool is capped
   const preload = document.createElement('link');
   preload.rel = 'preload'; preload.as = 'script'; preload.href = TF[firstBackend][0]; preload.integrity = TF[firstBackend][1]; preload.crossOrigin = 'anonymous';
   document.head.append(preload);

@@ -14,14 +14,18 @@ export const ARCHITECTURE: PreviewKind = {
   title: 'Live neural architecture generation — Pixel Morph',
   loading: 'Loading live 3D…',
   failure: 'This browser could not start the 3D preview. Try Play again, or open the full Pixel Morph demo from Selected work.',
-  src: (query, manual, light) => `/architecture/?${query}&anchor=8&walk=tour&trans=blend&hd=${light ? 0 : 1}&neural=${light ? 0 : 1}&compact=1&speed=0.8&play=${manual ? 1 : 0}`,
+  // TensorFlow.js keeps freed textures in a pool that grew past 2 GB here (measured in Chromium): tfjsflags caps it. A touch
+  // device also gets WebGL (WebGPU's pool has no cap), half-float textures and no HD grid or per-pixel pass: ~130 MB.
+  src: (query, manual, light) => `/architecture/?${query}&anchor=8&walk=tour&trans=blend&compact=1&speed=0.8&play=${manual ? 1 : 0}&${light
+    ? 'backend=webgl&hd=0&neural=0&tfjsflags=WEBGL_DELETE_TEXTURE_THRESHOLD:50331648,WEBGL_FORCE_F16_TEXTURES:true'
+    : 'hd=1&neural=1&tfjsflags=WEBGL_DELETE_TEXTURE_THRESHOLD:134217728'}`,
 };
 export const DRAWING: PreviewKind = {
   channel: 'portfolio-drawing',
   title: 'Live neural drawing generation — Pixel Morph',
   loading: 'Loading live 2D…',
   failure: 'This browser could not start the 2D preview. Try Play again, or open the full Pixel Morph demo from Selected work.',
-  src: (query, manual) => `/drawings/?${query}&play=${manual ? 1 : 0}`,
+  src: (query, manual, light) => `/drawings/?${query}&play=${manual ? 1 : 0}${light ? '&backend=webgl' : ''}`,
 };
 
 export function setupPreview(root: HTMLElement, kind: PreviewKind = ARCHITECTURE) {

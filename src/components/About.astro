@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import portrait from '../assets/me/portrait.jpg';
 import { bio, facts, interests, links, site } from '../data/site';
 import Icon, { type IconName } from './Icon.astro';
+import LiveArchitecture from './LiveArchitecture.astro';
 
 const interestIcons: Record<string, IconName> = {
   Biking: 'bike',
@@ -48,6 +49,8 @@ const interestIcons: Record<string, IconName> = {
         <div class="about__bio reveal">
           {bio.map((paragraph) => <p>{paragraph}</p>)}
         </div>
+        <LiveArchitecture />
+        <LiveArchitecture kind="2d" />
         <dl class="about__facts reveal">
           {
             facts.map((fact) => (
