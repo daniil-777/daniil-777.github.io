@@ -52,3 +52,5 @@ __pycache__/
 !/docs/watch-plane.md
 !/docs/chronos-watch.md
 !/docs/chronos-watch-review.json
+!/docs/site-security.md
+!/docs/site-security-review.json

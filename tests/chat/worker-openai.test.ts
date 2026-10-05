@@ -21,7 +21,7 @@ function fixture(t: TestContext, output: string, extra: Partial<Env> = {}, failu
   const stored = new Map();
   const budget = new Budget({ storage: { get: async (key: string) => stored.get(key), put: async (key: string, value: unknown) => { stored.set(key, value); } } } as never);
   const env = {
-    CHAT_PROVIDER: 'openai', OPENAI_API_KEY: 'server-secret', OPENAI_BASE_URL: 'https://api-test.example/v1',
+    CHAT_ENABLED: 'true', CHAT_PROVIDER: 'openai', OPENAI_API_KEY: 'server-secret', OPENAI_BASE_URL: 'https://api-test.example/v1',
     ALLOWED_ORIGINS: ORIGIN, KB_URL: `https://kb-test.example/${sequence++}.json`, DAILY_LIMIT: '100',
     RL_IP: { limit: async () => ({ success: true }) }, RL_ALL: { limit: async () => ({ success: true }) },
     BUDGET: { idFromName: (name: string) => name, get: () => ({ fetch: (url: string) => budget.fetch(new Request(url)) }) }, ...extra,

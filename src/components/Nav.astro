@@ -13,10 +13,10 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
     </nav>
 
     <div class="nav__tools">
-      <a class="nav__ask" href="/ask/" data-chat-open>
+      <button class="nav__ask" type="button" disabled aria-label="Ask AI — temporarily paused" title="Temporarily paused" data-chat-paused data-no-translate>
         <Icon name="ask" />
-        <span>Ask AI</span>
-      </a>
+        <span>Ask AI · paused</span>
+      </button>
       <LanguageSwitcher />
       <button class="nav__tool" type="button" data-theme-toggle aria-label="Switch between light and dark appearance">
         <Icon name="sun" class="nav__sun" />
@@ -42,7 +42,7 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
         ))
       }
       <li style={`--i:${nav.length}`}>
-        <a href="/ask/" data-chat-open>Ask AI</a>
+        <button type="button" disabled data-chat-paused data-no-translate>Ask AI · paused</button>
       </li>
     </ul>
   </nav>
@@ -144,6 +144,10 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
     white-space: nowrap;
     transition: background-color 0.2s var(--ease);
   }
+
+  [data-chat-paused] { opacity: .48; cursor: not-allowed; }
+
+  .nav__sheet [data-chat-paused] { display: block; padding: 16px 0; color: var(--text-2); font-size: 28px; font-weight: 600; }
 
   .nav__ask:hover {
     background: var(--field-hover);

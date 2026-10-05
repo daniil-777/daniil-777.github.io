@@ -125,6 +125,7 @@ async function startWorker(stubUrl, overrides = {}, port = 0) {
   const stored = new Map();
   const budget = new Budget({ storage: { get: async (key) => stored.get(key), put: async (key, value) => void stored.set(key, value) } });
   const env = {
+    CHAT_ENABLED: 'true', // Local stub only; production remains paused.
     ANTHROPIC_API_KEY: 'stub',
     ANTHROPIC_BASE_URL: stubUrl,
     ALLOWED_ORIGINS: ORIGIN,

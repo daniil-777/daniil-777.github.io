@@ -1,0 +1,87 @@
+/** Benign browser checks against our own preview or production origin. */
+import assert from 'node:assert/strict';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { startBrowser } from '../watch-language/browser-helper.mjs';
+const base = process.env.SECURITY_QA_URL ?? 'http://127.0.0.1:4357';
+const output = process.env.SECURITY_QA_OUTPUT ?? '/tmp/portfolio-security-qa';
+const results = [];
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const browser = await startBrowser('about:blank', { width: 1440, height: 1100, graphics: true });
+await mkdir(output, { recursive: true });
+const until = async expression => {
+  for (let i = 0; i < 400; i++) { if (await browser.evaluate(expression)) return; await wait(100); }
+  throw new Error(`Not ready: ${expression}; ${JSON.stringify(await browser.evaluate('({status:document.querySelector("#msg")?.textContent,state:window.__m3d??window.__pd,violations:window.__policyViolations})'))}`);
+};
+const violations = () => browser.evaluate('window.__policyViolations');
+try {
+  await browser.send('Page.addScriptToEvaluateOnNewDocument', { source: `window.__policyViolations=[];document.addEventListener('securitypolicyviolation',e=>window.__policyViolations.push({directive:e.effectiveDirective,blocked:e.blockedURI,source:e.sourceFile,line:e.lineNumber}));` });
+  await browser.send('Page.navigate', { url: `${base}/?lang=en` });
+  await until('document.querySelector("[data-theme-toggle]")');
+  await wait(1000);
+  assert.equal(await browser.evaluate('document.querySelectorAll("[data-chat-open]").length'), 0);
+  assert.equal(await browser.evaluate('[...document.querySelectorAll("[data-chat-paused]")].every(n=>n.disabled)'), true);
+  await browser.evaluate('document.querySelector("[data-chat-paused]").click()');
+  await wait(100);
+  const resources = await browser.evaluate('performance.getEntriesByType("resource").map(r=>r.name)');
+  assert.ok(!resources.some(r => /\/chat\/|chat-dialog|\/v1\/chat|demtsev-chat/.test(r)), 'Disabled button makes no assistant download or request');
+  assert.equal(await browser.evaluate('Boolean(document.querySelector("[data-chat-dialog]"))'), false);
+  results.push({ test: 'public Ask AI is disabled with no chat dialog or backend request', passed: true });
+  const before = await browser.evaluate('document.documentElement.dataset.theme');
+  await browser.evaluate('document.querySelector("[data-theme-toggle]").click()');
+  assert.notEqual(await browser.evaluate('document.documentElement.dataset.theme'), before);
+  results.push({ test: 'theme script runs under hash-based CSP', passed: true });
+  await browser.evaluate('document.querySelector("[data-qr-open]").click()');
+  assert.equal(await browser.evaluate('document.querySelector("[data-qr-dialog]").open'), true);
+  await browser.evaluate('document.querySelector("[data-qr-save]").click()');
+  await wait(300);
+  await browser.evaluate('document.querySelector("[data-qr-dialog]").close()');
+  results.push({ test: 'QR dialog and blob image export remain usable', passed: true });
+  await browser.evaluate('document.querySelector("#work").scrollIntoView()');
+  await wait(300);
+  assert.equal(await browser.evaluate('document.querySelectorAll("video").length>0'), true);
+  assert.deepEqual(await violations(), [], 'No CSP violations on normal portfolio interactions');
+  results.push({ test: 'portfolio and video elements load without CSP violations', passed: true });
+  await writeFile(`${output}/home.png`, await browser.screenshot());
+  await browser.send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  await browser.evaluate('document.querySelector("[data-nav-toggle]").click()');
+  assert.equal(await browser.evaluate('document.querySelector("[data-nav-toggle]").getAttribute("aria-expanded")'), 'true');
+  assert.equal(await browser.evaluate('document.querySelector(".nav__sheet [data-chat-paused]")?.disabled ?? [...document.querySelectorAll("[data-chat-paused]")].at(-1).disabled'), true);
+  results.push({ test: 'mobile navigation keeps the assistant paused', passed: true });
+  await browser.send('Page.navigate', { url: `${base}/ask/?lang=en` });
+  await until('document.querySelector("[data-chat-paused]")');
+  assert.equal(await browser.evaluate('document.querySelectorAll("[data-chat-open]").length'), 0);
+  assert.deepEqual(await violations(), []);
+  results.push({ test: 'answers page retains static information with its assistant paused', passed: true });
+  await browser.send('Page.navigate', { url: `${base}/smart-watch/?watchStyle=marquee&lang=en` });
+  await until('document.querySelector("[data-watch-status]")?.textContent.includes("Reviewed thought")');
+  await wait(200);
+  assert.equal(await browser.evaluate('document.querySelector("[data-watch]").dataset.watchThoughtStyle'), 'marquee');
+  assert.equal(await browser.evaluate('document.querySelector("[data-watch-marquee-track]").getAnimations()[0].playState'), 'running');
+  assert.deepEqual(await violations(), []);
+  results.push({ test: 'narrow ticker and local reviewed thoughts work under enforced CSP', passed: true });
+  for (const preview of ['architecture', 'drawings']) {
+    await browser.send('Page.navigate', { url: `${base}/${preview}/?backend=webgl&res=32&hi=32&neural=0` });
+    await until('Boolean(window.tf)');
+    console.log(`Checking ${preview} with isolated software WebGL…`);
+    await until(preview === 'architecture' ? 'window.__m3d?.ready || window.__m3d?.failed' : 'window.__pd?.ready');
+    await wait(800);
+    const state = await browser.evaluate('({status:document.querySelector("#msg")?.textContent,metrics:document.querySelector("#metrics")?.textContent,ready:Boolean(window.__m3d?.ready||window.__pd?.ready),runtime:window.__m3d??{backend:window.__pd?.backend},tf:tf.version_core,violations:window.__policyViolations})');
+    assert.deepEqual(state.violations, [], `${preview} must not require a broader script policy`);
+    assert.equal(state.tf, '4.22.0');
+    assert.ok(state.ready, `${preview} decoder must finish: ${JSON.stringify(state)}`);
+    results.push({ test: `${preview} neural preview remains operational with scoped pinned scripts`, passed: true, ...state });
+  }
+  await browser.send('Page.navigate', { url: `${base}/?lang=en` });
+  await until('document.querySelector("[data-theme-toggle]")');
+  await wait(500);
+  assert.deepEqual(await violations(), []);
+  await browser.evaluate(`(()=>{window.__unexpectedInline=false;const s=document.createElement('script');s.textContent='window.__unexpectedInline=true';document.head.append(s);const b=document.createElement('button');b.setAttribute('onclick','window.__unexpectedInline=true');document.body.append(b);b.click();})()`);
+  await wait(100);
+  assert.equal(await browser.evaluate('window.__unexpectedInline'), false);
+  const rejected = await violations();
+  assert.ok(rejected.some(v=>v.directive==='script-src-elem'));
+  assert.ok(rejected.some(v=>v.directive==='script-src-attr'));
+  results.push({ test: 'unexpected inline script and event handler are blocked', passed: true, expectedViolations: rejected });
+  await writeFile(`${output}/summary.json`, JSON.stringify({ url: base, date: new Date().toISOString(), passed: results.length, results }, null, 2)+'\n');
+  console.log(`Security browser QA passed ${results.length} checks.`);
+} finally { await browser.close(); }

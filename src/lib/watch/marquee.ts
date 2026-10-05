@@ -1,22 +1,20 @@
-/** A readable pass, followed by a quiet reset and a right-to-left entrance. */
+import type { WatchMotion } from './types.ts';
+
+/** A continuous advertising-style loop. Every word passes through the window. */
 export function planMarquee(viewport: number, text: number, font: number) {
   const overflow = Math.max(0, text - viewport);
-  const speed = Math.max(18, font * 1.35);
-  const dwell = 1600, fade = 300, gap = 100;
-  const travel = overflow / speed * 1000;
-  const entrance = viewport / speed * 1000;
-  const readMs = dwell + travel + dwell;
-  const duration = readMs + fade + gap + entrance;
-  const frame = (time: number, x: number, opacity = 1) => ({ offset: time / duration, transform: `translateX(${x}px)`, opacity });
-  return { overflow, readMs, duration, frames: [
-    frame(0, 0), frame(dwell, 0), frame(dwell + travel, -overflow),
-    frame(readMs, -overflow), frame(readMs + fade, -overflow, 0),
-    frame(readMs + fade + gap, viewport, 0), frame(duration, 0),
+  const speed = Math.max(32, font * 2.6);
+  const gap = font * 1.8;
+  const distance = text + gap;
+  const readMs = text / speed * 1000;
+  const duration = distance / speed * 1000;
+  return { overflow, gap, readMs, duration, frames: [
+    { transform: 'translateX(0px)' }, { transform: `translateX(${-distance}px)` },
   ] };
 }
 
 /** Owns only the decorative copy. The complete accessible caption stays outside. */
-export function mountMarquee(output: HTMLElement, onMotionChange: () => void) {
+export function mountMarquee(output: HTMLElement, onMotionChange: () => void, motion: WatchMotion = 'sweep') {
   const root = output.closest<HTMLElement>('[data-watch]')!;
   const media = matchMedia('(prefers-reduced-motion: reduce)');
   const abort = new AbortController();
@@ -27,6 +25,8 @@ export function mountMarquee(output: HTMLElement, onMotionChange: () => void) {
   windowNode.append(track);
   let animation: Animation | undefined, enabled = false, blocked = false, hovered = false;
   let sentence = '', signature = '', readMs = 0, read = false, disposed = false;
+  const respectsReduction = () => motion === 'system' && media.matches;
+  let wasReduced = respectsReduction();
   function sync() {
     if (animation) {
       if (blocked || hovered) animation.pause(); else animation.play();
@@ -35,13 +35,17 @@ export function mountMarquee(output: HTMLElement, onMotionChange: () => void) {
   }
   function refresh() {
     if (!enabled || disposed) return;
-    root.dataset.watchMarqueeStatic = String(media.matches);
+    const reduced = respectsReduction();
+    if (wasReduced && !reduced) { windowNode.scrollLeft = 0; read = false; }
+    wasReduced = reduced;
+    root.dataset.watchMarqueeStatic = String(reduced);
     if (output.firstChild !== windowNode) output.replaceChildren(windowNode);
     track.textContent = sentence;
+    track.dataset.watchMarqueeCopy = sentence;
     const width = windowNode.clientWidth;
     const font = Number.parseFloat(getComputedStyle(output).fontSize);
     const textWidth = track.getBoundingClientRect().width;
-    const nextSignature = `${sentence}:${width}:${textWidth}:${font}:${media.matches}`;
+    const nextSignature = `${sentence}:${width}:${textWidth}:${font}:${respectsReduction()}`;
     if (signature === nextSignature) return;
     const progress = readMs && animation ? Math.min(1, Number(animation.currentTime ?? 0) / readMs) : 0;
     read ||= progress >= 1;
@@ -50,31 +54,34 @@ export function mountMarquee(output: HTMLElement, onMotionChange: () => void) {
     const plan = planMarquee(width, textWidth, font);
     readMs = plan.readMs;
     output.dataset.watchMarqueeReadMs = String(readMs);
-    if (!media.matches && width > 0 && plan.overflow > 1) {
+    output.style.setProperty('--watch-marquee-gap', `${plan.gap}px`);
+    if (!respectsReduction() && width > 0 && sentence) {
       animation = track.animate(plan.frames, { duration: plan.duration, iterations: Infinity, easing: 'linear' });
       animation.currentTime = progress * readMs;
     }
     sync();
   }
-  media.addEventListener('change', () => { root.dataset.watchMarqueeStatic = String(media.matches); onMotionChange(); }, { signal: abort.signal });
+  media.addEventListener('change', () => { root.dataset.watchMarqueeStatic = String(respectsReduction()); onMotionChange(); }, { signal: abort.signal });
   output.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse') { hovered = true; sync(); } }, { signal: abort.signal });
   output.addEventListener('pointerleave', () => { hovered = false; sync(); }, { signal: abort.signal });
-  root.dataset.watchMarqueeStatic = String(media.matches);
+  root.dataset.watchMarqueeStatic = String(respectsReduction());
   return {
-    get reducedMotion() { return media.matches; },
+    get reducedMotion() { return respectsReduction(); },
     get readyForNext() {
       if (!enabled) return true;
       if (hovered) return false;
-      read ||= !animation || Number(animation.currentTime ?? 0) >= readMs;
+      if (!animation) return true;
+      read ||= Number(animation.currentTime ?? 0) >= readMs;
       return read;
     },
     setText(text: string, active: boolean) {
-      if (sentence !== text || (active && !enabled)) { read = false; signature = ''; animation?.cancel(); animation = undefined; }
+      if (sentence !== text || (active && !enabled)) { read = false; signature = ''; windowNode.scrollLeft = 0; animation?.cancel(); animation = undefined; }
       sentence = text; enabled = active;
       if (active) refresh();
       else { animation?.cancel(); animation = undefined; signature = ''; hovered = false; output.textContent = text; }
     },
     refresh,
+    setMotion(value: WatchMotion) { motion = value; root.dataset.watchMarqueeStatic = String(respectsReduction()); refresh(); },
     pause(value: boolean) { blocked = value; sync(); },
     dispose() { disposed = true; abort.abort(); animation?.cancel(); animation = undefined; },
   };

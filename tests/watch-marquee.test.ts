@@ -3,19 +3,18 @@ import { test } from 'node:test';
 import { Window } from 'happy-dom';
 import { mountMarquee, planMarquee } from '../src/lib/watch/marquee.ts';
 
-test('scrolling timing reserves a full first and last word dwell with constant readable speed', () => {
-  for (const [width, text, font] of [[140, 900, 15], [220, 1500, 21], [288, 2100, 26]]) {
+test('advertising ticker is continuous at constant speed and reserves a complete passage before rotation', () => {
+  for (const [width, text, font] of [[100, 900, 15], [156, 1500, 21], [200, 2100, 26]]) {
     const plan = planMarquee(width, text, font);
     assert.equal(plan.overflow, text - width);
-    const travelMs = (plan.frames[2].offset - plan.frames[1].offset) * plan.duration;
-    assert.ok(Math.abs(plan.overflow / travelMs * 1000 - font * 1.35) < .001);
-    assert.ok(plan.frames[1].offset * plan.duration >= 1599);
-    assert.ok((plan.frames[3].offset - plan.frames[2].offset) * plan.duration >= 1599);
-    assert.ok(plan.readMs > 2000, 'Two-second rotation must wait for the whole sentence');
-    assert.equal(plan.frames[2].transform, `translateX(${-plan.overflow}px)`);
+    assert.equal(plan.frames.length, 2, 'No intermediate dwell or fade keyframes');
+    assert.equal(plan.frames[0].transform, 'translateX(0px)');
+    assert.equal(plan.frames[1].transform, `translateX(${-text-plan.gap}px)`);
+    assert.ok(Math.abs((text + plan.gap) / plan.duration * 1000 - font * 2.6) < .001);
+    assert.equal(plan.readMs, text / (font * 2.6) * 1000);
+    assert.ok(plan.readMs > 2000, 'Two-second rotation must wait for every word to pass');
     assert.ok(plan.duration > plan.readMs);
   }
-  assert.equal(planMarquee(220, 120, 18).overflow, 0);
 });
 
 test('marquee preserves reading progress, suspends and cancels motion, and changes preferences live', async () => {
@@ -61,9 +60,15 @@ test('marquee preserves reading progress, suspends and cancels motion, and chang
     assert.equal(animations.at(-1)!.cancelled, true);
     controller.setText(output.textContent!, true);
     assert.equal(controller.readyForNext, false, 'Re-entering the face starts a new readable pass');
+    controller.setMotion('system');
     media.matches = true; media.dispatchEvent(new Event('change'));
     assert.equal(preferenceChanges, 1); assert.equal(root.dataset.watchMarqueeStatic, 'true');
     assert.equal(animations.at(-1)!.cancelled, true); assert.equal(output.dataset.watchMarqueeState, 'static');
+    const viewport=output.firstChild as unknown as HTMLElement;viewport.scrollLeft=200;
+    controller.setMotion('sweep');assert.equal(viewport.scrollLeft,0,'Animated mode resets manual scroll'); assert.equal(output.dataset.watchMarqueeState, 'playing', 'Explicit sweeping opts into scrolling despite the device preference');
+    controller.setMotion('system');viewport.scrollLeft=100;
+    controller.setText('A changed answer begins at its first word.',true);assert.equal(viewport.scrollLeft,0,'New answers reset manual scroll');
+    controller.setMotion('sweep');
     media.matches = false; media.dispatchEvent(new Event('change'));
     controller.dispose(); assert.equal(animations.at(-1)!.cancelled, true);
     media.dispatchEvent(new Event('change')); assert.equal(preferenceChanges, 2, 'Disposal removes preference listeners');

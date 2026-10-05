@@ -1,3 +1,4 @@
+window.addEventListener('error', function(event) { if (event.target instanceof HTMLScriptElement && event.target.src.includes('cdn.jsdelivr.net')) window.__tfLoadError = 'The graphics runtime could not load.'; }, true);
 /* Model downloads start only when this opt-in document is mounted. */
 (function () {
   'use strict';

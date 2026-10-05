@@ -7,6 +7,7 @@ import Footer from '../components/Footer.astro';
 import Icon from '../components/Icon.astro';
 import Nav from '../components/Nav.astro';
 import QrDialog from '../components/QrDialog.astro';
+import { CHAT_ENABLED } from '../data/chat-status';
 import { links, site } from '../data/site';
 import { pageCatalog } from '../i18n/server';
 
@@ -89,7 +90,7 @@ const person = {
 
     <QrDialog url={canonical} />
     <DocDialog />
-    <ChatDialog />
+    {CHAT_ENABLED && <ChatDialog />}
     <script type="application/json" is:inline data-i18n-pack set:html={JSON.stringify(languagePack).replace(/</g, '\\u003c')} />
 
     <dialog class="vdialog" data-video-dialog aria-label="Video player">
@@ -105,6 +106,7 @@ const person = {
     </dialog>
 
     <script>
+      import { CHAT_ENABLED } from '../data/chat-status';
       import '../scripts/language.ts';
       import '../scripts/site.ts';
       import '../scripts/player.ts';
@@ -117,6 +119,7 @@ const person = {
         if (target.closest('[data-chat-close]')) return target.closest('dialog')?.close();
         const trigger = target.closest<HTMLAnchorElement>('[data-chat-open]');
         // Leave Cmd/Ctrl-click and middle-click alone: they open /ask/ in a new tab.
+        if (!CHAT_ENABLED) { if (trigger) event.preventDefault(); return; }
         if (!trigger || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
         const dialog = document.querySelector<HTMLDialogElement>('[data-chat-dialog]');
         if (!dialog) return;

@@ -5,6 +5,7 @@
  * answer and falls back to the quotes whenever that cannot be trusted.
  */
 import styles from '../../styles/chat.css?inline';
+import { CHAT_ENABLED } from '../../data/chat-status.ts';
 import { COPY, DEVICE_MODE, INPUT_MAX, LOCAL_LLM, SUGGESTED } from '../../data/chat.ts';
 import { composeExtractive, type Answer } from '../../lib/chat/answer.ts';
 import { buildIndex } from '../../lib/chat/bm25.ts';
@@ -414,6 +415,7 @@ let chat: ReturnType<typeof start> | undefined;
 
 /** Called by the opener with the dialog (already shown) and the control that was pressed. */
 export async function open(dialog: HTMLDialogElement, trigger: HTMLElement) {
+  if (!CHAT_ENABLED) return;
   try {
     (await (chat ??= start(dialog))).opened(trigger);
   } catch (error) {

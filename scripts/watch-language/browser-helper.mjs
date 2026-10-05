@@ -7,7 +7,7 @@ import { spawn } from 'node:child_process';
 export async function startBrowser(url, options = {}) {
   const profile = await mkdtemp(join(tmpdir(), 'chronos-browser-'));
   const chrome = options.chrome ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-  const browser = spawn(chrome, ['--headless=new', '--no-first-run', '--disable-gpu', '--remote-debugging-port=0', `--user-data-dir=${profile}`, url], { stdio: 'ignore' });
+  const browser = spawn(chrome, ['--headless=new', '--no-first-run', ...(options.graphics ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : ['--disable-gpu']), '--remote-debugging-port=0', `--user-data-dir=${profile}`, url], { stdio: 'ignore' });
   let socket;
   const close = async () => { socket?.close(); browser.kill(); await new Promise(r => setTimeout(r, 100)); await rm(profile, { recursive: true, force: true }); };
   try {

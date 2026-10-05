@@ -27,6 +27,8 @@ jobs:
       - run: npm ci
       # Worker integration tests import its provider SDKs during the full suite.
       - run: npm ci --prefix worker
+      - run: npm audit --omit=dev
+      - run: npm audit --omit=dev --prefix worker
       - run: npx astro check
       # The embedding model the build uses for the assistant's "Smarter search" (23 MB).
       # Its name and revision are in embed.ts, so a new revision starts a new cache.
@@ -45,6 +47,7 @@ jobs:
         env:
           PUBLIC_CHAT_ENDPOINT: ${{ vars.PUBLIC_CHAT_ENDPOINT }}
       # Search quality with the embedding model the build just used, and no unanswerable question answered.
+      - run: node scripts/security/csp-hashes.mjs
       - run: npm run check:i18n
       - run: npm run eval:chat
       # The Worker is deployed by hand, but a type error or a broken route in it should stop here.

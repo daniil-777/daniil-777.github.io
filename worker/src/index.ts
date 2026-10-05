@@ -19,6 +19,8 @@ import { streamOpenAI } from './openai.ts';
 export { Budget } from './budget.ts';
 
 export interface Env {
+  /** Fail closed: only an explicit true enables public, billable requests. */
+  CHAT_ENABLED?: string;
   OPENAI_API_KEY?: string;
   /** SDK-style base URL, including /v1. Only override for local testing. */
   OPENAI_BASE_URL?: string;
@@ -188,6 +190,7 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = allowedOrigin(request.headers.get('Origin'), env.ALLOWED_ORIGINS ?? '');
     if (new URL(request.url).pathname !== '/v1/chat') return fail('invalid', 'Not found.', origin, {}, 404);
+    if (env.CHAT_ENABLED !== 'true') return fail('upstream', 'The public assistant is temporarily paused.', origin, { 'Retry-After': '3600' }, 503);
     if (request.method === 'OPTIONS') {
       if (!origin) return fail('origin', 'This origin may not use the endpoint.', undefined);
       return new Response(null, { status: 204, headers: { ...cors(origin), 'Access-Control-Allow-Methods': 'POST', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '86400' } });
