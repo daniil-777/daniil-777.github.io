@@ -17,20 +17,47 @@
 
     lin(t, k, act) { return tf.fused.matMul({ a: t, b: this.W[k + '.w'], bias: this.W[k + '.b'], activation: act || 'linear' }); }
 
-    // WebGL convolves through im2col, k*k*Cin floats per output pixel: a 4L plane (arch3: 256^2 x 128 channels) needs a
-    // 300 MB texture, which TF.js then keeps pooled beside the 2L stage's. Row bands of 2L^2 pixels share the 2L stage's
-    // instead; each band reads its neighbour rows, and zeros only past the image as 'same' padding does: same values.
+    // WebGL convolves through im2col, k*k*Cin floats per output pixel, and TF.js keeps each texture shape pooled (arch3:
+    // 300 MB for a 4L plane, 230 MB over the decoder). One plane at a time in row bands of at most L^2 pixels, every 3x3
+    // convolution here shares two im2col textures of ~20 MB. A band reads its neighbour rows, and zeros only past the
+    // image as 'same' padding does, so the values are unchanged.
     conv(x, k, act) {
-      const [n, H, Wd] = x.shape, rows = 4 * this.meta.lat ** 2 / Wd, w = this.W[k + '.w'];
-      if (!this.perPlane || n !== 1 || rows >= H || H % rows || w.shape[0] !== 3) return super.conv(x, k, act);
-      const bands = [];
-      for (let r0 = 0; r0 < H; r0 += rows) {
-        const a = Math.max(0, r0 - 1), b = Math.min(H, r0 + rows + 1);
-        bands.push(tf.tidy(() => tf.fused.conv2d({ x: tf.slice(x, [0, a, 0, 0], [1, b - a, Wd, -1]), filter: w, strides: 1,
-          pad: [[0, 0], [a + 1 - r0, r0 + rows + 1 - b], [1, 1], [0, 0]], bias: this.W[k + '.b'], activation: act || 'linear' })));
+      const w = this.W[k + '.w'], [n, H, Wd] = x.shape, rows = Math.max(1, Math.floor(this.meta.lat ** 2 / Wd));
+      if (!this.perPlane || w.shape[0] !== 3 || (n === 1 && rows >= H)) return super.conv(x, k, act);
+      const per = Math.ceil(H / rows), bands = [];
+      for (let p = 0; p < n; p++) for (let r0 = 0; r0 < H; r0 += rows) {
+        const r1 = Math.min(H, r0 + rows), a = Math.max(0, r0 - 1), b = Math.min(H, r1 + 1);
+        bands.push(tf.tidy(() => tf.fused.conv2d({ x: tf.slice(x, [p, a, 0, 0], [1, b - a, Wd, -1]), filter: w, strides: 1,
+          pad: [[0, 0], [a + 1 - r0, r1 + 1 - b], [1, 1], [0, 0]], bias: this.W[k + '.b'], activation: act || 'linear' })));
       }
-      const y = tf.concat(bands, 1);
+      const y = tf.tidy(() => {
+        const planes = Array.from({ length: n }, (_, p) => (per > 1 ? tf.concat(bands.slice(p * per, (p + 1) * per), 1) : bands[p]));
+        return n > 1 ? tf.concat(planes, 0) : planes[0];
+      });
       tf.dispose(bands);
+      return y;
+    }
+
+    exchange(x) {                            // as M.Model's, its full-size intermediates freed as they are summed
+      const W = this.W, [R, C] = [x.shape[1], x.shape[3]];
+      const s = tf.tidy(() => {
+        const [xy, xz, yz] = tf.split(x, 3, 0).map((t) => tf.reshape(t, [R, R, C]));
+        const mm = (v, k) => tf.matMul(v, W[k]);
+        const along = (v, h) => tf.reshape(v, h ? [1, R, 1, C] : [1, 1, R, C]);
+        const a = tf.concat([along(mm(tf.mean(xz, 1), 'ex.wa'), 1), along(mm(tf.mean(xy, 1), 'ex.wa'), 1), along(mm(tf.mean(xy, 0), 'ex.wa'), 1)], 0);
+        const b = tf.concat([along(mm(tf.mean(yz, 1), 'ex.wb'), 0), along(mm(tf.mean(yz, 0), 'ex.wb'), 0), along(mm(tf.mean(xz, 0), 'ex.wb'), 0)], 0);
+        const own = tf.tidy(() => tf.add(tf.reshape(tf.matMul(tf.reshape(x, [3 * R * R, C]), W['ex.w0']), [3, R, R, C]), W['ex.b']));
+        return tf.add(own, tf.add(a, b));
+      });
+      const y = tf.tidy(() => tf.add(x, tf.relu(s)));
+      s.dispose();
+      return y;
+    }
+
+    res(x, k) {                              // as M.Model's, the first conv's output and the sum freed once consumed
+      const r = tf.tidy(() => this.conv(this.conv(x, k + '.c1', 'relu'), k + '.c2'));
+      const y = tf.tidy(() => tf.relu(tf.add(x, r)));
+      r.dispose();
       return y;
     }
 
@@ -72,16 +99,21 @@
 
     // z [3, L, L, cz] -> P [3, planes_res, planes_res, hid + chc]; with size, P as tf.image.resizeBilinear(P, [size, size],
     // true) would make it, each plane's channels resampled as soon as they exist, so the planes_res^2 planes (arch3:
-    // 240 MB) never exist together. Every step frees its input once the next exists, and after the last step that mixes
-    // the planes they go one at a time. TF.js keeps freed GPU memory pooled by exact size, so what a keyframe holds is the
-    // sum over sizes of how many are alive at once: when the tidy held every intermediate to the end, that was 1.5 GB on
-    // WebGPU and 2.3 GB on WebGL for arch3. The tidy now only cleans up after an error. Same ops on the same inputs, so
-    // the same values.
+    // 240 MB) never exist together; with an array of sizes, one P per size from the same pass. Every step frees its input
+    // once the next exists, and after the last step that mixes the planes they go one at a time. TF.js keeps freed GPU
+    // memory pooled by exact size, so what a keyframe holds is the sum over sizes of how many are alive at once: when the
+    // tidy held every intermediate to the end, that was 1.5 GB on WebGPU and 2.3 GB on WebGL for arch3. The tidy now only
+    // cleans up after an error. Same ops on the same inputs, so the same values.
     planes(z, size) {
-      return tf.tidy(() => {
+      const sizes = [size].flat();
+      const P = tf.tidy(() => {
         const W = this.W, D = this.D, L = this.meta.lat, chc = this.chc, R2 = 8 * L;
         const step = (x, f) => { const y = tf.tidy(() => f(x)); x.dispose(); return y; };      // f(x), x released
-        const rs = (t) => (size && size !== t.shape[1] ? step(t, (t) => tf.image.resizeBilinear(t, [size, size], true)) : t);
+        const rs = (t) => {                  // t at every requested size (t itself at its own), t released after
+          const out = sizes.map((s) => (s && s !== t.shape[1] ? tf.tidy(() => tf.image.resizeBilinear(t, [s, s], true)) : t));
+          if (!out.includes(t)) t.dispose();
+          return out;
+        };
         let x = tf.tidy(() => tf.relu(tf.add(tf.conv2d(z, W['inp.w'], 1, 'same'), this.inpBias)));
         x = step(x, (t) => this.exchange(t));
         x = step(x, (t) => this.res(t, 'res0'));
@@ -92,27 +124,28 @@
         // plane p: the 2L and 4L stages; geometry head (1x1) [-> bilinear x2 -> detail]; colour head [+ palette, xy plane]
         // [-> bilinear x2] [-> colour detail (cdetail), the palette after it]; then its geometry and colour channels side by side
         const out = pl.map((t, p) => {
-          let f = step(t, (t) => this.res(this.conv(tf.image.resizeNearestNeighbor(t, [2 * L, 2 * L]), 'up1', 'relu'), 'res1'));
+          let f = step(t, (t) => this.conv(tf.image.resizeNearestNeighbor(t, [2 * L, 2 * L]), 'up1', 'relu'));
+          f = step(f, (t) => this.res(t, 'res1'));
           f = step(f, (t) => (D.hi === 'conv3' ? this.conv(tf.image.resizeNearestNeighbor(t, [4 * L, 4 * L]), 'up2', 'relu')
             : this.res(this.conv(tf.image.resizeBilinear(t, [4 * L, 4 * L], true), 'up2', 'relu'), 'res2')));
           let g = tf.tidy(() => this.pix(f, 'head' + p)), c = chc ? tf.tidy(() => this.pix(f, 'chead' + p)) : null;
           f.dispose();
           if (D.detail) g = this.detail(step(g, (t) => tf.image.resizeBilinear(t, [R2, R2], true)), p, 'dw', 'pw');
-          g = rs(g);
-          if (!c) return g;
+          const gs = rs(g);
+          if (!c) return gs;
           const pp = pal && p === 0 ? pal : null;
           if (pp && !D.cdetail) c = step(c, (t) => tf.add(t, pp));
           if (D.detail) c = step(c, (t) => tf.image.resizeBilinear(t, [R2, R2], true));
           if (D.cdetail) { c = this.detail(c, p, 'cdw', 'cpw'); if (pp) c = step(c, (t) => tf.add(t, pp)); }
-          c = rs(c);
-          g = step(g, (t) => tf.concat([t, c], 3));
-          c.dispose();
-          return g;
+          const cs = rs(c), ys = gs.map((g, i) => tf.tidy(() => tf.concat([g, cs[i]], 3)));
+          tf.dispose([...gs, ...cs]);
+          return ys;
         });
-        const P = tf.concat(out, 0);
-        tf.dispose(out);
+        const P = sizes.map((_, i) => tf.concat(out.map((o) => o[i]), 0));
+        tf.dispose(out.flat());
         return P;
       });
+      return Array.isArray(size) ? P : P[0];
     }
 
     // Dense grid x_i = -1 + 2i/(R-1) -> {sdf [R^3] (x slowest, z fastest), rgb [Rc^3 x 3] at every 2nd point}; TF.js ops

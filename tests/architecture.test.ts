@@ -138,7 +138,7 @@ function shapeOnlyTf(backend: string) {
 test('the compact preview decodes keyframes inside a GPU memory budget on every backend', () => {
   // This accounting matches Chromium within a few percent. With the old decoder (one tidy around everything) TF.js held
   // 1515 MB after a keyframe on WebGPU and 2345 MB on WebGL, more than a phone's browser grants a page before killing
-  // and reloading it. Now: 449 MB and 745 MB.
+  // and reloading it. Now: 418 MB and 531 MB.
   const MB = 2 ** 20;
   const meta = json('model/meta.json');
   for (const backend of ['webgpu', 'webgl']) {
@@ -147,13 +147,13 @@ test('the compact preview decodes keyframes inside a GPU memory budget on every 
     const model = window.M3D.createModel(meta, gunzipSync(read('model/decoder.bin.gz')));
     model.addAnchors(gunzipSync(read('model/anchors-0.bin.gz')), 0);
     const base = tf.memory().numBytes;
-    for (const [anchor, size] of [[0, 96], [0, 160], [5, 96]]) {   // a keyframe, the fine grid of its hold, the next one
-      const z = model.tensor({ terms: [[anchor, 1]] }), P = model.planes(z, size);
-      assert.deepEqual(P.shape, [3, size, size, meta.hid + meta.dec.chc]);
-      tf.dispose([z, P]);
+    for (const [anchor, sizes] of [[0, [96, 160]], [5, [96]]] as [number, number[]][]) {   // a resting object (both grids, one pass), a keyframe
+      const z = model.tensor({ terms: [[anchor, 1]] }), P = model.planes(z, sizes);
+      sizes.forEach((size, i) => assert.deepEqual(P[i].shape, [3, size, size, meta.hid + meta.dec.chc]));
+      tf.dispose([z, ...P]);
       assert.equal(tf.memory().numBytes, base, `${backend}: nothing outlives a keyframe`);
     }
-    const budget = backend === 'webgl' ? 768 : 512;                   // WebGL pools its im2col textures as well
+    const budget = backend === 'webgl' ? 560 : 480;                   // WebGL pools its im2col textures as well
     assert.ok(tf.memory().pooled < budget * MB, `${backend}: compact keyframes leave under ${budget} MB allocated`);
     const z = model.tensor({ terms: [[0, 1]] });
     tf.peakSince();

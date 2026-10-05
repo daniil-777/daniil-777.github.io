@@ -13,8 +13,8 @@
       "upstream": "morph3d/m3d-model2.js",
       "local": "architecture/runtime/m3d-model2.js",
       "upstreamSha256": "e82a1fcbc0b2f2e0b8f971179e7a7cb390217fbaff7d5e445f380bb6b8018d16",
-      "localSha256": "a8c6c3fd66ad9468f04181e17df913ca23eca729f81f81ed4d4d57996c1d89c0",
-      "localBytes": 13614
+      "localSha256": "b787454a46b58a63cc4e913346718459718e99bb45745cff33f9f53abec9ff5d",
+      "localBytes": 15718
     },
     {
       "upstream": "morph3d/m3d-render.js",
@@ -55,8 +55,8 @@
       "upstream": "morph3d/m3d-app.js",
       "local": "architecture/runtime/m3d-app.js",
       "upstreamSha256": "06619bcab4fb8a7e38d0684bb0de04968fdc21db25e0d9cd65dcb92b60f4ceae",
-      "localSha256": "00fbc4c92961a8a04a1b22672f61cec5732acb2cf3b456cde7576a094cc85696",
-      "localBytes": 34199
+      "localSha256": "1b8266bbdefd07697af7f4d38ecd28043c6d1d2f312f6922203827aa87913124",
+      "localBytes": 34594
     },
     {
       "upstream": "morph3d/model-arch3/anchors-0.bin.gz",
@@ -105,13 +105,13 @@
       "Unused neural-detail shader initialization skipped when neural=0",
       "Repaint when asynchronous neural detail becomes available",
       "Retain grid rendering after neural upload failure and lower compact HD grid after decode failure",
-      "Compact preview without HD or per-pixel detail decodes planes already resampled to its grid size, and releases the previous latent’s planes before decoding the next",
-      "WebGPU submits after every dispatch, so a freed buffer is reused at once rather than after the next batch"
+      "WebGPU submits after every dispatch, so a freed buffer is reused at once rather than after the next batch",
+      "Compact preview without HD or per-pixel detail decodes planes already resampled to its grid sizes, a resting object’s at both sizes from one decoder pass, and releases the previous latent’s planes before decoding the next"
     ],
     "runtime/m3d-model2.js": [
-      "Decoder planes are built step by step and, after the last step that mixes them, one plane at a time, freeing intermediates as soon as they are consumed; same ops and values. With TF.js pooling freed GPU memory by size, the compact preview’s decoder holds 0.45 GB instead of 1.5 GB on WebGPU and 0.75 GB instead of 2.3 GB on WebGL",
-      "Optional output size resamples each plane’s channels as soon as they exist, exactly as the grid would sample the full planes",
-      "WebGL runs the 4L convolution in row bands that share the 2L stage’s im2col texture, with the same values"
+      "Decoder planes are built step by step and, after the last step that mixes them, one plane at a time, freeing intermediates (including those of the residual blocks and the plane exchange) as soon as they are consumed; same ops and values. With TF.js pooling freed GPU memory by size, the compact preview’s decoder holds 418 MB instead of 1515 MB on WebGPU and 531 MB instead of 2345 MB on WebGL (Chromium)",
+      "Optional output size, or sizes, resamples each plane’s channels as soon as they exist, exactly as the grid would sample the full planes",
+      "WebGL runs every 3x3 convolution one plane at a time in row bands of at most L^2 pixels, so they share two small im2col textures, with the same values"
     ],
     "model/meta.json": [
       "First twelve architecture anchors and first chunk only",

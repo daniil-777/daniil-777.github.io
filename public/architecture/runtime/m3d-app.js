@@ -125,19 +125,22 @@
     };
     setHD(hd);
 
-    // planes of the last latent: a hold's fine grid reuses them. size: already resampled to the grid that reads them,
-    // as the grid itself would (compact without HD or per-pixel detail: arch3's full planes are 240 MB, 160^2 ones 25 MB)
+    // planes of the last latent, by size: a hold's fine grid reuses them. Compact without HD or per-pixel detail, they
+    // come resampled to the grids that read them, as the grids themselves would (arch3's full planes are 240 MB, 160^2
+    // ones 25 MB); a resting object's at both grid sizes from one decoder pass, since its fine grid follows. 0: full.
     let pc = null, floorHint;
-    const planesFor = (spec, size) => {
-      if (pc && pc.key === spec.key && pc.size === size) return pc.P;
-      if (pc) { pc.P.dispose(); pc = null; }             // before the next ones exist: one latent's planes at a time
+    const planesFor = (spec, R) => {
+      const lite = compact && !hd && !R3.neuralOn && R > 0, size = lite ? R : 0;
+      if (pc && pc.key === spec.key && pc.P.has(size)) return pc.P.get(size);
+      if (pc) { tf.dispose([...pc.P.values()]); pc = null; }   // before the next ones exist: one latent's planes at a time
+      const sizes = !lite ? [0] : spec.still ? [...new Set([R, resLo, resHi])] : [R];
       const z = model.tensor(spec); let P;
-      try { P = model.planes(z, size); } finally { z.dispose(); }
-      pc = { key: spec.key, size, P };
-      return P;
+      try { P = model.planes(z, lite ? sizes : undefined); } finally { z.dispose(); }
+      pc = { key: spec.key, P: new Map(lite && Array.isArray(P) ? sizes.map((s, i) => [s, P[i]]) : [[size, P]]) };   // v1: one full P
+      return pc.P.get(size);
     };
     const decode = async (spec, R, floorGuess) => {
-      const P = planesFor(spec, compact && !hd && !R3.neuralOn ? R : undefined);
+      const P = planesFor(spec, R);
       if (glgrid) return lev(await R3.gridVolume(model, P, R, floorGuess, band(R)));   // its exact floor arrives a frame or two later
       const g = await grid(P, R);
       try { const v = R3.volume(g); v.floor = floorHint = floorOf(g, floorHint); return lev(v); } finally { if (g.done) g.done(); }
@@ -296,7 +299,7 @@
           if (++st.restarts > 3) throw e;
           if (compact && resHi > hiBase) resHi = st.resHi = hiBase; // Retry at the device tier after an HD decode failure.
           console.warn('decode failed, retrying', e); st.warnings.push(String((e && e.message) || e));
-          if (pc) { pc.P.dispose(); pc = null; }
+          if (pc) { tf.dispose([...pc.P.values()]); pc = null; }
           await new Promise((r) => setTimeout(r, 400));
         }
       }

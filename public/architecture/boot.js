@@ -9,6 +9,10 @@
     webgpu: [cdn + 'webgpu@4.22.0/dist/tf-backend-webgpu.min.js', 'sha384-0cz8Hmjyhn7MyeyzI7MSTOuEdxiSNiwpDDPakM6XjdtC/Fb5/qRxkmLrTJROQqjQ'],
     webgl: [cdn + 'webgl@4.22.0/dist/tf-backend-webgl.min.js', 'sha384-PAbE0QuTSZkDuS/hX4MEx1MZ0Nwd+mkb2Znz35ZqGDjb36klpR8/mCpykhdd7uHW'],
   };
+  // the backend m3d-app.js will try first downloads now, beside tf-core and the model, instead of after them
+  const first = window.__M3D_BE[navigator.gpu && qs.get('backend') !== 'webgl' ? 'webgpu' : 'webgl'], hint = document.createElement('link');
+  Object.assign(hint, { rel: 'preload', as: 'script', href: first[0], integrity: first[1], crossOrigin: 'anonymous' });
+  document.head.append(hint);
   window.__tfLoadError = null;
   const progress = window.__M3D_PROG = { got: 0, total: 0 };
   const get = async (name, json = false) => {
