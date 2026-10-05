@@ -1,0 +1,292 @@
+---
+import { Image } from 'astro:assets';
+import portrait from '../assets/me/portrait.jpg';
+import { bio, facts, interests, links, site } from '../data/site';
+import Icon, { type IconName } from './Icon.astro';
+import LiveArchitecture from './LiveArchitecture.astro';
+
+const interestIcons: Record<string, IconName> = {
+  Biking: 'bike',
+  Hiking: 'mountain',
+  Travelling: 'plane',
+  Museums: 'museum',
+  Chess: 'chess',
+  Tennis: 'tennis',
+  Swimming: 'swimming',
+  Running: 'running',
+};
+---
+
+<section class="section about" id="about" aria-labelledby="about-title">
+  <div class="wrap">
+    <div class="about__intro">
+      <div class="about__profile">
+        <figure class="about__photo reveal">
+          <Image
+            src={portrait}
+            alt={`${site.name}, seated at a table in a white shirt`}
+            widths={[360, 540, 720, 1080]}
+            sizes="(min-width: 900px) 420px, 260px"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </figure>
+        <nav class="about__links reveal" aria-label="Social profiles and email">
+          {links.map((link) => (
+            <a href={link.href} rel={link.id === 'mail' ? undefined : 'me noopener'}>
+              <Icon name={link.id} />
+              <span>{link.label}</span>
+            </a>
+          ))}
+        </nav>
+      </div>
+
+      <div class="about__text">
+        <header class="reveal">
+          <p class="eyebrow">About</p>
+          <h1 class="h2" id="about-title">Research curiosity, with an engineer’s habit of shipping.</h1>
+        </header>
+        <div class="about__bio reveal">
+          {bio.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+        <LiveArchitecture />
+        <dl class="about__facts reveal">
+          {
+            facts.map((fact) => (
+              <div>
+                <dt>{fact.label}</dt>
+                <dd>{fact.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+
+    <div class="about__interests">
+      <section class="panel panel--wide reveal" aria-labelledby="interests-title">
+        <h3 class="h3" id="interests-title">Away from the keyboard</h3>
+        <ul class="interests">
+          {interests.map((interest) => (
+            <li>
+              <span class="interests__icon"><Icon name={interestIcons[interest]} /></span>
+              <span>{interest}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+
+    <p class="about__contact reveal">
+      Feel free to reach out to me or message my chatbot by clicking
+      <q><a href="/ask/" data-chat-open aria-haspopup="dialog">Ask AI</a></q>.
+    </p>
+  </div>
+</section>
+
+<style>
+  .about__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
+    gap: clamp(32px, 6vw, 88px);
+    align-items: start;
+  }
+
+  .about__profile {
+    position: sticky;
+    top: calc(var(--nav-h) + 28px);
+    width: 100%;
+  }
+
+  .about__photo {
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    background: var(--tile);
+    aspect-ratio: 4 / 4.7;
+  }
+
+  .about__photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 20%;
+  }
+
+  .about__bio {
+    display: grid;
+    gap: 1.05em;
+    max-width: 60ch;
+    margin-top: clamp(24px, 3vw, 36px);
+    font-size: clamp(17px, 1.5vw, 19px);
+    line-height: 1.52;
+    text-wrap: pretty;
+  }
+
+  .about__bio p:first-child {
+    font-size: 1.16em;
+    line-height: 1.42;
+    letter-spacing: -0.016em;
+  }
+
+  .about__bio p:not(:first-child) {
+    color: var(--text-2);
+  }
+
+  .about__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 18px 28px;
+    margin-top: clamp(28px, 3.4vw, 40px);
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  .about__facts dt {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-3);
+  }
+
+  .about__facts dd {
+    margin-top: 4px;
+    font-size: 15px;
+  }
+
+  .about__interests {
+    margin-top: clamp(56px, 8vw, 104px);
+  }
+
+  .about__contact {
+    margin-top: 24px;
+    color: var(--text-2);
+    font-size: clamp(17px, 1.5vw, 19px);
+    line-height: 1.52;
+    text-wrap: pretty;
+  }
+
+  .about__contact a {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .about__links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .about__links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 44px;
+    padding: 9px 13px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--tile);
+    color: var(--text-2);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .about__links a:hover {
+    background: var(--field-hover);
+    border-color: var(--link);
+    color: var(--link);
+    text-decoration: none;
+  }
+
+  .about__links :global(svg) {
+    width: 16px;
+    height: 16px;
+    flex: none;
+  }
+
+  .panel {
+    padding: clamp(24px, 3.2vw, 40px);
+    border-radius: var(--r-xl);
+    background: var(--tile);
+  }
+
+  .panel--wide {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px 40px;
+  }
+
+  .interests {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 26px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: clamp(20px, 2.4vw, 28px);
+    font-weight: 600;
+    letter-spacing: -0.022em;
+    color: var(--text-2);
+  }
+
+  .interests li {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+  }
+
+  .interests__icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    background: color-mix(in srgb, var(--link) 9%, transparent);
+    color: var(--link);
+  }
+
+  .interests__icon :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* Tablets and phones held sideways: a small photo beside the text. */
+  @media (max-width: 899px) {
+    .about__intro {
+      grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+    }
+
+    /* Small enough for the 640px source to stay sharp on a 3x screen. */
+    .about__profile {
+      position: static;
+      max-width: 260px;
+    }
+
+    .about__links a {
+      gap: 6px;
+      padding-inline: 8px;
+      font-size: 12px;
+    }
+
+    .about__links :global(svg) {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  @media (max-width: 699px) {
+    .about__intro {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .about__profile {
+      margin-inline: auto;
+    }
+  }
+</style>

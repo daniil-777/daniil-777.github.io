@@ -1,0 +1,325 @@
+---
+import { nav, site } from '../data/site';
+import Icon from './Icon.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+---
+
+<header class="nav" data-nav>
+  <div class="nav__bar wrap">
+    <a class="nav__brand" href="/" aria-label={`${site.name}, home`}>{site.name}</a>
+
+    <nav class="nav__links" aria-label="Primary">
+      {nav.map((item) => <a href={item.href} data-nav-link>{item.label}</a>)}
+    </nav>
+
+    <div class="nav__tools">
+      <a class="nav__ask" href="/ask/" data-chat-open>
+        <Icon name="ask" />
+        <span>Ask AI</span>
+      </a>
+      <LanguageSwitcher />
+      <button class="nav__tool" type="button" data-theme-toggle aria-label="Switch between light and dark appearance">
+        <Icon name="sun" class="nav__sun" />
+        <Icon name="moon" class="nav__moon" />
+      </button>
+      <button class="nav__tool nav__qr" type="button" data-qr-open aria-label="Show a QR code for this page">
+        <Icon name="qr" />
+      </button>
+      <button class="nav__tool nav__menu" type="button" data-nav-toggle aria-expanded="false" aria-controls="nav-sheet" aria-label="Menu">
+        <Icon name="menu" class="nav__open" />
+        <Icon name="close" class="nav__close" />
+      </button>
+    </div>
+  </div>
+
+  <nav id="nav-sheet" class="nav__sheet" aria-label="Menu" data-nav-sheet hidden>
+    <ul class="wrap">
+      {
+        nav.map((item, i) => (
+          <li style={`--i:${i}`}>
+            <a href={item.href}>{item.label}</a>
+          </li>
+        ))
+      }
+      <li style={`--i:${nav.length}`}>
+        <a href="/ask/" data-chat-open>Ask AI</a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--nav-bg);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s var(--ease);
+  }
+
+  .nav.is-scrolled,
+  .nav.is-open {
+    border-bottom-color: var(--line);
+  }
+
+  .nav__bar {
+    height: var(--nav-h);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav__brand {
+    justify-self: start;
+    color: var(--text);
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .nav__brand:hover {
+    text-decoration: none;
+  }
+
+  .nav__links {
+    display: flex;
+    gap: clamp(18px, 2.6vw, 34px);
+  }
+
+  .nav__links a {
+    color: var(--text-2);
+    font-size: 14px;
+    letter-spacing: -0.01em;
+    padding: 6px 0;
+    transition: color 0.2s var(--ease);
+  }
+
+  .nav__links a:hover,
+  .nav__links a.is-active {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .nav__tools {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .nav__tool {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: var(--text-2);
+    transition:
+      color 0.2s var(--ease),
+      background-color 0.2s var(--ease);
+  }
+
+  .nav__tool:hover {
+    color: var(--text);
+    background: var(--field);
+  }
+
+  /* The assistant: a pill with its name where there is room, an icon like the other tools where there is not. */
+  .nav__ask {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    margin-right: 6px;
+    padding: 0 12px;
+    border-radius: 980px;
+    background: var(--field);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background-color 0.2s var(--ease);
+  }
+
+  .nav__ask:hover {
+    background: var(--field-hover);
+    text-decoration: none;
+  }
+
+  .nav__ask :global(svg) {
+    display: none;
+    width: 19px;
+    height: 19px;
+  }
+
+  .nav__tool :global(svg) {
+    width: 19px;
+    height: 19px;
+    grid-area: 1 / 1;
+  }
+
+  /* The toggle shows the appearance you would switch to. */
+  .nav__tool :global(.nav__sun) {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .nav__tool :global(.nav__sun) {
+      display: block;
+    }
+
+    :global(:root:not([data-theme='light'])) .nav__tool :global(.nav__moon) {
+      display: none;
+    }
+  }
+
+  :global(:root[data-theme='dark']) .nav__tool :global(.nav__sun) {
+    display: block;
+  }
+
+  :global(:root[data-theme='dark']) .nav__tool :global(.nav__moon) {
+    display: none;
+  }
+
+  .nav__menu {
+    display: none;
+  }
+
+  .nav__menu :global(.nav__close),
+  .nav.is-open .nav__menu :global(.nav__open) {
+    display: none;
+  }
+
+  .nav.is-open .nav__menu :global(.nav__close) {
+    display: block;
+  }
+
+  .nav__sheet {
+    position: absolute;
+    inset: 100% 0 auto;
+    height: calc(100dvh - var(--nav-h));
+    background: var(--bg);
+    padding-top: 28px;
+    overflow-y: auto;
+  }
+
+  .nav__sheet ul {
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav__sheet li {
+    border-bottom: 1px solid var(--line);
+    animation: sheet-in 0.5s var(--ease) both;
+    animation-delay: calc(var(--i) * 45ms);
+  }
+
+  .nav__sheet a {
+    display: block;
+    padding: 16px 0;
+    color: var(--text);
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  .nav__sheet a:hover {
+    text-decoration: none;
+  }
+
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Fingers need a larger target than a pointer does. */
+  @media (pointer: coarse) {
+    .nav__tool {
+      width: 44px;
+      height: 44px;
+    }
+
+    /* 44px to press, still 30px to look at: the fill stops at the transparent border. */
+    .nav__ask {
+      height: 44px;
+      border-block: 7px solid transparent;
+      background-clip: padding-box;
+    }
+
+    .nav__brand,
+    .nav__links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
+
+  /* Phones only: on a tablet the links fit in the bar. Keep in step with site.ts. */
+  @media (max-width: 1099px) {
+    .nav__bar {
+      grid-template-columns: 1fr auto;
+    }
+
+    .nav__links {
+      display: none;
+    }
+
+    .nav__menu {
+      display: grid;
+    }
+  }
+
+  @media (max-width: 419px) {
+    .nav__bar { gap: 6px; }
+    .nav__brand { font-size: 15px; }
+    .nav__qr { display: none; }
+    .nav__ask {
+      width: 40px;
+      height: 40px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--text-2);
+    }
+
+    .nav__ask:hover {
+      background: var(--field);
+      color: var(--text);
+    }
+
+    .nav__ask :global(svg) {
+      display: block;
+    }
+
+    /* Out of sight, still the link's name for a screen reader. */
+    .nav__ask span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+  }
+
+  @media (max-width: 419px) and (pointer: coarse) {
+    .nav__ask {
+      width: 44px;
+      height: 44px;
+    }
+  }
+
+  /* The narrowest phones (320px) have room for three tools. The code is for opening the page on a phone, so it gives way. */
+  @media (max-width: 359px) {
+    .nav__qr {
+      display: none;
+    }
+  }
+</style>

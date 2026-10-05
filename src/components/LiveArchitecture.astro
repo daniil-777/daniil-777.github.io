@@ -1,0 +1,57 @@
+<section class="live-architecture" aria-labelledby="architecture-title" data-architecture>
+  <div class="live-architecture__visual">
+    <div id="architecture-preview" data-architecture-preview hidden></div>
+    <a class="live-architecture__play" href="/architecture/" data-play aria-controls="architecture-preview" aria-expanded="false"><span aria-hidden="true">▶</span> Play live 3D</a>
+  </div>
+  <div class="live-architecture__copy">
+    <h2 id="architecture-title">Live 3D, in your browser.</h2>
+    <p>Neural architecture in HD, transforming live.</p>
+    <div class="live-architecture__actions">
+      <button type="button" data-toggle hidden>Pause</button>
+      <button type="button" data-next hidden>Next</button>
+      <button type="button" data-remove hidden>Remove</button>
+    </div>
+    <div class="live-architecture__links"><a href="/work/pixel-morph/">Explore the project ↗</a><a href="/architecture/credits.html" target="_blank" rel="noopener">Model credits</a></div>
+    <p class="live-architecture__status" data-status role="status" hidden></p>
+  </div>
+</section>
+
+<script>
+  import { activateWhenVisible } from '../lib/architecture/activation';
+  const root = document.querySelector<HTMLElement>('[data-architecture]');
+  if (root) {
+    const play = root.querySelector<HTMLAnchorElement>('[data-play]')!;
+    let controller: Promise<{ start(manual?: boolean): void }> | undefined;
+    let stopAuto = () => {};
+    const activate = (manual: boolean) => {
+      stopAuto();
+      controller ??= import('../lib/architecture/preview').then(({ setupPreview }) => setupPreview(root));
+      void controller.then((preview) => preview.start(manual)).catch(() => { controller = undefined; if (manual) location.assign(play.href); });
+    };
+    play.addEventListener('click', (event) => {
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+      event.preventDefault(); activate(true);
+    });
+    stopAuto = activateWhenVisible(root, () => activate(false));
+  }
+</script>
+
+<style>
+  .live-architecture { display: grid; grid-template-columns: 160px minmax(0, 1fr); align-items: center; gap: 20px; max-width: 520px; margin-top: 28px; }
+  .live-architecture__visual { position: relative; width: 160px; height: 160px; overflow: hidden; border-radius: 50%; background: var(--tile); }
+  [data-architecture-preview], [data-architecture-preview] :global(iframe) { display: block; width: 100%; height: 100%; border: 0; }
+  h2 { font-size: 16px; font-weight: 600; letter-spacing: -.02em; }
+  .live-architecture__copy > p { margin-top: 5px; color: var(--text-2); font-size: 13px; line-height: 1.45; }
+  .live-architecture__play { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--link); font-size: 13px; font-weight: 600; }
+  .live-architecture__play span { font-size: 22px; }
+  .live-architecture__play:hover { text-decoration: none; background: var(--field-hover); }
+  .live-architecture__actions { display: flex; flex-wrap: wrap; gap: 2px 8px; margin-top: 5px; }
+  button { min-width: 44px; min-height: 44px; padding: 8px 3px; border: 0; background: transparent; color: var(--link); font: inherit; font-size: 13px; cursor: pointer; }
+  button:hover { text-decoration: underline; }
+  .live-architecture__links { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 7px; font-size: 12px; }
+  .live-architecture__links a:last-child { color: var(--text-2); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  .live-architecture__play:focus-visible { outline-offset: -4px; }
+  [hidden] { display: none; }
+  @media(max-width: 399px) { .live-architecture { grid-template-columns: 128px minmax(0, 1fr); gap: 12px; } .live-architecture__visual { width: 128px; height: 128px; } h2 { font-size: 14px; } }
+</style>

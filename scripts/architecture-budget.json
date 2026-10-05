@@ -1,0 +1,14 @@
+{
+  "note": "Explicit budget for the compact HD About preview, 2026-10-05: in-view activation and external playback controls. Original chat baseline and allowances retained. Runtime and models must stay outside the eager graph. Pre-feature measurements remain below.",
+  "before": {
+    "html": 22379,
+    "css": 11147,
+    "js": 7272
+  },
+  "allowance": {
+    "html": 500,
+    "css": 350,
+    "js": 850
+  },
+  "activatedLocalMaxBytes": 3400000
+}

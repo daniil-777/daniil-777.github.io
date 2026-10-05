@@ -1,0 +1,46 @@
+# Allowlist: this folder also holds raw source material (CV, diplomas,
+# unpublished papers, multi-GB screen recordings) that must never be pushed.
+# Only the website itself is tracked.
+/*
+!/.gitignore
+!/.github/
+!/README.md
+!/package.json
+!/package-lock.json
+!/astro.config.mjs
+!/tsconfig.json
+!/src/
+!/public/
+!/scripts/
+!/tests/
+!/worker/
+
+.DS_Store
+.env*
+# Raw screen recordings never belong in the repository; the site ships the MP4s in public/media.
+*.mov
+# Left behind only if `npm run media` is interrupted mid-encode.
+*.partial.*
+
+# State that agent tooling drops into whichever folder it happens to run in.
+.claude-flow/
+.swarm/
+ruvector.db
+agentdb.rvf*
+
+# The assistant's endpoint. .dev.vars holds provider API keys for local runs;
+# .wrangler is the local state of `wrangler dev`.
+worker/.dev.vars*
+!worker/.dev.vars.example
+worker/.wrangler/
+worker/node_modules/
+# The embedding model downloaded by the build.
+.cache/
+
+# Document the non-secret frontend endpoint variable.
+!/.env.example
+
+# Public model provenance required by architecture tests; all other local docs stay private.
+!/docs/
+/docs/*
+!/docs/live-architecture-provenance.json

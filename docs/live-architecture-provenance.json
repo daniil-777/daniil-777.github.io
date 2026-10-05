@@ -1,0 +1,124 @@
+{
+  "repository": "https://github.com/daniil-777/real-time-web-2D3D-generation",
+  "commit": "107db8f196386da39104f14f86a4c41a426d309e",
+  "files": [
+    {
+      "upstream": "morph3d/m3d-model.js",
+      "local": "architecture/runtime/m3d-model.js",
+      "upstreamSha256": "b1251b6021c669099cd94b66869cd7b7f1878208281c4c14d31ff298c443e3f3",
+      "localSha256": "b1251b6021c669099cd94b66869cd7b7f1878208281c4c14d31ff298c443e3f3",
+      "localBytes": 18135
+    },
+    {
+      "upstream": "morph3d/m3d-model2.js",
+      "local": "architecture/runtime/m3d-model2.js",
+      "upstreamSha256": "e82a1fcbc0b2f2e0b8f971179e7a7cb390217fbaff7d5e445f380bb6b8018d16",
+      "localSha256": "e82a1fcbc0b2f2e0b8f971179e7a7cb390217fbaff7d5e445f380bb6b8018d16",
+      "localBytes": 11106
+    },
+    {
+      "upstream": "morph3d/m3d-render.js",
+      "local": "architecture/runtime/m3d-render.js",
+      "upstreamSha256": "9f22cb7b384821ecad35ab8fb3d369952e4f71af002a2c4899b305a0e8b8eb79",
+      "localSha256": "a72af8fa64135c603b157459181e2013f858ac01175e7db2ceb060272aa44fc7",
+      "localBytes": 18249
+    },
+    {
+      "upstream": "morph3d/m3d-glgrid.js",
+      "local": "architecture/runtime/m3d-glgrid.js",
+      "upstreamSha256": "b5588ba68f5381c629b91994d3b7e074521b6c6459e214a983ae7fd70d95f737",
+      "localSha256": "b5588ba68f5381c629b91994d3b7e074521b6c6459e214a983ae7fd70d95f737",
+      "localBytes": 21024
+    },
+    {
+      "upstream": "morph3d/m3d-neural.js",
+      "local": "architecture/runtime/m3d-neural.js",
+      "upstreamSha256": "a8a1f036648e722c0f7895db3ece34193bba7fbb71fab9543633c87cfafa7756",
+      "localSha256": "a8a1f036648e722c0f7895db3ece34193bba7fbb71fab9543633c87cfafa7756",
+      "localBytes": 18466
+    },
+    {
+      "upstream": "morph3d/m3d-level.js",
+      "local": "architecture/runtime/m3d-level.js",
+      "upstreamSha256": "7b19fe0f5a6df37488341fa613624680233d7382f9577e4f2f94b3ed42c1bfa1",
+      "localSha256": "7b19fe0f5a6df37488341fa613624680233d7382f9577e4f2f94b3ed42c1bfa1",
+      "localBytes": 4542
+    },
+    {
+      "upstream": "morph3d/m3d-walk.js",
+      "local": "architecture/runtime/m3d-walk.js",
+      "upstreamSha256": "7115fa443750f1b6eb3ec777e4e712623a6fb7e6975ecfe855d8bd2f3e8723bb",
+      "localSha256": "7115fa443750f1b6eb3ec777e4e712623a6fb7e6975ecfe855d8bd2f3e8723bb",
+      "localBytes": 24279
+    },
+    {
+      "upstream": "morph3d/m3d-app.js",
+      "local": "architecture/runtime/m3d-app.js",
+      "upstreamSha256": "06619bcab4fb8a7e38d0684bb0de04968fdc21db25e0d9cd65dcb92b60f4ceae",
+      "localSha256": "07da2e741eedb1ff03d4a38aedcfc4b775172dc807ff62e011a3bec31d6e6560",
+      "localBytes": 33570
+    },
+    {
+      "upstream": "morph3d/model-arch3/anchors-0.bin.gz",
+      "local": "architecture/model/anchors-0.bin.gz",
+      "upstreamSha256": "1862f9cf2c79af3a958986b0566d53cccc3f7aeaae11ecd78574c32a1f962c28",
+      "localSha256": "1862f9cf2c79af3a958986b0566d53cccc3f7aeaae11ecd78574c32a1f962c28",
+      "localBytes": 993075
+    },
+    {
+      "upstream": "morph3d/model-arch3/decoder.bin.gz",
+      "local": "architecture/model/decoder.bin.gz",
+      "upstreamSha256": "b2045955b46697aa2015035474dbfab27b8f0694113e6caa028986c7abda6d54",
+      "localSha256": "b2045955b46697aa2015035474dbfab27b8f0694113e6caa028986c7abda6d54",
+      "localBytes": 2124316
+    },
+    {
+      "upstream": "morph3d/model-arch3/map.json",
+      "local": "architecture/model/map.json",
+      "upstreamSha256": "18db79a766a3463d9f6cd2f43179156b146c5906d5e279ba0b56e121528e7866",
+      "localSha256": "3f632406b84cc6ee96aa688184e9ee498035101d14e7bb5ceb430a63a4aa23c9",
+      "localBytes": 354
+    },
+    {
+      "upstream": "morph3d/model-arch3/meta.json",
+      "local": "architecture/model/meta.json",
+      "upstreamSha256": "cd47e9101b1eeabd6c5916ad3085abf705bac2e7ef5135a87e8b91cdf291fb7d",
+      "localSha256": "061dda56d3a8f5a7bcd32395c4ba5d30e488a493bad209fefe2df307599dc1ac",
+      "localBytes": 6890
+    },
+    {
+      "upstream": "morph3d/model-arch3/sources.json",
+      "local": "architecture/model/sources.json",
+      "upstreamSha256": "85a73d7ba20054054dae1a216474382c7df67e975c673692d62bc5feaca3eede",
+      "localSha256": "e9aa35aeeea964104837dc8631909e1eecf8d2c43cde0f64530df3c473ee6422",
+      "localBytes": 2995
+    }
+  ],
+  "adaptations": {
+    "runtime/m3d-app.js": [
+      "GPU-only backend; no CPU inference fallback",
+      "Host and document visibility gate decoding and drawing",
+      "Pause stops automatic rotation",
+      "Wheel zoom requires Alt to preserve page scrolling",
+      "Compact preview caps drawing at30fps and neural samples near3/sec, retaining interpolated display frames",
+      "Explicit manual Play permits the normal building-tour cadence with reduced motion",
+      "Unused neural-detail shader initialization skipped when neural=0",
+      "Repaint when asynchronous neural detail becomes available",
+      "Retain grid rendering after neural upload failure and lower compact HD grid after decode failure"
+    ],
+    "model/meta.json": [
+      "First twelve architecture anchors and first chunk only",
+      "CLIP text encoder metadata removed; no prior is present"
+    ],
+    "model/map.json": [
+      "Coordinates and neighbor indices reduced to12; similarity scores stay aligned"
+    ],
+    "model/sources.json": [
+      "First twelve authors and original model licences retained"
+    ],
+    "runtime/m3d-render.js": [
+      "Curvature shading respects the coarser morph grid spacing",
+      "Compact preview uses bounded, coverage-gated five-tap sharpening; silhouettes, paper and shadows are excluded"
+    ]
+  }
+}

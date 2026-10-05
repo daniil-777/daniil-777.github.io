@@ -1,0 +1,473 @@
+@import './voice.css';
+
+/*
+ * The "Ask AI" dialog. Imported by src/scripts/chat/main.ts, so it is only
+ * downloaded when the chat is opened. The size of the dialog and the surface
+ * of its panel are in ChatDialog.astro: they show before this file arrives.
+ * Colours are the tokens of global.css; light and dark follow from them.
+ */
+
+.chat__panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 14px;
+  height: min(720px, 100dvh - 64px);
+}
+
+.chat__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.turn__resources {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.turn__resource {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--tile);
+}
+
+.turn__resource strong {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.turn__resource-kind,
+.turn__resource-description {
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.turn__resource-kind {
+  margin-bottom: 5px;
+}
+
+.turn__resource-description {
+  margin-top: 6px;
+}
+
+.turn__resource video {
+  display: block;
+  width: 100%;
+  max-height: 280px;
+  margin-top: 12px;
+  border-radius: 10px;
+  background: #000;
+}
+
+.turn__resource-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chat__disclosure,
+.chat__foot,
+.chat__hint,
+.chat__consent {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+
+/* ------------------------------------------------------------ mode switch */
+
+.chat__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.chat__tools:not(:has(> :not([hidden]))) {
+  display: none;
+}
+
+.chat__modes {
+  display: flex;
+  margin: 0;
+  padding: 3px;
+  border: 0;
+  border-radius: 980px;
+  background: var(--field);
+}
+
+.chat__mode {
+  position: relative;
+  cursor: pointer;
+}
+
+/* The radio itself stays in place for the keyboard and for screen readers; the label is what is seen. */
+.chat__mode input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.chat__mode span {
+  display: flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 14px;
+  border-radius: 980px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.chat__mode input:checked + span {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.chat__mode input:focus-visible + span {
+  outline: 3px solid color-mix(in srgb, var(--accent) 70%, transparent);
+  outline-offset: 1px;
+}
+
+.chat__mode input:disabled + span {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.chat__mode small {
+  font-size: inherit;
+  font-weight: 400;
+}
+
+.chat__smart {
+  font-size: 13px;
+  color: var(--link);
+  text-align: left;
+}
+
+.chat__smart:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.chat__hint .chat__smart {
+  margin-left: 8px;
+}
+
+/* --------------------------------------------------------------- transcript */
+
+/*
+ * The one part that scrolls: the transcript, the suggestions and a download
+ * question. It takes the height that is left, so the field below it is always
+ * on screen, however little room an on-screen keyboard leaves.
+ */
+.chat__scroll {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1 1 0;
+  min-height: 0;
+  /* Room for the focus ring of a chip at the edge. */
+  margin-inline: -6px;
+  padding: 4px 6px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chat__scroll:focus-visible {
+  outline-offset: 0;
+}
+
+.chat__log {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  /* In the empty state this pushes the suggestions down to the field. */
+  flex: 1 0 auto;
+}
+
+.turn {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  font-size: 16px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.turn--q {
+  justify-self: end;
+  max-width: 85%;
+  padding: 10px 16px;
+  border-radius: var(--r-md);
+  background: var(--field);
+}
+
+.turn--a {
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 12px;
+}
+
+.turn__avatar {
+  display: block;
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.turn__content {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+@media (max-width: 420px) {
+  .turn--a {
+    grid-template-columns: 32px minmax(0, 1fr);
+    column-gap: 9px;
+  }
+  .turn__avatar { width: 32px; height: 32px; }
+}
+
+.turn__text {
+  display: grid;
+  gap: 8px;
+}
+
+.turn__mode,
+.turn__note,
+.turn__notice {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.turn__notice {
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.turn__writing {
+  color: var(--text-2);
+}
+
+.turn__passage {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+}
+
+.turn__quote {
+  margin: 0;
+  padding-left: 14px;
+  border-left: 2px solid var(--line);
+  color: var(--text-2);
+}
+
+.turn .turn__list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 14px;
+  border-left: 2px solid var(--line);
+  color: var(--text-2);
+}
+
+.turn__sources,
+.turn__next,
+.chat__suggest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* A chip here can hold a whole question or a long title: it may wrap, where the site's chips never do. */
+.chat .chip {
+  height: auto;
+  min-height: 30px;
+  padding-block: 5px;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.3;
+  transition:
+    background-color 0.2s var(--ease),
+    color 0.2s var(--ease);
+}
+
+.chat button.chip {
+  color: var(--text);
+}
+
+.chat button.chip:hover {
+  background: var(--field-hover);
+}
+
+.turn__meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ----------------------------------------------------------------- composer */
+
+.chat__consent {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: var(--r-md);
+  background: var(--field);
+}
+
+.chat__consent progress {
+  width: min(100%, 240px);
+  margin-right: 10px;
+  vertical-align: middle;
+  accent-color: var(--accent);
+}
+
+.chat__choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chat__form {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: end;
+  gap: 8px;
+}
+
+.chat__form textarea {
+  display: block;
+  width: 100%;
+  /* Four lines, then the field scrolls. */
+  max-height: calc(4 * 1.4em + 22px);
+  margin: 0;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: var(--r-md);
+  background: var(--field);
+  color: var(--text);
+  font: inherit;
+  /* Below 16px iOS zooms the page when the field is focused. */
+  font-size: max(16px, 1rem);
+  line-height: 1.4;
+  letter-spacing: inherit;
+  resize: none;
+}
+
+.chat__form textarea::placeholder {
+  /* The only visible prompt of the field, so it has the contrast of text. */
+  color: var(--text-2);
+  /* A wrapped placeholder would be cut by the one-line field; narrow screens get a shorter one (view.ts). */
+  white-space: nowrap;
+}
+
+.chat__form textarea:focus-visible {
+  outline-offset: 0;
+  border-radius: var(--r-md);
+}
+
+.chat__form .btn {
+  min-height: 44px;
+}
+
+.chat__count {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-3);
+}
+
+/* Fingers need a larger target than a pointer does. */
+@media (pointer: coarse) {
+  .chat .chip,
+  .chat__mode span,
+  .chat__smart {
+    min-height: 44px;
+  }
+
+  .chat__smart,
+  .chat__foot a,
+  .turn__email a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+/*
+ * A phone, upright or on its side: the dialog is the whole screen, and stays
+ * above the on-screen keyboard. The height condition also catches a tablet
+ * whose keyboard leaves it a strip.
+ */
+@media (max-width: 600px), (max-height: 520px) {
+  .chat {
+    /* Not 100vw, which would run underneath a classic scrollbar. */
+    width: 100%;
+    max-width: none;
+    height: var(--vvh, 100dvh);
+    max-height: none;
+    margin: 0;
+  }
+
+  .chat__panel {
+    height: 100%;
+    padding: calc(14px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom))
+      calc(20px + env(safe-area-inset-left));
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* Said before the first question; after it every answer carries its own label, and the room goes to the transcript. */
+  [data-started] .chat__disclosure {
+    display: none;
+  }
+}
+
+/* Little height (a phone on its side, or with its keyboard up): what is not needed to ask goes. */
+@media (max-height: 520px) {
+  .chat__panel {
+    gap: 8px;
+    padding-top: calc(8px + env(safe-area-inset-top));
+  }
+
+  .chat__body {
+    gap: 8px;
+  }
+
+  .chat__foot {
+    display: none;
+  }
+
+  /* One row that scrolls sideways instead of four rows. */
+  .chat__suggest {
+    flex-wrap: nowrap;
+    flex: none;
+    margin-inline: -6px;
+    padding: 2px 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .chat__suggest li {
+    flex: none;
+  }
+
+  .chat .chat__suggest .chip {
+    white-space: nowrap;
+  }
+}

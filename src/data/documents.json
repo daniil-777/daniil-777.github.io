@@ -1,0 +1,430 @@
+{
+  "alzheimers-poster": {
+    "title": "Studying Alzheimer’s Disease Related Brain Deformations Using Generative Adversarial Networks",
+    "pdf": "/papers/amgen-scholars-poster-2018.pdf",
+    "thumb": {
+      "src": "/docs/alzheimers-poster/thumb.webp",
+      "width": 480,
+      "height": 679
+    },
+    "thumbSmall": {
+      "src": "/docs/alzheimers-poster/thumb-s.webp",
+      "width": 240,
+      "height": 339
+    },
+    "pages": [
+      {
+        "src": "/docs/alzheimers-poster/1.webp",
+        "width": 1400,
+        "height": 1980
+      }
+    ],
+    "sig": {
+      "pdf": "1ef1afbfc8a1",
+      "pages": "70e27a284a5d",
+      "thumb": "e19661c08266",
+      "thumbSmall": "c5af97383ad5"
+    },
+    "sha256": {
+      "source": "c63865fb43f8786e1d8e5092b6ad2cfd05b2f03698c4c497701a6c141eda9484",
+      "pdf": "3765f10c330f6ecbeeab1b6da7fda3ae53e5714a4dea9f82b665ed2d3e12ef1d",
+      "images": "9283bb1ae0e655d8b9969ef3e5bad048507871bdddb7a8bb57973b747bdf49e5"
+    }
+  },
+  "camera-pose-patent": {
+    "title": "A method for determining the 6D pose of a camera used to acquire an image of a scene using a point cloud of the scene and features",
+    "pdf": "/papers/camera-pose-patent.pdf",
+    "thumb": {
+      "src": "/docs/camera-pose-patent/thumb.webp",
+      "width": 480,
+      "height": 679
+    },
+    "thumbSmall": {
+      "src": "/docs/camera-pose-patent/thumb-s.webp",
+      "width": 240,
+      "height": 340
+    },
+    "pages": [
+      {
+        "src": "/docs/camera-pose-patent/1.webp",
+        "width": 1400,
+        "height": 1981
+      },
+      {
+        "src": "/docs/camera-pose-patent/2.webp",
+        "width": 1400,
+        "height": 1981
+      },
+      {
+        "src": "/docs/camera-pose-patent/3.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/4.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/5.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/6.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/7.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/8.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/9.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/10.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/11.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/12.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/13.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/14.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/15.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/16.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/17.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/18.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/19.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/20.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/21.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/22.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/23.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/24.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/25.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/26.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/27.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/28.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/29.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/30.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/31.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/32.webp",
+        "width": 1400,
+        "height": 1981
+      },
+      {
+        "src": "/docs/camera-pose-patent/33.webp",
+        "width": 1400,
+        "height": 1981
+      },
+      {
+        "src": "/docs/camera-pose-patent/34.webp",
+        "width": 1400,
+        "height": 1981
+      },
+      {
+        "src": "/docs/camera-pose-patent/35.webp",
+        "width": 1400,
+        "height": 1981
+      },
+      {
+        "src": "/docs/camera-pose-patent/36.webp",
+        "width": 1400,
+        "height": 1982
+      },
+      {
+        "src": "/docs/camera-pose-patent/37.webp",
+        "width": 1400,
+        "height": 1982
+      }
+    ],
+    "sig": {
+      "pdf": "f32eaf5b9cd9",
+      "pages": "aeaa92962e76",
+      "thumb": "9fc031344843",
+      "thumbSmall": "fb3ca3f395d1"
+    },
+    "sha256": {
+      "source": "d2de984650bf25a9fbc9b3597bf9bd063af7071a742a7fb9626ada7fb6f943a5",
+      "pdf": "0a0bf42674d2be50eba88d5ce409258ddbc25aedd334b6f91b237f7fbab6c62e",
+      "images": "3de3f658e15b372e187d66cc4371c4380450591fd54aac969714b767faac34bc"
+    }
+  },
+  "dynamic-plane-onet-paper": {
+    "title": "Dynamic Plane Convolutional Occupancy Networks",
+    "pdf": "/papers/dynamic-plane-onet-paper.pdf",
+    "thumb": {
+      "src": "/docs/dynamic-plane-onet-paper/thumb.webp",
+      "width": 480,
+      "height": 621
+    },
+    "thumbSmall": {
+      "src": "/docs/dynamic-plane-onet-paper/thumb-s.webp",
+      "width": 240,
+      "height": 311
+    },
+    "pages": [
+      {
+        "src": "/docs/dynamic-plane-onet-paper/1.webp",
+        "width": 1400,
+        "height": 1812
+      },
+      {
+        "src": "/docs/dynamic-plane-onet-paper/2.webp",
+        "width": 1400,
+        "height": 1812
+      },
+      {
+        "src": "/docs/dynamic-plane-onet-paper/3.webp",
+        "width": 1400,
+        "height": 1812
+      },
+      {
+        "src": "/docs/dynamic-plane-onet-paper/4.webp",
+        "width": 1400,
+        "height": 1812
+      },
+      {
+        "src": "/docs/dynamic-plane-onet-paper/5.webp",
+        "width": 1400,
+        "height": 1812
+      },
+      {
+        "src": "/docs/dynamic-plane-onet-paper/6.webp",
+        "width": 1400,
+        "height": 1812
+      },
+      {
+        "src": "/docs/dynamic-plane-onet-paper/7.webp",
+        "width": 1400,
+        "height": 1812
+      },
+      {
+        "src": "/docs/dynamic-plane-onet-paper/8.webp",
+        "width": 1400,
+        "height": 1812
+      },
+      {
+        "src": "/docs/dynamic-plane-onet-paper/9.webp",
+        "width": 1400,
+        "height": 1812
+      },
+      {
+        "src": "/docs/dynamic-plane-onet-paper/10.webp",
+        "width": 1400,
+        "height": 1812
+      }
+    ],
+    "sig": {
+      "pdf": "ca15d061240f",
+      "pages": "e24393154521",
+      "thumb": "e62a01de6505",
+      "thumbSmall": "2bdb8411f2ed"
+    },
+    "sha256": {
+      "source": "7f9859f6705a327b0177e5811dec55ee9013906c485a9c3f84c304d1ba051532",
+      "pdf": "a6af1d53d5d0f7c13ecc82f18d2130279fbd20b3138e5b5498014c85771b2d56",
+      "images": "a25b58b182936e4074fd118e1c895b6a088ff40a6cc49bed23a4b14f53a05a18"
+    }
+  },
+  "loss-landscape-barcodes-paper": {
+    "title": "Barcodes as Summary of Loss Function Topology",
+    "pdf": "/papers/loss-landscape-barcodes-paper.pdf",
+    "thumb": {
+      "src": "/docs/loss-landscape-barcodes-paper/thumb.webp",
+      "width": 480,
+      "height": 679
+    },
+    "thumbSmall": {
+      "src": "/docs/loss-landscape-barcodes-paper/thumb-s.webp",
+      "width": 240,
+      "height": 339
+    },
+    "pages": [
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/1.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/2.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/3.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/4.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/5.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/6.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/7.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/8.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/9.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/10.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/11.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/12.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/13.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/14.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/15.webp",
+        "width": 1400,
+        "height": 1980
+      },
+      {
+        "src": "/docs/loss-landscape-barcodes-paper/16.webp",
+        "width": 1400,
+        "height": 1980
+      }
+    ],
+    "sig": {
+      "pdf": "2efc254ff5e4",
+      "pages": "47ab2f3025ad",
+      "thumb": "894e57d58046",
+      "thumbSmall": "23876891e574"
+    },
+    "sha256": {
+      "source": "788494ee49ea2ca6aec351d903244bf75e39273ee4e6aa50b131ea31ebb9271b",
+      "pdf": "09ea5199056e8cf3ea25edb5c20f0b6d55da48725c44b8c6db0ff604efbb4a07",
+      "images": "1f6333fa80412e387d6d01469b8e88ff410254a20d4cd837d7a0fcccadde064c"
+    }
+  }
+}

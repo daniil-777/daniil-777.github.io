@@ -1,0 +1,167 @@
+{
+  "fx-regime-radar": {
+    "src": "/media/video/fx-regime-radar.mp4",
+    "small": "/media/small/fx-regime-radar.mp4",
+    "preview": "/media/preview/fx-regime-radar.mp4",
+    "width": 1920,
+    "height": 1080,
+    "duration": 25,
+    "audio": true,
+    "sig": {
+      "full": "75171f0b0f8b",
+      "small": "7f11487bdb92",
+      "preview": "f1f75d6e4493",
+      "poster": "e1d3fa669cfc"
+    }
+  },
+  "pixel-morph": {
+    "src": "/media/video/pixel-morph.mp4",
+    "small": "/media/small/pixel-morph.mp4",
+    "preview": "/media/preview/pixel-morph.mp4",
+    "width": 1920,
+    "height": 1080,
+    "duration": 25,
+    "audio": true,
+    "sig": {
+      "full": "86656828bdf2",
+      "small": "6bb752b9b8f4",
+      "preview": "ce59d882474f",
+      "poster": "89ad8c0cd87d"
+    }
+  },
+  "ai-proctor-analyser": {
+    "src": "/media/video/ai-proctor-analyser.mp4",
+    "small": "/media/small/ai-proctor-analyser.mp4",
+    "preview": "/media/preview/ai-proctor-analyser.mp4",
+    "width": 1920,
+    "height": 1018,
+    "duration": 165.8,
+    "audio": false,
+    "sig": {
+      "full": "591ace41212c",
+      "small": "4a83662da37b",
+      "preview": "040d993578ee",
+      "poster": "eb4c7b2c4c06"
+    }
+  },
+  "ai-proctor-davos": {
+    "src": "/media/video/ai-proctor-davos.mp4",
+    "small": "/media/small/ai-proctor-davos.mp4",
+    "preview": "/media/preview/ai-proctor-davos.mp4",
+    "width": 1920,
+    "height": 1222,
+    "duration": 190.6,
+    "audio": false,
+    "sig": {
+      "full": "0c786b6addb0",
+      "small": "d897458c579d",
+      "preview": "44680af29ea0",
+      "poster": "0e726542fdcc"
+    }
+  },
+  "artpulse": {
+    "src": "/media/video/artpulse.mp4",
+    "small": "/media/small/artpulse.mp4",
+    "preview": "/media/preview/artpulse.mp4",
+    "width": 1920,
+    "height": 1080,
+    "duration": 33.6,
+    "audio": true,
+    "sig": {
+      "full": "7d4a87e3a885",
+      "small": "819e90eb1eb2",
+      "preview": "6c2c4bd30a61",
+      "poster": "3325562ce8b6"
+    }
+  },
+  "astro-pilot": {
+    "src": "/media/video/astro-pilot.mp4",
+    "small": "/media/small/astro-pilot.mp4",
+    "preview": "/media/preview/astro-pilot.mp4",
+    "width": 1920,
+    "height": 1080,
+    "duration": 103.2,
+    "audio": true,
+    "sig": {
+      "full": "a04e49567c7f",
+      "small": "8af9dc9ff2c8",
+      "preview": "7cded873b559",
+      "poster": "23ca3d933a6e"
+    }
+  },
+  "lap-peg-transfer": {
+    "src": "/media/video/lap-peg-transfer.mp4",
+    "small": "/media/small/lap-peg-transfer.mp4",
+    "preview": "/media/preview/lap-peg-transfer.mp4",
+    "width": 1920,
+    "height": 1264,
+    "duration": 124.7,
+    "audio": false,
+    "sig": {
+      "full": "2a8c43678b31",
+      "small": "da36935b73f1",
+      "preview": "50b0324479e2",
+      "poster": "7e11ec35f2a6"
+    }
+  },
+  "lap-precision-cutting": {
+    "src": "/media/video/lap-precision-cutting.mp4",
+    "small": "/media/small/lap-precision-cutting.mp4",
+    "preview": "/media/preview/lap-precision-cutting.mp4",
+    "width": 1920,
+    "height": 1256,
+    "duration": 84.9,
+    "audio": false,
+    "sig": {
+      "full": "a852358257f6",
+      "small": "6e01aa549c8b",
+      "preview": "4cce15bb3dc5",
+      "poster": "9bbb5bf4e570"
+    }
+  },
+  "lap-ligating-loop": {
+    "src": "/media/video/lap-ligating-loop.mp4",
+    "small": "/media/small/lap-ligating-loop.mp4",
+    "preview": "/media/preview/lap-ligating-loop.mp4",
+    "width": 1920,
+    "height": 1254,
+    "duration": 51.4,
+    "audio": false,
+    "sig": {
+      "full": "60d4f46038d7",
+      "small": "772f0badd7ef",
+      "preview": "da3624d4d643",
+      "poster": "8012d6898927"
+    }
+  },
+  "lap-extracorporeal-knot": {
+    "src": "/media/video/lap-extracorporeal-knot.mp4",
+    "small": "/media/small/lap-extracorporeal-knot.mp4",
+    "preview": "/media/preview/lap-extracorporeal-knot.mp4",
+    "width": 1920,
+    "height": 1260,
+    "duration": 77.6,
+    "audio": false,
+    "sig": {
+      "full": "5c478a30e534",
+      "small": "8525e70d117f",
+      "preview": "d4b706469cb0",
+      "poster": "35d7bc218fac"
+    }
+  },
+  "lap-stratafix": {
+    "src": "/media/video/lap-stratafix.mp4",
+    "small": "/media/small/lap-stratafix.mp4",
+    "preview": "/media/preview/lap-stratafix.mp4",
+    "width": 1920,
+    "height": 1010,
+    "duration": 170.4,
+    "audio": false,
+    "sig": {
+      "full": "6870271f0773",
+      "small": "b3c167a082b6",
+      "preview": "6e97fbcfbb19",
+      "poster": "2f77d6ea2a17"
+    }
+  }
+}

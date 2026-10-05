@@ -1,0 +1,200 @@
+---
+import { links, publications } from '../data/site';
+import { DOCUMENT_KIND, getDocuments, pageCount, thumbSrcset } from '../lib/documents';
+import { projectHref } from '../lib/projects';
+import Icon from './Icon.astro';
+
+const scholar = links.find((link) => link.id === 'scholar')!;
+const documents = await getDocuments();
+// Each citation is joined with the document it cites, which carries the title and the files.
+const rows = publications.map((pub) => {
+  const doc = documents.find((candidate) => candidate.id === pub.document);
+  if (!doc) throw new Error(`Publication "${pub.document}" has no rendered document. Run: npm run docs`);
+  return { ...pub, doc, kind: DOCUMENT_KIND[doc.kind] };
+});
+---
+
+<section class="section section--alt research" id="research" aria-labelledby="research-title">
+  <div class="wrap">
+    <header class="section__head reveal">
+      <p class="eyebrow">Research</p>
+      <h2 class="h2" id="research-title">Publications and a patent filing.</h2>
+      <p class="lead">Work on 3D vision, the theory of deep learning and medical imaging, with groups at ETH Zurich and in Moscow.</p>
+    </header>
+
+    <ul class="pubs">
+      {
+        rows.map(({ doc, kind, ...pub }) => (
+          <li class="pub reveal">
+            <p class="pub__kind">
+              <Icon name={kind.icon} />
+              {kind.label} · {pub.year}
+            </p>
+            {/* The link beside it does the same and has a name, so this one stays out of the tab order. */}
+            <a class="pub__thumb" href={doc.pdf} target="_blank" rel="noopener" data-doc={doc.id} tabindex="-1" aria-hidden="true">
+              <img src={doc.thumb.src} srcset={thumbSrcset(doc)} sizes="(max-width: 899px) 72px, 84px" width={doc.thumb.width} height={doc.thumb.height} alt="" loading="lazy" decoding="async" />
+            </a>
+            <div>
+              <h3 class="pub__title">{doc.title}</h3>
+              <p class="pub__authors">
+                {pub.authors.split(/(D\. Emtsev\*?)/).map((part) => (part.startsWith('D. Emtsev') ? <strong>{part}</strong> : part))}
+              </p>
+              <p class="pub__venue">{pub.venue}</p>
+            </div>
+            <p class="pub__links">
+              <a
+                class="arrow-link"
+                href={doc.pdf}
+                target="_blank"
+                rel="noopener"
+                data-doc={doc.id}
+                aria-label={`${kind.action}: ${doc.title} (preview, ${pageCount(doc)})`}
+              >
+                {kind.action} <Icon name="chevron-right" />
+              </a>
+              {doc.original && (
+                <a class="arrow-link" href={doc.original.href} rel="noopener">
+                  {doc.original.label} <Icon name="arrow-up-right" />
+                </a>
+              )}
+              <a class="arrow-link" href={projectHref(doc.project)}>
+                Project page <Icon name="chevron-right" />
+              </a>
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="research__more reveal">
+      <a class="btn btn--quiet" href={scholar.href} rel="noopener">
+        <Icon name="scholar" />
+        Google Scholar profile
+      </a>
+      <span class="muted">* equal contribution</span>
+    </p>
+  </div>
+</section>
+
+<style>
+  .pubs {
+    display: grid;
+    gap: clamp(12px, 1.6vw, 18px);
+  }
+
+  .pub {
+    display: grid;
+    grid-template-columns: 150px 84px minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 14px clamp(20px, 3vw, 40px);
+    padding: clamp(22px, 2.8vw, 32px);
+    border-radius: var(--r-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .pub__kind {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+
+  .pub__kind :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* The first page of the document; opens the preview. */
+  .pub__thumb {
+    display: block;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 0 0 1px var(--line), var(--shadow-soft);
+    transition: transform 0.25s var(--ease);
+  }
+
+  .pub__thumb:hover {
+    transform: scale(1.04);
+  }
+
+  .pub__thumb img {
+    width: 100%;
+    height: auto;
+    filter: var(--figure-filter);
+  }
+
+  .pub__title {
+    font-size: clamp(18px, 1.8vw, 21px);
+    font-weight: 600;
+    line-height: 1.26;
+    letter-spacing: -0.018em;
+    text-wrap: balance;
+  }
+
+  .pub__authors {
+    margin-top: 8px;
+    font-size: 15px;
+    color: var(--text-2);
+  }
+
+  .pub__authors strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .pub__venue {
+    margin-top: 2px;
+    font-size: 15px;
+    color: var(--text-2);
+  }
+
+  .pub__links {
+    display: grid;
+    gap: 6px;
+    justify-items: start;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+
+  .pub__links .arrow-link {
+    font-size: 15px;
+  }
+
+  .research__more {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 22px;
+    margin-top: clamp(24px, 3vw, 36px);
+    font-size: 14px;
+  }
+
+  @media (max-width: 860px) {
+    .pub {
+      grid-template-columns: 72px minmax(0, 1fr);
+    }
+
+    .pub__kind,
+    .pub__links {
+      grid-column: 1 / -1;
+    }
+
+    .pub__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 22px;
+    }
+  }
+
+  /* Fingers need a larger target: the links become 44px rows (see Base.astro), so no gap between them. */
+  @media (pointer: coarse) {
+    .pub__links {
+      row-gap: 0;
+    }
+  }
+</style>

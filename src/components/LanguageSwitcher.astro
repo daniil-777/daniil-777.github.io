@@ -1,0 +1,57 @@
+---
+import { LANGUAGES } from '../i18n/core';
+import Icon from './Icon.astro';
+---
+
+<div class="language" data-language-switcher>
+  <button class="language__trigger" type="button" aria-label="Change language" aria-haspopup="menu" aria-expanded="false" aria-controls="language-menu" data-language-trigger>
+    <Icon name="globe" />
+    <span class="language__code" data-language-code data-no-translate>EN</span>
+  </button>
+  <div class="language__menu" id="language-menu" role="menu" aria-label="Choose your language" hidden data-language-menu>
+    <p class="language__heading" role="presentation">Language</p>
+    {LANGUAGES.map(({ code, name }) => (
+      <button class="language__option" type="button" role="menuitemradio" aria-checked={code === 'en'} tabindex="-1" data-language-option={code}>
+        <span lang={code === 'zh' ? 'zh-Hans' : code} data-no-translate>{name}</span>
+        <Icon name="check" />
+      </button>
+    ))}
+  </div>
+  <span class="sr-only" aria-live="polite" data-language-status data-no-translate></span>
+</div>
+
+<style>
+  .language { position: relative; }
+  .language__trigger {
+    display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+    height: 40px; min-width: 60px; padding: 0 9px; border-radius: 980px;
+    color: var(--text-2); transition: background .18s ease, color .18s ease;
+  }
+  .language__trigger:hover, .language__trigger[aria-expanded='true'] { background: var(--field); color: var(--text); }
+  .language__trigger :global(svg) { width: 19px; height: 19px; stroke-width: 1.65; }
+  .language__code { font-size: 10px; font-weight: 600; letter-spacing: .025em; }
+  .language__menu {
+    position: absolute; top: calc(100% + 10px); right: 0; z-index: 110;
+    width: 224px; max-width: calc(100vw - 24px); padding: 8px;
+    border: 1px solid var(--line); border-radius: 18px;
+    background: var(--nav-bg); color: var(--text);
+    -webkit-backdrop-filter: saturate(180%) blur(28px); backdrop-filter: saturate(180%) blur(28px);
+    box-shadow: 0 16px 50px rgb(0 0 0 / .16), 0 2px 8px rgb(0 0 0 / .06);
+    transform-origin: top right; animation: language-in .16s ease-out;
+  }
+  .language__menu[hidden] { display: none; }
+  .language__heading { padding: 7px 12px 9px; font-size: 11px; font-weight: 600; color: var(--text-3); }
+  .language__option {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    width: 100%; min-height: 42px; padding: 9px 12px; border-radius: 10px;
+    text-align: left; font-size: 14px; font-weight: 500;
+  }
+  .language__option:hover, .language__option:focus-visible { background: var(--field); }
+  .language__option[aria-checked='true'] { color: var(--link); background: var(--field); }
+  .language__option :global(svg) { width: 16px; height: 16px; opacity: 0; }
+  .language__option[aria-checked='true'] :global(svg) { opacity: 1; }
+  @keyframes language-in { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+  @media (pointer: coarse) { .language__trigger { min-height: 44px; } .language__option { min-height: 44px; } }
+  @media (max-width: 419px) { .language__trigger { min-width: 40px; padding: 0; } .language__code { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .language__menu { animation: none; } .language__trigger { transition: none; } }
+</style>

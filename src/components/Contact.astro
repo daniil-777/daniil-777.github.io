@@ -1,0 +1,218 @@
+---
+import { links, site } from '../data/site';
+import { qrSvg } from '../lib/qr';
+import Icon from './Icon.astro';
+
+const mail = links.find((link) => link.id === 'mail')!;
+---
+
+<section class="section section--alt contact" id="contact" aria-labelledby="contact-title">
+  <div class="wrap">
+    <header class="section__head reveal">
+      <p class="eyebrow">Contact</p>
+      <h2 class="h2" id="contact-title">Let’s talk.</h2>
+      <p class="lead">
+        I enjoy working directly with the people who will use the system. If you have a problem where AI has to work in
+        the real world, I would like to hear about it.
+      </p>
+      <p class="contact__cta">
+        <a class="btn btn--primary" href={mail.href}>
+          <Icon name="mail" />
+          Send an email
+        </a>
+      </p>
+    </header>
+
+    <div class="contact__grid">
+      <ul class="contact__links">
+        {
+          links.map((link, i) => (
+            <li class="reveal" style={`--i:${i}`}>
+              <a class="linkcard" href={link.href} rel={link.id === 'mail' ? undefined : 'me noopener'}>
+                <span class="linkcard__icon">
+                  <Icon name={link.id} />
+                </span>
+                <span class="linkcard__text">
+                  <strong>{link.label}</strong>
+                  <span>{link.handle}</span>
+                </span>
+                <Icon name="arrow-up-right" class="linkcard__arrow" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <button class="qrcard reveal" type="button" data-qr-open aria-label={`Show a larger QR code for ${site.domain}`}>
+        <span class="qrcard__code" set:html={qrSvg(site.url)} />
+        <span class="qrcard__text">
+          <strong>Scan to open on your phone</strong>
+          <span>{site.domain}</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact__cta {
+    margin-top: 28px;
+  }
+
+  .contact__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, clamp(220px, 24vw, 300px));
+    gap: clamp(14px, 1.8vw, 22px);
+    align-items: stretch;
+  }
+
+  .contact__links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(14px, 1.8vw, 22px);
+  }
+
+  .linkcard {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    height: 100%;
+    padding: clamp(18px, 2.2vw, 26px);
+    border-radius: var(--r-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-soft);
+    color: var(--text);
+    transition:
+      transform 0.45s var(--ease),
+      box-shadow 0.45s var(--ease);
+  }
+
+  .linkcard:hover {
+    text-decoration: none;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .linkcard__icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--field);
+  }
+
+  .linkcard__icon :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+
+  .linkcard__text {
+    display: grid;
+    min-width: 0;
+  }
+
+  .linkcard__text strong {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  .linkcard__text span {
+    font-size: 14px;
+    color: var(--text-2);
+    /* An address is there to be read: wrap it rather than cut it short. */
+    overflow-wrap: anywhere;
+  }
+
+  .linkcard :global(.linkcard__arrow) {
+    width: 18px;
+    height: 18px;
+    color: var(--text-3);
+    transition:
+      transform 0.3s var(--ease),
+      color 0.3s var(--ease);
+  }
+
+  .linkcard:hover :global(.linkcard__arrow) {
+    color: var(--link);
+    transform: translate(2px, -2px);
+  }
+
+  .qrcard {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 16px;
+    padding: clamp(20px, 2.4vw, 28px);
+    border-radius: var(--r-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-soft);
+    text-align: center;
+    transition:
+      transform 0.45s var(--ease),
+      box-shadow 0.45s var(--ease);
+  }
+
+  .qrcard:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .qrcard__code {
+    width: min(100%, 168px);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px var(--line);
+  }
+
+  .qrcard__code :global(svg) {
+    width: 100%;
+    height: auto;
+  }
+
+  .qrcard__text {
+    display: grid;
+    gap: 2px;
+  }
+
+  .qrcard__text strong {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .qrcard__text span {
+    font-size: 14px;
+    color: var(--text-2);
+  }
+
+  /* A landscape tablet: the arrow gives its room to the address. */
+  @media (min-width: 900px) and (max-width: 1099px) {
+    .linkcard {
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .linkcard :global(.linkcard__arrow) {
+      display: none;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .contact__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* A phone cannot scan its own screen. */
+    .qrcard {
+      display: none;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .contact__links {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

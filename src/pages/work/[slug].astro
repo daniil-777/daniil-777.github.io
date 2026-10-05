@@ -1,0 +1,463 @@
+---
+import { getImage } from 'astro:assets';
+import { render } from 'astro:content';
+import Compare from '../../components/Compare.astro';
+import Documents from '../../components/Documents.astro';
+import Figure from '../../components/Figure.astro';
+import Icon, { type IconName } from '../../components/Icon.astro';
+import NextProject from '../../components/NextProject.astro';
+import Player from '../../components/Player.astro';
+import type { LinkKind } from '../../data/taxonomy';
+import Base from '../../layouts/Base.astro';
+import { DOCUMENT_KIND, resolveDocuments } from '../../lib/documents';
+import { getProjects, projectContext, projectCover, resolveVideos, type Project } from '../../lib/projects';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: { project, next: projects[(i + 1) % projects.length] },
+  }));
+}
+
+interface Props {
+  project: Project;
+  next: Project;
+}
+
+const { project, next } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
+
+const [mainVideo, ...moreVideos] = resolveVideos(project);
+
+// Each figure links to a large version of itself, opened in the zoom dialog.
+const gallery = await Promise.all(
+  data.gallery.map(async (figure) => ({
+    ...figure,
+    zoom: (await getImage({ src: figure.src, width: Math.min(figure.src.width, 2400), format: 'webp', quality: 88 })).src,
+  })),
+);
+// Without a video or a slider, the first figure leads the page.
+const leadFigure = !mainVideo && !data.compare ? gallery[0] : undefined;
+const figures = leadFigure ? gallery.slice(1) : gallery;
+
+const cover = projectCover(project);
+const social = cover ? (await getImage({ src: cover.image, width: 1200, format: 'jpg' })).src : undefined;
+
+const linkIcon: Record<LinkKind, IconName> = { live: 'globe', code: 'github', site: 'arrow-up-right' };
+const documents = resolveDocuments(project);
+// Under the title: each document (opens the preview), where it was published, then the other links.
+const actions: { label: string; icon: IconName; href: string; doc?: string }[] = [
+  ...documents.map((doc) => ({ ...DOCUMENT_KIND[doc.kind], label: DOCUMENT_KIND[doc.kind].action, href: doc.pdf, doc: doc.id })),
+  ...documents.flatMap((doc) => (doc.original ? [{ ...doc.original, icon: 'arrow-up-right' as const }] : [])),
+  ...data.links.map((link) => ({ ...link, icon: linkIcon[link.kind] })),
+];
+---
+
+<Base title={data.title} description={data.summary} image={social}>
+  <article class="project">
+    <header class="wrap project__head">
+      <a class="arrow-link project__back" href="/#work">
+        <Icon name="arrow-left" />
+        All work
+      </a>
+      <p class="eyebrow">
+        {projectContext(project)} · {data.year}
+      </p>
+      <h1 class="project__title">{data.title}</h1>
+      <p class="lead">{data.tagline}</p>
+      {
+        actions.length > 0 && (
+          <p class="project__links">
+            {actions.map((link, i) => (
+              <a class:list={['btn', i === 0 ? 'btn--primary' : 'btn--quiet']} href={link.href} target="_blank" rel="noopener" data-doc={link.doc}>
+                <Icon name={link.icon} />
+                {link.label}
+              </a>
+            ))}
+          </p>
+        )
+      }
+    </header>
+
+    <div class="wrap project__lead">
+      {
+        mainVideo ? (
+          <figure>
+            <Player video={mainVideo} priority />
+            {mainVideo.caption && <figcaption class="caption">{mainVideo.caption}</figcaption>}
+          </figure>
+        ) : data.compare ? (
+          <Compare {...data.compare} />
+        ) : leadFigure ? (
+          <Figure {...leadFigure} priority />
+        ) : null
+      }
+    </div>
+
+    {
+      data.highlights.length > 0 && (
+        <ul class="wrap highlights">
+          {data.highlights.map((item) => (
+            <li>
+              <strong>{item.value}</strong>
+              <span>{item.label}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <div class="wrap project__body">
+      <div class="prose">
+        <p class="prose__summary">{data.summary}</p>
+        <Content />
+      </div>
+
+      <aside class="facts" aria-label="Project details">
+        {
+          data.role && (
+            <div>
+              <h2>Role</h2>
+              <p>{data.role}</p>
+            </div>
+          )
+        }
+        <div>
+          <h2>Topics</h2>
+          <ul class="facts__chips">
+            {data.topics.map((topic) => (
+              <li>
+                <a class="chip" href={`/?topic=${encodeURIComponent(topic)}#work`} title={`All projects on ${topic}`}>
+                  {topic}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        {
+          data.stack.length > 0 && (
+            <div>
+              <h2>Built with</h2>
+              <p class="facts__stack">{data.stack.join(' · ')}</p>
+            </div>
+          )
+        }
+      </aside>
+    </div>
+
+    {
+      documents.length > 0 && (
+        <section class="wrap project__section" aria-labelledby="documents-title">
+          <h2 class="h3" id="documents-title">Documents</h2>
+          <Documents documents={documents} />
+        </section>
+      )
+    }
+
+    {
+      moreVideos.length > 0 && (
+        <section class="wrap project__section" aria-labelledby="videos-title">
+          <h2 class="h3" id="videos-title">
+            More videos
+          </h2>
+          <ul class="videos">
+            {moreVideos.map((video) => (
+              <li>
+                <Player video={video} sizes="(min-width: 900px) 760px, 92vw" />
+                <h3>{video.title}</h3>
+                {video.caption && <p>{video.caption}</p>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      mainVideo && data.compare && (
+        <section class="wrap project__section">
+          <Compare {...data.compare} />
+        </section>
+      )
+    }
+
+    {
+      figures.length > 0 && (
+        <section class="wrap project__section" aria-labelledby="figures-title">
+          <h2 class="h3" id="figures-title">
+            Figures
+          </h2>
+          <div class="figures">
+            {figures.map((figure) => (
+              <Figure {...figure} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <NextProject project={next} />
+  </article>
+
+  {/* Opened by any figure; its script and styles live in Figure.astro. */}
+  <dialog class="zoom" data-zoom-dialog aria-label="Figure at full size">
+    <button class="icon-btn zoom__close" type="button" data-zoom-close aria-label="Close">
+      <Icon name="close" />
+    </button>
+    <img alt="" data-zoom-image />
+  </dialog>
+</Base>
+
+<style>
+  .project {
+    padding-top: clamp(28px, 4vw, 48px);
+    padding-bottom: clamp(72px, 9vw, 120px);
+  }
+
+  .project__head {
+    text-align: center;
+    display: grid;
+    justify-items: center;
+  }
+
+  .project__back {
+    justify-self: start;
+    margin-bottom: clamp(28px, 4vw, 48px);
+    font-size: 15px;
+    color: var(--text-2);
+  }
+
+  .project__back:hover {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .project__back:hover :global(svg) {
+    transform: translateX(-3px);
+  }
+
+  .project__title {
+    max-width: 980px;
+    font-size: clamp(38px, 6.6vw, 80px);
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  .project__head .lead {
+    max-width: 34ch;
+  }
+
+  .project__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .project__lead {
+    margin-top: clamp(36px, 5vw, 64px);
+  }
+
+  .highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 24px clamp(20px, 3vw, 44px);
+    margin-top: clamp(40px, 5vw, 64px);
+    padding: 0;
+    list-style: none;
+  }
+
+  .highlights li {
+    display: grid;
+    align-content: start;
+    gap: 6px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+
+  .highlights strong {
+    font-size: clamp(24px, 2.8vw, 34px);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    overflow-wrap: anywhere;
+  }
+
+  .highlights span {
+    font-size: 15px;
+    line-height: 1.36;
+    color: var(--text-2);
+  }
+
+  .project__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 300px);
+    gap: 40px clamp(40px, 7vw, 104px);
+    align-items: start;
+    margin-top: clamp(48px, 7vw, 96px);
+  }
+
+  .prose {
+    max-width: 66ch;
+    font-size: clamp(17px, 1.5vw, 19px);
+    line-height: 1.55;
+  }
+
+  .prose p.prose__summary {
+    margin-top: 0;
+    color: var(--text);
+    font-size: clamp(21px, 2.3vw, 28px);
+    font-weight: 600;
+    line-height: 1.28;
+    letter-spacing: -0.022em;
+  }
+
+  .prose :global(h2) {
+    margin-top: 1.9em;
+    font-size: clamp(22px, 2.3vw, 28px);
+    font-weight: 600;
+    line-height: 1.16;
+    letter-spacing: -0.022em;
+  }
+
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin-top: 0.85em;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: 1.2em;
+  }
+
+  .prose :global(li) {
+    margin-top: 0.45em;
+    padding-left: 0.2em;
+  }
+
+  .prose :global(li)::marker {
+    color: var(--text-3);
+  }
+
+  .prose :global(strong) {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .facts {
+    position: sticky;
+    top: calc(var(--nav-h) + 28px);
+    display: grid;
+    gap: 26px;
+    padding: 26px;
+    border-radius: var(--r-lg);
+    background: var(--tile);
+  }
+
+  .facts h2 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-3);
+    margin-bottom: 8px;
+  }
+
+  .facts p {
+    font-size: 15px;
+  }
+
+  .facts__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (pointer: coarse) {
+    .facts__chips {
+      gap: 8px;
+    }
+  }
+
+  .facts__chips .chip {
+    background: var(--surface);
+    color: var(--link);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+
+  .facts__stack {
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+
+  .project__section {
+    margin-top: clamp(56px, 8vw, 104px);
+  }
+
+  .project__section > .h3 {
+    margin-bottom: clamp(20px, 2.6vw, 30px);
+  }
+
+  /* One extra video takes the full width; more than one sit two abreast. */
+  .videos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: clamp(24px, 3vw, 40px) clamp(16px, 2vw, 24px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* A single extra video is not stretched across the whole page. */
+  .videos > li:only-child {
+    max-width: 760px;
+  }
+
+  /* A phone held sideways: two abreast where they fit, and a lone, height-capped player lines up with its title. */
+  @media (max-height: 500px) {
+    .videos {
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    }
+
+    .videos :global(.player) {
+      margin-inline: 0;
+    }
+  }
+
+  .videos h3 {
+    margin-top: 14px;
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.018em;
+  }
+
+  .videos p {
+    margin-top: 4px;
+    font-size: 15px;
+    color: var(--text-2);
+  }
+
+  .figures {
+    display: grid;
+    gap: clamp(28px, 4vw, 48px);
+  }
+
+  @media (max-width: 899px) {
+    .project__body {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .facts {
+      position: static;
+    }
+  }
+</style>

@@ -1,0 +1,29 @@
+---
+import About from '../components/About.astro';
+import Catalog from '../components/Catalog.astro';
+import Contact from '../components/Contact.astro';
+import Featured from '../components/Featured.astro';
+import Hero from '../components/Hero.astro';
+import Journey from '../components/Journey.astro';
+import Research from '../components/Research.astro';
+import SkillsAndAwards from '../components/SkillsAndAwards.astro';
+import VirtaMed from '../components/VirtaMed.astro';
+import Base from '../layouts/Base.astro';
+import { getProjects } from '../lib/projects';
+
+const projects = await getProjects();
+---
+
+<Base>
+  <About />
+  <div id="work">
+    <Hero />
+    <Featured projects={projects} />
+    <VirtaMed projects={projects} />
+    <Catalog projects={projects} />
+  </div>
+  <Journey projects={projects} />
+  <Research />
+  <SkillsAndAwards />
+  <Contact />
+</Base>

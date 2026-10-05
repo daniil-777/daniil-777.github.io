@@ -1,0 +1,51 @@
+---
+/**
+ * The "Ask AI" assistant: one dialog for the whole site. Only this empty shell
+ * is on the page. Any link that carries `data-chat-open` opens it; the opener
+ * in Base.astro then loads src/scripts/chat/main.ts, which builds the rest.
+ * Such a link points at /ask/ (on that page, at its answers), so it still works without JavaScript.
+ */
+import { COPY } from '../data/chat';
+import Icon from './Icon.astro';
+---
+
+<dialog class="chat" data-chat-dialog aria-labelledby="chat-title">
+  <div class="chat__panel">
+    <header class="chat__bar">
+      <h2 class="h3" id="chat-title">{COPY.title}</h2>
+      <button class="icon-btn" type="button" data-chat-new aria-label="New chat" hidden>
+        <Icon name="plus" />
+      </button>
+      <button class="icon-btn" type="button" data-chat-close aria-label="Close">
+        <Icon name="close" />
+      </button>
+    </header>
+    <p class="sr-only" role="status" aria-live="polite" aria-atomic="true" data-chat-status></p>
+    <div class="chat__body" data-chat-body><p class="muted">Loading…</p></div>
+  </div>
+</dialog>
+
+<style is:global>
+  /* Only what the empty dialog needs; the rest is src/styles/chat.css, loaded with the chat. */
+  .chat {
+    width: min(100vw - 32px, 640px);
+    margin: auto;
+  }
+
+  .chat__panel {
+    padding: 28px;
+    border-radius: var(--r-xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .chat__bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .chat__bar .h3 {
+    flex: 1;
+  }
+</style>

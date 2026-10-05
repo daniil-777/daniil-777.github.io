@@ -1,0 +1,265 @@
+---
+import '@fontsource-variable/inter/wght.css';
+import '../styles/global.css';
+import ChatDialog from '../components/ChatDialog.astro';
+import DocDialog from '../components/DocDialog.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import Nav from '../components/Nav.astro';
+import QrDialog from '../components/QrDialog.astro';
+import { links, site } from '../data/site';
+import { pageCatalog } from '../i18n/server';
+
+interface Props {
+  /** Page title. Omit on the home page. */
+  title?: string;
+  description?: string;
+  /** Absolute or root-relative URL of the social preview image. */
+  image?: string;
+}
+
+const { title, description = site.description, image = '/og.jpg' } = Astro.props;
+const pageTitle = title ? `${title} · ${site.name}` : site.title;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const ogImage = new URL(image, site.url).href;
+const content = await Astro.slots.render('default');
+const languagePack = pageCatalog(`${content} ${pageTitle} ${description}`);
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  url: site.url,
+  jobTitle: site.role,
+  email: `mailto:${site.email}`,
+  worksFor: { '@type': 'Organization', name: 'VirtaMed' },
+  alumniOf: [
+    { '@type': 'CollegeOrUniversity', name: 'ETH Zurich' },
+    { '@type': 'CollegeOrUniversity', name: 'Moscow Institute of Physics and Technology' },
+  ],
+  address: { '@type': 'PostalAddress', addressLocality: 'Zurich', addressCountry: 'CH' },
+  sameAs: links.filter((l) => l.id !== 'mail').map((l) => l.href),
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        // Content waits for a scroll reveal. If the site's script never arrives, show it anyway.
+        setTimeout(function () {
+          if (!window.__siteReady) root.classList.add('reveal-all');
+        }, 4000);
+        try {
+          var theme = localStorage.getItem('theme');
+          if (theme === 'light' || theme === 'dark') root.dataset.theme = theme;
+        } catch (e) {}
+      })();
+    </script>
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(person).replace(/</g, '\\u003c')} />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Nav />
+    <main id="main">
+      <Fragment set:html={content} />
+    </main>
+    <Footer />
+
+    <QrDialog url={canonical} />
+    <DocDialog />
+    <ChatDialog />
+    <script type="application/json" is:inline data-i18n-pack set:html={JSON.stringify(languagePack).replace(/</g, '\\u003c')} />
+
+    <dialog class="vdialog" data-video-dialog aria-label="Video player">
+      <div class="vdialog__panel">
+        <header class="vdialog__bar">
+          <p class="vdialog__title" data-video-title></p>
+          <button class="icon-btn" type="button" data-video-close aria-label="Close video">
+            <Icon name="close" />
+          </button>
+        </header>
+        <div class="vdialog__stage" data-video-stage></div>
+      </div>
+    </dialog>
+
+    <script>
+      import '../scripts/language.ts';
+      import '../scripts/site.ts';
+      import '../scripts/player.ts';
+
+      // The assistant: nothing of it is fetched until one of its links is pressed.
+      let chat: Promise<typeof import('../scripts/chat/main.ts')> | undefined;
+      document.addEventListener('click', (event) => {
+        const target = event.target as HTMLElement;
+        // Close works from the first moment, also while the chat is still loading.
+        if (target.closest('[data-chat-close]')) return target.closest('dialog')?.close();
+        const trigger = target.closest<HTMLAnchorElement>('[data-chat-open]');
+        // Leave Cmd/Ctrl-click and middle-click alone: they open /ask/ in a new tab.
+        if (!trigger || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        const dialog = document.querySelector<HTMLDialogElement>('[data-chat-dialog]');
+        if (!dialog) return;
+        event.preventDefault();
+        dialog.showModal();
+        if (!chat) dialog.querySelector('[data-chat-status]')!.textContent = 'Loading the assistant';
+        // If the chat cannot load, the link does what it says: the questions-and-answers page.
+        (chat ??= import('../scripts/chat/main.ts')).then((m) => m.open(dialog, trigger)).catch(() => { chat = undefined; dialog.close(); location.href = trigger.href; });
+      });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  /* The page stays put behind an open dialog. */
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
+
+  /* Fingers need a larger target than a pointer does. Shared controls; each component enlarges its own. */
+  @media (pointer: coarse) {
+    button.icon-btn {
+      width: 44px;
+      height: 44px;
+    }
+
+    .btn.btn--small,
+    a.arrow-link {
+      min-height: 44px;
+    }
+
+    a.chip {
+      height: auto;
+      min-height: 40px;
+    }
+
+    /*
+     * Mux Player draws its controls for a pointer (30 by 26px). For fingers the
+     * buttons of its bar grow to 44px and the seek bar becomes a taller strip.
+     * Here, not in Player.astro: the video dialog is on every page.
+     */
+    mux-player::part(bottom button) {
+      box-sizing: border-box;
+      min-width: 44px;
+      min-height: 44px;
+      justify-content: center;
+    }
+
+    mux-player::part(time range) {
+      height: 32px;
+      bottom: -8px;
+    }
+
+    /* Only a small player has this one at 40px; a larger player already draws it at 90px. */
+    mux-player::part(center play button) {
+      min-width: 60px;
+    }
+
+    /*
+     * In a player under 216px tall the strip above would reach over the lower part of
+     * that button, and a tap there would scrub instead of pausing. There the layer the
+     * button is centred in ends higher up, by just enough to keep the two apart.
+     */
+    mux-player::part(centered-layer) {
+      bottom: max(0px, 216px - 100%);
+    }
+  }
+
+  .vdialog {
+    width: min(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right), 1280px);
+    margin: auto;
+  }
+
+  .vdialog__panel {
+    display: grid;
+    gap: 12px;
+  }
+
+  .vdialog__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: #fff;
+  }
+
+  .vdialog__bar .icon-btn {
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+  }
+
+  .vdialog__bar .icon-btn:hover {
+    background: rgba(255, 255, 255, 0.28);
+  }
+
+  .vdialog__title {
+    font-size: 17px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .vdialog__stage {
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
+    /* The stage never grows taller than the viewport, whatever the video's shape. */
+    aspect-ratio: var(--ratio, 16 / 9);
+    max-height: calc(100dvh - 120px);
+    margin-inline: auto;
+    max-width: 100%;
+  }
+
+  .vdialog__stage mux-player {
+    display: block;
+    width: 100%;
+    height: 100%;
+    --media-object-fit: contain;
+  }
+
+  /* A phone held sideways: the video takes the whole height, the close button floats over its corner. */
+  @media (max-height: 500px) {
+    .vdialog__panel {
+      position: relative;
+      gap: 0;
+    }
+
+    .vdialog__title {
+      display: none;
+    }
+
+    .vdialog__bar {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 1;
+    }
+
+    .vdialog__stage {
+      max-height: calc(100dvh - 16px);
+      border-radius: 14px;
+    }
+  }
+</style>

@@ -1,0 +1,28 @@
+:root { color-scheme: light; --bg: #fff; --text: #1d1d1f; --muted: #6e6e73; --fill: #f5f5f7; --line: #dedee2; --blue: #0066cc; }
+:root[data-theme=dark] { color-scheme: dark; --bg: #000; --text: #f5f5f7; --muted: #b5b5bd; --fill: #161618; --line: #363638; --blue: #2997ff; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 14px/1.4 -apple-system, BlinkMacSystemFont, Inter, system-ui, sans-serif; }
+main { height: 100%; display: flex; flex-direction: column; }
+#stage { position: relative; flex: 1; min-height: 230px; overflow: hidden; }
+#c { width: 100%; height: 100%; display: block; touch-action: pan-y; cursor: grab; }
+#c:active { cursor: grabbing; }
+#c:focus-visible { outline: 3px solid var(--blue); outline-offset: -4px; }
+#msg { position: absolute; inset: 40% 18% auto; text-align: center; color: var(--muted); }
+#metrics { position: absolute; top: 16px; right: 18px; background: var(--fill); border-radius: 999px; padding: 7px 12px; font-size: 12px; font-variant-numeric: tabular-nums; }
+#toolbar { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; padding: 10px 16px; }
+button, select { min-height: 44px; border: 1px solid var(--line); border-radius: 999px; background: var(--fill); color: var(--text); font-family: inherit; font-size: 13px; font-weight: 500; line-height: 1.2; padding: 10px 15px; cursor: pointer; }
+button[aria-pressed=true] { border-color: var(--blue); }
+button:disabled, select:disabled { opacity: .5; cursor: wait; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+label { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.caption { text-align: center; padding: 0 18px 14px; }
+.caption p { margin: 3px 0; }
+#label { font-weight: 600; }
+#credit, .links { font-size: 11px; color: var(--muted); }
+a { color: var(--blue); text-underline-offset: 3px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+[hidden] { display: none !important; }
+:root[data-compact] #stage { min-height: 0; height: 100%; }
+:root[data-compact] #toolbar, :root[data-compact] .caption, :root[data-compact] #metrics { display: none; }
+:root[data-compact] #msg { inset: 35% 8% auto; font-size: 11px; }
+@media (max-width: 600px) { #toolbar { gap: 6px; padding: 8px; } button, select { padding-inline: 11px; font-size: 12px; } label { font-size: 12px; } }

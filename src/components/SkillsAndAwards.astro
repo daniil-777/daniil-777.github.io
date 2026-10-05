@@ -1,0 +1,135 @@
+---
+import { awards, skills } from '../data/site';
+---
+
+<div class="section">
+  <div class="wrap details__grid">
+    <section class="panel reveal" aria-labelledby="skills-title">
+      <h2 class="h3" id="skills-title">Tools I work with</h2>
+      <dl class="skills">
+        {
+          skills.map((group) => (
+            <div>
+              <dt>{group.group}</dt>
+              <dd>
+                <ul>
+                  {group.items.map((item) => (
+                    <li class="chip">{item}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <section class="panel reveal" style="--i:1" aria-labelledby="awards-title">
+      <h2 class="h3" id="awards-title">Awards and honours</h2>
+      <ul class="awards">
+        {
+          awards.map((award) => (
+            <li>
+              <p>
+                <strong>{award.title}</strong>
+                <span>{award.detail}</span>
+              </p>
+              <span class="awards__year">{award.year}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+</div>
+
+<style>
+  .details__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(14px, 1.8vw, 22px);
+  }
+
+  .panel {
+    padding: clamp(24px, 3.2vw, 40px);
+    border-radius: var(--r-xl);
+    background: var(--tile);
+  }
+
+  .skills {
+    display: grid;
+    gap: 20px;
+    margin-top: 24px;
+  }
+
+  .skills dt {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-3);
+    margin-bottom: 8px;
+  }
+
+  .skills ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .skills .chip {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+
+  .awards {
+    display: grid;
+    margin-top: 14px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .awards li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    padding-block: 13px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .awards li:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .awards p {
+    display: grid;
+  }
+
+  .awards strong {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+  }
+
+  .awards p span {
+    font-size: 14px;
+    color: var(--text-2);
+  }
+
+  .awards__year {
+    flex: none;
+    font-size: 14px;
+    color: var(--text-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 899px) {
+    .details__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

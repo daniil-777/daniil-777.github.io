@@ -1,0 +1,178 @@
+---
+import { qrSvg } from '../lib/qr';
+import Icon from './Icon.astro';
+
+interface Props {
+  /** The address the code points to: the canonical URL of the current page. */
+  url: string;
+}
+
+const { url } = Astro.props;
+const display = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+---
+
+<dialog class="qr" data-qr-dialog aria-labelledby="qr-title">
+  <div class="qr__panel">
+    <button class="icon-btn qr__close" type="button" data-qr-close aria-label="Close">
+      <Icon name="close" />
+    </button>
+    <h2 class="h3" id="qr-title">Open this page on your phone</h2>
+    <p class="muted">Point your camera at the code.</p>
+    <div class="qr__code" data-qr-code set:html={qrSvg(url)} />
+    <p class="qr__url">{display}</p>
+    <div class="qr__actions">
+      <button class="btn btn--quiet btn--small" type="button" data-qr-copy data-url={url}>
+        <Icon name="copy" />
+        <span data-qr-copy-label>Copy link</span>
+      </button>
+      <button class="btn btn--quiet btn--small" type="button" data-qr-save>
+        <Icon name="download" />
+        Save image
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  import { closeOnBackdrop } from '../scripts/player.ts';
+
+  const dialog = document.querySelector<HTMLDialogElement>('[data-qr-dialog]');
+
+  if (dialog) {
+    document.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('[data-qr-open]')) dialog.showModal();
+    });
+    closeOnBackdrop(dialog, '[data-qr-close]');
+
+    const copy = dialog.querySelector<HTMLButtonElement>('[data-qr-copy]')!;
+    const label = dialog.querySelector<HTMLElement>('[data-qr-copy-label]')!;
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(copy.dataset.url!);
+        label.textContent = 'Copied';
+      } catch {
+        label.textContent = 'Copy failed';
+      }
+      window.setTimeout(() => (label.textContent = 'Copy link'), 1800);
+    });
+
+    // Rasterise the inline SVG so it can be saved, printed or dropped into a slide.
+    dialog.querySelector('[data-qr-save]')!.addEventListener('click', () => {
+      const svg = dialog.querySelector<SVGElement>('[data-qr-code] svg')!;
+      const source = new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' });
+      const sourceUrl = URL.createObjectURL(source);
+      const image = new Image();
+      image.onload = () => {
+        const size = 1024;
+        const canvas = Object.assign(document.createElement('canvas'), { width: size, height: size });
+        canvas.getContext('2d')!.drawImage(image, 0, 0, size, size);
+        URL.revokeObjectURL(sourceUrl);
+        canvas.toBlob((png) => {
+          if (!png) return;
+          const link = Object.assign(document.createElement('a'), {
+            href: URL.createObjectURL(png),
+            download: `${location.hostname.replace(/\W+/g, '-')}-qr.png`,
+          });
+          link.click();
+          window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+        }, 'image/png');
+      };
+      image.src = sourceUrl;
+    });
+  }
+</script>
+
+<style>
+  .qr {
+    width: min(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right), 400px);
+    margin: auto;
+  }
+
+  .qr__panel {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    padding: 36px 28px 28px;
+    border-radius: var(--r-xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-lift);
+    text-align: center;
+    /* On a short screen (a phone held sideways) the panel scrolls instead of being cut off. */
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+  }
+
+  .qr__close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+  }
+
+  .qr__code {
+    width: min(100%, 248px);
+    margin-top: 18px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px var(--line);
+  }
+
+  .qr__code :global(svg) {
+    width: 100%;
+    height: auto;
+  }
+
+  .qr__url {
+    margin-top: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+  }
+
+  .qr__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  /* Where the heading would run under the close button, it starts below it. */
+  @media (max-width: 480px), (pointer: coarse) {
+    .qr__panel {
+      padding-top: 62px;
+    }
+  }
+
+  /* A phone held sideways: the code on the left, everything else beside it, and nothing to scroll. */
+  @media (max-height: 540px) and (min-width: 560px) {
+    .qr {
+      width: min(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right), 660px);
+    }
+
+    .qr__panel {
+      grid-template-columns: auto minmax(0, 1fr);
+      align-content: center;
+      column-gap: 28px;
+      /* The right side keeps clear of the close button. */
+      padding: 24px 76px 24px 28px;
+    }
+
+    .qr__actions {
+      align-items: start;
+    }
+
+    .qr__panel > * {
+      grid-column: 2;
+    }
+
+    .qr__panel > .qr__code {
+      grid-column: 1;
+      grid-row: 1 / span 4;
+      align-self: center;
+      width: min(248px, 100dvh - 96px);
+      margin-top: 0;
+    }
+  }
+</style>

@@ -1,0 +1,450 @@
+---
+import { CATEGORIES, CATEGORY_IDS, TOPICS } from '../data/taxonomy';
+import type { Project } from '../lib/projects';
+import Icon from './Icon.astro';
+import ProjectCard from './ProjectCard.astro';
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+const count = (test: (project: Project) => boolean) => projects.filter(test).length;
+const videoCount = projects.reduce((sum, project) => sum + project.data.videos.length, 0);
+
+// Only topics that are in use, most common first.
+const topics = TOPICS.map((topic) => ({ topic, total: count((p) => p.data.topics.includes(topic)) }))
+  .filter((entry) => entry.total > 0)
+  .sort((a, b) => b.total - a.total);
+---
+
+<section class="section section--alt catalog" id="catalog" aria-labelledby="work-title">
+  <div class="wrap">
+    <header class="section__head reveal">
+      <p class="eyebrow">All work</p>
+      <h2 class="h2" id="work-title">The full catalog.</h2>
+      <p class="lead">
+        {projects.length} projects and {videoCount} videos, from surgical AI to research papers. Narrow them down by area
+        or topic, or search for a method or a tool.
+      </p>
+    </header>
+
+    <form class="filters reveal" data-filters role="search" aria-label="Filter projects">
+      <div class="filters__top">
+        <fieldset class="seg">
+          <legend class="sr-only">Area</legend>
+          <label>
+            <input type="radio" name="cat" value="all" checked />
+            <span>All <b data-cat-count="all">{projects.length}</b></span>
+          </label>
+          {
+            CATEGORY_IDS.map((id) => (
+              <label>
+                <input type="radio" name="cat" value={id} />
+                <span>
+                  {CATEGORIES[id].label} <b data-cat-count={id}>{count((p) => p.data.category === id)}</b>
+                </span>
+              </label>
+            ))
+          }
+        </fieldset>
+
+        <div class="filters__tools">
+          <label class="search">
+            <Icon name="search" />
+            <span class="sr-only">Search projects</span>
+            <input type="search" name="q" placeholder="Search projects" autocomplete="off" spellcheck="false" />
+          </label>
+
+          <div class="view" role="group" aria-label="Layout">
+            <button type="button" data-view-btn="grid" aria-pressed="true" aria-label="Show projects as a grid" title="Grid">
+              <Icon name="grid" />
+            </button>
+            <button type="button" data-view-btn="list" aria-pressed="false" aria-label="Show projects as a list" title="List">
+              <Icon name="list" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <fieldset class="topics" data-topics>
+        <legend class="sr-only">Topics. A project must match every selected topic.</legend>
+        <label class="tchip tchip--video">
+          <input type="checkbox" name="video" />
+          <span><Icon name="play" /> With video</span>
+        </label>
+        {
+          topics.map(({ topic, total }) => (
+            <label class="tchip">
+              <input type="checkbox" name="topic" value={topic} />
+              <span>
+                {topic} <b data-topic-count={topic}>{total}</b>
+              </span>
+            </label>
+          ))
+        }
+        <button class="topics__more" type="button" data-topics-toggle aria-expanded="false">More topics</button>
+      </fieldset>
+
+      <div class="filters__status">
+        <p data-status aria-live="polite" tabindex="-1">Showing all {projects.length} projects</p>
+        <button class="clear" type="reset" data-clear hidden>Clear filters</button>
+      </div>
+    </form>
+
+    <div class="grid" data-grid data-view="grid">
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
+
+    <div class="empty" data-empty hidden>
+      <p class="h3">Nothing matches that combination.</p>
+      <p class="muted">Try removing a topic or changing the search.</p>
+      <button class="btn btn--quiet" type="button" data-reset>Clear filters</button>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../scripts/catalog.ts';
+</script>
+
+<style>
+  .filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    margin-bottom: clamp(28px, 3.6vw, 40px);
+  }
+
+  .filters__top > * {
+    min-width: 0;
+  }
+
+  .filters__tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 320px;
+    justify-content: flex-end;
+  }
+
+  /* Grid or list. */
+  .view {
+    display: flex;
+    flex: none;
+    padding: 4px;
+    border-radius: 980px;
+    background: var(--field);
+  }
+
+  .view button {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 36px;
+    border-radius: 980px;
+    color: var(--text-2);
+    transition:
+      background-color 0.25s var(--ease),
+      color 0.25s var(--ease),
+      box-shadow 0.25s var(--ease);
+  }
+
+  .view button:hover {
+    color: var(--text);
+  }
+
+  .view button[aria-pressed='true'] {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.1),
+      0 3px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  .view :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  .filters fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .filters__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px 20px;
+  }
+
+  /* Area: a segmented control built on radio buttons. */
+  .seg {
+    display: flex;
+    /* Room for the focus ring, which this scrolling box would otherwise clip. */
+    padding: 5px;
+    border-radius: 980px;
+    background: var(--field);
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .seg label,
+  .tchip {
+    position: relative;
+    cursor: pointer;
+    flex: none;
+  }
+
+  .seg input,
+  .tchip input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .seg span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 980px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-2);
+    white-space: nowrap;
+    transition:
+      background-color 0.25s var(--ease),
+      color 0.25s var(--ease),
+      box-shadow 0.25s var(--ease);
+  }
+
+  .seg b,
+  .tchip b {
+    font-weight: 500;
+    font-size: 0.86em;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.62;
+  }
+
+  .seg label:hover span {
+    color: var(--text);
+  }
+
+  .seg input:checked + span {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.1),
+      0 3px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  .seg input:focus-visible + span,
+  .tchip input:focus-visible + span {
+    outline: 3px solid color-mix(in srgb, var(--accent) 70%, transparent);
+    outline-offset: 2px;
+  }
+
+  .search {
+    position: relative;
+    flex: 1 1 260px;
+    max-width: 360px;
+  }
+
+  .search :global(svg) {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    width: 17px;
+    height: 17px;
+    transform: translateY(-50%);
+    color: var(--text-3);
+    pointer-events: none;
+  }
+
+  .search input {
+    width: 100%;
+    height: 44px;
+    padding: 0 16px 0 40px;
+    border: 0;
+    border-radius: 980px;
+    background: var(--field);
+    font-size: 16px;
+    outline-offset: 0;
+    text-overflow: ellipsis;
+    transition: background-color 0.2s var(--ease);
+  }
+
+  .search input::placeholder {
+    color: var(--text-2);
+  }
+
+  .search input:hover {
+    background: var(--field-hover);
+  }
+
+  .topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tchip span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 980px;
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    transition:
+      background-color 0.2s var(--ease),
+      color 0.2s var(--ease),
+      box-shadow 0.2s var(--ease),
+      opacity 0.2s var(--ease);
+  }
+
+  .tchip :global(svg) {
+    width: 11px;
+    height: 11px;
+  }
+
+  .tchip:hover span {
+    box-shadow: inset 0 0 0 1px var(--text-3);
+  }
+
+  .tchip input:checked + span {
+    background: var(--text);
+    color: var(--bg);
+    box-shadow: none;
+  }
+
+  .tchip input:disabled {
+    cursor: default;
+  }
+
+  .tchip input:disabled + span {
+    opacity: 0.38;
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+
+  .filters__status {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 24px;
+    font-size: 14px;
+    color: var(--text-2);
+  }
+
+  .clear {
+    color: var(--link);
+    font-size: 14px;
+  }
+
+  .clear:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .grid {
+    display: grid;
+    /* 290px: three columns on a landscape tablet, where two made oversized cards. */
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
+    gap: clamp(16px, 2vw, 24px);
+  }
+
+  /* The list layout of each card lives in ProjectCard.astro. */
+  .grid[data-view='list'] {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .empty {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    padding: 64px 20px;
+    text-align: center;
+  }
+
+  .empty .btn {
+    margin-top: 12px;
+  }
+
+  .topics__more {
+    display: inline-flex;
+    align-items: center;
+    height: 34px;
+    padding: 0 6px;
+    font-size: 14px;
+    color: var(--link);
+  }
+
+  /* "With video" and the nine most common topics; the rest wait behind "More topics".
+     A topic that is switched on always stays visible. */
+  .topics:not([data-expanded]) .tchip:nth-of-type(n + 11):not(:has(input:checked)) {
+    display: none;
+  }
+
+  /* Fingers need a larger target than a pointer does. */
+  @media (pointer: coarse) {
+    .seg span,
+    .tchip span,
+    .topics__more,
+    .clear {
+      min-height: 44px;
+    }
+
+    .view button {
+      width: 44px;
+      height: 44px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    /* All four areas fit without scrolling once the counts are dropped. */
+    .seg span {
+      padding: 0 11px;
+      font-size: 14px;
+    }
+
+    .seg b {
+      display: none;
+    }
+
+    .filters__tools {
+      flex-basis: 100%;
+    }
+
+    .search {
+      max-width: none;
+    }
+
+    /* On a phone: "With video" plus the six most common topics. */
+    .topics:not([data-expanded]) .tchip:nth-of-type(n + 8):not(:has(input:checked)) {
+      display: none;
+    }
+  }
+
+  /* The narrowest phones (320px): tighter still, so the last area is not cut off. */
+  @media (max-width: 339px) {
+    .seg span {
+      padding: 0 6px;
+      font-size: 13px;
+    }
+  }
+</style>

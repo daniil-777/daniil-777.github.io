@@ -1,0 +1,299 @@
+---
+import { Image } from 'astro:assets';
+import { projectContext, projectHref, resolveVideos, type Project } from '../lib/projects';
+import Icon from './Icon.astro';
+import ProjectActions from './ProjectActions.astro';
+
+interface Props {
+  projects: Project[];
+}
+
+const featured = Astro.props.projects
+  .filter((project) => project.data.featured)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const tiles = featured.map((project, i) => ({
+  project,
+  video: resolveVideos(project)[0],
+  // Wide, two halves, wide, two halves ...
+  wide: i % 3 === 0,
+}));
+---
+
+<section class="section featured" id="featured" aria-labelledby="featured-title">
+  <div class="wrap">
+    <header class="section__head reveal">
+      <p class="eyebrow">Selected work</p>
+      <h2 class="h2" id="featured-title">Built to work in the moment.</h2>
+      <p class="lead">
+        Surgical coaching, reinforcement learning and generative models, each working in real time.
+      </p>
+    </header>
+
+    <div class="bento">
+      {
+        tiles.map(({ project, video, wide }) => (
+          <article class:list={['tile', 'reveal', { 'tile--wide': wide }]} data-preview-scope>
+            <div class="tile__text">
+              <p class="tile__cat">{projectContext(project)}</p>
+              <h3 class="tile__title">
+                <a class="tile__link" href={projectHref(project)}>
+                  {project.data.title}
+                </a>
+              </h3>
+              <p class="tile__tagline">{project.data.tagline}</p>
+              <div class="tile__actions">
+                <ProjectActions project={project} size="large" videoLabel="Watch" fallback={false} />
+                <span class="arrow-link" aria-hidden="true">
+                  Read the story <Icon name="chevron-right" />
+                </span>
+              </div>
+            </div>
+            {video && (
+              <div class="tile__media" data-preview={video.preview}>
+                <Image
+                  src={video.poster}
+                  alt=""
+                  widths={[640, 960, 1280, 1600]}
+                  sizes={wide ? '(min-width: 900px) 720px, (min-width: 700px) 50vw, calc(100vw - 88px)' : '(min-width: 900px) 560px, (min-width: 700px) 44vw, calc(100vw - 88px)'}
+                  loading="lazy"
+                />
+              </div>
+            )}
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .featured {
+    padding-top: clamp(40px, 6vw, 72px);
+  }
+
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(14px, 1.8vw, 22px);
+  }
+
+  .tile {
+    --pad: clamp(24px, 3.2vw, 44px);
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: var(--pad);
+    padding: var(--pad) var(--pad) 0;
+    border-radius: var(--r-xl);
+    background: var(--tile);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .tile--wide {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.5fr);
+    grid-template-rows: auto;
+    align-items: end;
+    padding: var(--pad) 0 0 var(--pad);
+    min-height: clamp(360px, 38vw, 480px);
+  }
+
+  .tile__text {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+  }
+
+  .tile--wide .tile__text {
+    align-self: center;
+    padding-bottom: var(--pad);
+  }
+
+  .tile__cat {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-2);
+    margin-bottom: 10px;
+  }
+
+  .tile__title {
+    font-size: clamp(28px, 3.4vw, 44px);
+    font-weight: 600;
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+  }
+
+  .tile__link {
+    color: inherit;
+  }
+
+  .tile__link:hover {
+    text-decoration: none;
+  }
+
+  /* The whole tile is the link, so the whole tile shows the keyboard focus. */
+  .tile__link:focus-visible {
+    outline: none;
+  }
+
+  .tile:has(.tile__link:focus-visible) {
+    outline: 3px solid color-mix(in srgb, var(--accent) 70%, transparent);
+    outline-offset: 3px;
+  }
+
+  /* The whole tile is the link; the Watch button sits above it. */
+  .tile__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .tile__tagline {
+    max-width: 30ch;
+    margin-top: 12px;
+    font-size: clamp(17px, 1.6vw, 21px);
+    line-height: 1.32;
+    letter-spacing: -0.015em;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+
+  .tile__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 10px;
+    margin-top: 22px;
+  }
+
+  /* The buttons and the text link wrap as one row, so a lone button is not left on a line of its own. */
+  .tile__actions :global(.actions) {
+    display: contents;
+  }
+
+  .tile__actions :global(.act) {
+    /* Above the link that makes the whole tile clickable. */
+    position: relative;
+    z-index: 3;
+  }
+
+  .tile__actions .arrow-link {
+    margin-left: 10px;
+    color: var(--link);
+  }
+
+  .tile:hover .arrow-link :global(svg) {
+    transform: translateX(3px);
+  }
+
+  .tile__media {
+    position: relative;
+    align-self: end;
+    aspect-ratio: 16 / 10;
+    border-radius: 18px 18px 0 0;
+    overflow: hidden;
+    background: #000;
+    box-shadow: var(--shadow-lift);
+    transition: transform 0.7s var(--ease);
+    transform-origin: 50% 100%;
+  }
+
+  .tile--wide .tile__media {
+    height: 100%;
+    min-height: 300px;
+    aspect-ratio: auto;
+    border-radius: 18px 0 0 0;
+    transform-origin: 100% 100%;
+  }
+
+  .tile:hover .tile__media {
+    transform: scale(1.018);
+  }
+
+  .tile__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 0 0;
+  }
+
+  .tile__media {
+    object-position: 0 0;
+  }
+
+  /* Tablets and phones held sideways keep the bento, with more room for the text of a wide tile. */
+  @media (max-width: 899px) {
+    .tile--wide {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      min-height: 0;
+    }
+
+    .tile--wide .tile__media {
+      min-height: 240px;
+    }
+  }
+
+  @media (max-width: 699px) {
+    .bento {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .tile__tagline {
+      max-width: 46ch;
+    }
+
+    .tile--wide {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
+      padding: var(--pad) var(--pad) 0;
+      min-height: 0;
+    }
+
+    .tile--wide .tile__text {
+      padding-bottom: 0;
+    }
+
+    .tile--wide .tile__media {
+      height: auto;
+      min-height: 0;
+      aspect-ratio: 16 / 10;
+      border-radius: 18px 18px 0 0;
+    }
+  }
+
+  /*
+   * A phone held sideways: a tile with its picture under the text is taller
+   * than the screen. Every tile is laid out like a wide one instead, text
+   * beside picture, and fits in one view.
+   */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .bento {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .tile,
+    .tile--wide {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      grid-template-rows: auto;
+      align-items: end;
+      padding: var(--pad) 0 0 var(--pad);
+    }
+
+    .tile__text,
+    .tile--wide .tile__text {
+      align-self: center;
+      padding-bottom: var(--pad);
+    }
+
+    .tile__media,
+    .tile--wide .tile__media {
+      height: 100%;
+      min-height: 200px;
+      aspect-ratio: auto;
+      border-radius: 18px 0 0 0;
+    }
+  }
+</style>

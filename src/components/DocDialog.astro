@@ -1,0 +1,446 @@
+---
+/**
+ * The document preview: one dialog for the whole site. Any link that carries
+ * `data-doc="<id>"` opens it. Such a link always points at the PDF, so it
+ * still works without JavaScript and when opened in a new tab.
+ *
+ * Pages are plain images rendered by `npm run docs`; no PDF viewer is loaded.
+ */
+import { DOCUMENT_KIND, getDocuments, pageCount } from '../lib/documents';
+import Icon from './Icon.astro';
+
+const documents = Object.fromEntries(
+  (await getDocuments()).map((doc) => [
+    doc.id,
+    {
+      title: doc.title,
+      meta: `${DOCUMENT_KIND[doc.kind].label} · ${pageCount(doc)}`,
+      pdf: doc.pdf,
+      original: doc.original,
+      pages: doc.pages,
+    },
+  ]),
+);
+---
+
+<dialog class="ddialog" data-doc-dialog aria-labelledby="doc-title" aria-describedby="doc-note">
+  <div class="ddialog__panel">
+    <header class="ddialog__bar">
+      <div class="ddialog__head">
+        <h2 class="ddialog__title" id="doc-title" data-doc-title></h2>
+        <p class="ddialog__meta" data-doc-meta></p>
+      </div>
+      <p class="ddialog__actions">
+        <a class="btn btn--quiet btn--small" data-doc-pdf target="_blank" rel="noopener">
+          <Icon name="doc" />
+          Open PDF
+          <span class="sr-only">(opens in a new tab)</span>
+        </a>
+        <a class="btn btn--quiet btn--small" data-doc-original target="_blank" rel="noopener" hidden>
+          <span data-doc-original-label></span>
+          <Icon name="arrow-up-right" />
+          <span class="sr-only">(opens in a new tab)</span>
+        </a>
+      </p>
+      <button class="icon-btn ddialog__close" type="button" data-doc-close aria-label="Close preview">
+        <Icon name="close" />
+      </button>
+    </header>
+    <div class="ddialog__pages" data-doc-pages tabindex="0" role="group" aria-label="Pages"></div>
+    <p class="ddialog__count" data-doc-count aria-live="off"></p>
+    <p class="sr-only" id="doc-note">Pages are shown as images. Open the PDF or the original for a text version.</p>
+  </div>
+</dialog>
+<script type="application/json" is:inline data-doc-data set:html={JSON.stringify(documents).replace(/</g, '\\u003c')} />
+
+<script>
+  import { closeOnBackdrop } from '../scripts/player.ts';
+  import { t } from '../i18n/client';
+
+  interface PreviewDocument {
+    title: string;
+    meta: string;
+    pdf: string;
+    original?: { label: string; href: string };
+    pages: { src: string; width: number; height: number }[];
+  }
+
+  const dialog = document.querySelector<HTMLDialogElement>('[data-doc-dialog]');
+  const data = document.querySelector('[data-doc-data]')?.textContent;
+
+  if (dialog && data) {
+    const documents = JSON.parse(data) as Record<string, PreviewDocument>;
+    const part = <T extends HTMLElement>(name: string) => dialog.querySelector<T>(`[data-doc-${name}]`)!;
+    const pages = part('pages');
+    const count = part('count');
+    const pdf = part<HTMLAnchorElement>('pdf');
+    const original = part<HTMLAnchorElement>('original');
+    /** Id of the document whose pages are in the dialog. Reopening it keeps the place. */
+    let shown: string | undefined;
+
+    const find = (target: EventTarget | null) => {
+      const trigger = target instanceof Element ? target.closest<HTMLElement>('a[data-doc]') : null;
+      const id = trigger?.dataset.doc;
+      return id && documents[id] ? { id, doc: documents[id] } : undefined;
+    };
+
+    let idle = 0;
+
+    /** The page under the middle of the view; the last one once scrolled to the end. */
+    function updateCount() {
+      const total = pages.children.length;
+      // A one-page document needs no counter over its only page.
+      count.hidden = total < 2;
+      const middle = pages.getBoundingClientRect().top + pages.clientHeight / 2;
+      let current = 1;
+      while (current < total && pages.children[current].getBoundingClientRect().top <= middle) current++;
+      if (pages.scrollTop > 0 && pages.scrollTop + pages.clientHeight >= pages.scrollHeight - 2) current = total;
+      count.textContent = t('Page {current} of {total}', { current, total });
+      // The counter shows while the reader moves, then gets out of the way of the page.
+      count.classList.remove('is-idle');
+      window.clearTimeout(idle);
+      idle = window.setTimeout(() => count.classList.add('is-idle'), 1500);
+    }
+
+    function show(id: string, doc: PreviewDocument) {
+      const changed = shown !== id;
+      if (changed) {
+        shown = id;
+        part('title').textContent = doc.title;
+        part('meta').textContent = doc.meta;
+        pdf.href = doc.pdf;
+        original.hidden = !doc.original;
+        if (doc.original) {
+          original.href = doc.original.href;
+          part('original-label').textContent = doc.original.label;
+        }
+        pages.replaceChildren(
+          ...doc.pages.map((page, i) => {
+            // Explicit dimensions reserve the space, so nothing jumps as pages arrive.
+            const image = new Image(page.width, page.height);
+            image.alt = t('Page {current} of {total}', { current: i + 1, total: doc.pages.length });
+            image.decoding = 'async';
+            image.loading = i === 0 ? 'eager' : 'lazy';
+            image.src = page.src;
+            return image;
+          }),
+        );
+      }
+      dialog!.showModal();
+      // Only now: a closed dialog is not laid out, so it cannot be scrolled.
+      if (changed) pages.scrollTop = 0;
+      dialog!.toggleAttribute('data-reading', pages.scrollTop > 0);
+      width = pages.clientWidth;
+      remember();
+      // With the pages focused, the arrow keys scroll them straight away.
+      pages.focus({ preventScroll: true });
+      updateCount();
+    }
+
+    document.addEventListener('click', (event) => {
+      // Leave Cmd/Ctrl-click and middle-click alone: they open the PDF in a new tab.
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const found = find(event.target);
+      if (!found) return;
+      event.preventDefault();
+      show(found.id, found.doc);
+    });
+
+    // Fetch the first page as soon as a preview looks likely, so it opens already drawn.
+    const warmed = new Set<string>();
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+    const warm = (event: Event) => {
+      const found = saveData ? undefined : find(event.target);
+      if (!found || warmed.has(found.id)) return;
+      warmed.add(found.id);
+      new Image().src = found.doc.pages[0].src;
+    };
+    // Not on touchstart: that is how a scroll begins, and the tap's own click follows at once anyway.
+    for (const type of ['pointerover', 'focusin']) document.addEventListener(type, warm, { passive: true });
+
+    /*
+     * The place in the document: the page at the top of the view and how far
+     * into it. Turning a phone changes the height of every page, so the offset
+     * in pixels would land somewhere else; the place is restored instead.
+     */
+    let place = { page: 0, fraction: 0 };
+    let width = 0;
+    const offsetOf = (page: HTMLElement) => page.offsetTop - pages.offsetTop;
+    function remember() {
+      const all = [...pages.children] as HTMLElement[];
+      const page = Math.max(0, all.findIndex((child) => offsetOf(child) + child.offsetHeight > pages.scrollTop));
+      const child = all[page];
+      place = { page, fraction: child ? (pages.scrollTop - offsetOf(child)) / child.offsetHeight : 0 };
+    }
+    new ResizeObserver(() => {
+      if (!dialog.open) return;
+      const child = pages.children[place.page] as HTMLElement | undefined;
+      if (width && pages.clientWidth !== width && child) pages.scrollTop = offsetOf(child) + place.fraction * child.offsetHeight;
+      width = pages.clientWidth;
+      updateCount();
+    }).observe(pages);
+
+    let queued = false;
+    pages.addEventListener(
+      'scroll',
+      () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => {
+          queued = false;
+          // A scroll that arrives with a new width is the browser clamping, not the reader.
+          if (pages.clientWidth === width) remember();
+          // Once reading, a phone keeps only the buttons (see the styles); the title returns at the top.
+          dialog.toggleAttribute('data-reading', pages.scrollTop > (dialog.hasAttribute('data-reading') ? 0 : 60));
+          updateCount();
+        });
+      },
+      { passive: true },
+    );
+
+    // The reading keys work wherever the focus is inside the dialog.
+    dialog.addEventListener('keydown', (event) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const screen = pages.clientHeight * 0.9;
+      const onControl = (event.target as HTMLElement).closest('a, button') !== null;
+      const top =
+        event.key === 'PageDown' || (event.key === ' ' && !event.shiftKey && !onControl) ? pages.scrollTop + screen
+        : event.key === 'PageUp' || (event.key === ' ' && event.shiftKey && !onControl) ? pages.scrollTop - screen
+        : event.key === 'Home' ? 0
+        : event.key === 'End' ? pages.scrollHeight
+        : undefined;
+      if (top === undefined) return;
+      event.preventDefault();
+      pages.scrollTo({ top });
+    });
+
+    closeOnBackdrop(dialog, '[data-doc-close]');
+  }
+</script>
+
+<style is:global>
+  .ddialog {
+    width: min(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right), 1000px);
+    height: calc(100dvh - 32px);
+    margin: auto;
+  }
+
+  .ddialog__panel {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100%;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .ddialog__bar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 10px 14px;
+    padding: 14px 16px 14px 22px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .ddialog__title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.012em;
+  }
+
+  .ddialog__meta {
+    margin-top: 2px;
+    font-size: 13px;
+    color: var(--text-2);
+  }
+
+  .ddialog__actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* Dialogs do not scroll themselves (see global.css), so the pages do. */
+  .ddialog__pages {
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    gap: 12px;
+    padding: 16px 16px 64px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    background: var(--tile);
+  }
+
+  .ddialog__pages:focus-visible {
+    outline-width: 2px;
+    outline-offset: -2px;
+    border-radius: 0 0 var(--r-lg) var(--r-lg);
+  }
+
+  .ddialog__pages img {
+    width: 100%;
+    max-width: 900px;
+    height: auto;
+    border-radius: 4px;
+    background: #fff;
+    box-shadow: 0 0 0 1px var(--line);
+    filter: var(--figure-filter);
+  }
+
+  .ddialog__count {
+    position: absolute;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 7px 14px;
+    border-radius: 980px;
+    background: rgba(0, 0, 0, 0.74);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    pointer-events: none;
+    transition: opacity 0.4s var(--ease);
+  }
+
+  .ddialog__count.is-idle {
+    opacity: 0;
+  }
+
+  /* On a phone, upright or sideways, the preview takes the whole screen. Upright, the title sits above a row of buttons. */
+  @media (max-width: 640px), (max-height: 500px) {
+    .ddialog {
+      /* Not 100vw, which would run underneath a classic scrollbar. */
+      width: 100%;
+      height: 100dvh;
+    }
+
+    .ddialog__panel {
+      border-radius: 0;
+    }
+
+    .ddialog__bar {
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 8px;
+      padding: calc(12px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) 12px
+        calc(16px + env(safe-area-inset-left));
+    }
+
+    .ddialog__head {
+      grid-column: 1 / -1;
+    }
+
+    /* The kind and the page count are on the link that opened the preview, and in the counter. */
+    .ddialog__meta {
+      display: none;
+    }
+
+    .ddialog__title {
+      font-size: 16px;
+    }
+
+    /* One row, always: a long label ("arXiv:2011.05813") gives way before the buttons stack. */
+    .ddialog__actions {
+      grid-row: 2;
+      grid-column: 1;
+      min-width: 0;
+      gap: 6px;
+    }
+
+    .ddialog__actions [data-doc-original] {
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+
+    .ddialog__actions [data-doc-original-label] {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      /* Room for the descenders, which the clipping would otherwise cut. */
+      line-height: 1.3;
+    }
+
+    .ddialog__close {
+      grid-row: 2;
+      grid-column: 2;
+    }
+
+    .ddialog[data-reading] .ddialog__head {
+      display: none;
+    }
+
+    /* Tighter, so both buttons and the close button share one row on a 360px phone. */
+    .ddialog__actions .btn {
+      min-height: 44px;
+      padding-inline: 12px;
+    }
+
+    .ddialog__close {
+      width: 44px;
+      height: 44px;
+    }
+
+    .ddialog__pages {
+      gap: 8px;
+      padding: 8px calc(8px + env(safe-area-inset-right)) calc(64px + env(safe-area-inset-bottom))
+        calc(8px + env(safe-area-inset-left));
+    }
+
+    .ddialog__pages:focus-visible {
+      border-radius: 0;
+    }
+  }
+
+  /* Narrow phones: the words alone, so both labels are whole on one row. */
+  @media (max-width: 399px) {
+    .ddialog__actions .btn svg {
+      display: none;
+    }
+  }
+
+  /* At 320px the longest label is a few pixels too wide; tighter buttons keep it whole. */
+  @media (max-width: 339px) {
+    .ddialog__actions .btn {
+      padding-inline: 10px;
+    }
+  }
+
+  /* Sideways there is no height to spare: one line for the title and the buttons together. */
+  @media (max-height: 500px) {
+    .ddialog__bar {
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      padding-block: calc(8px + env(safe-area-inset-top)) 8px;
+    }
+
+    .ddialog__title {
+      -webkit-line-clamp: 1;
+      line-clamp: 1;
+    }
+
+    .ddialog__meta {
+      display: none;
+    }
+
+    .ddialog__head,
+    .ddialog[data-reading] .ddialog__head {
+      display: block;
+      grid-column: auto;
+    }
+
+    .ddialog__actions,
+    .ddialog__close {
+      grid-row: auto;
+      grid-column: auto;
+    }
+  }
+</style>

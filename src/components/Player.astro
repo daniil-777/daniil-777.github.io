@@ -1,0 +1,167 @@
+---
+/**
+ * A video shown as its poster with a play button. Pressing play swaps in
+ * Mux Player in place (see src/scripts/player.ts).
+ */
+import { Image } from 'astro:assets';
+import { formatDuration, videoPayload, type ResolvedVideo } from '../lib/projects';
+import Icon from './Icon.astro';
+
+interface Props {
+  video: ResolvedVideo;
+  /** Load the poster eagerly. Use for the first image on a page. */
+  priority?: boolean;
+  sizes?: string;
+  class?: string;
+}
+
+const { video, priority = false, sizes = '(min-width: 1240px) 1180px, 94vw', class: className } = Astro.props;
+const payload = await videoPayload(video);
+---
+
+<div
+  class:list={['player', className]}
+  data-player
+  data-video={JSON.stringify(payload)}
+  style={`--ratio:${video.width / video.height}`}
+  role="group"
+  aria-label={`Video: ${video.title}`}
+  tabindex="-1"
+>
+  <Image
+    class="player__poster"
+    src={video.poster}
+    alt=""
+    widths={[640, 960, 1280, 1920]}
+    sizes={sizes}
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : 'auto'}
+  />
+  <button class="player__btn" type="button" aria-label={`Play video: ${video.title}`}>
+    <span class="player__play"><Icon name="play" /></span>
+  </button>
+  <span class="player__time">{formatDuration(video.duration)}</span>
+</div>
+
+<style is:global>
+  .player {
+    position: relative;
+    aspect-ratio: var(--ratio);
+    width: 100%;
+    /* Never taller than the screen, so the picture and its controls are seen whole on a phone held sideways. */
+    width: min(100%, (100svh - var(--nav-h) - 24px) * var(--ratio));
+    margin-inline: auto;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+    background: #000;
+    isolation: isolate;
+  }
+
+  /* A tighter corner on phones, where a large radius cuts into the recorded interface. */
+  @media (max-width: 600px) {
+    .player {
+      border-radius: 14px;
+    }
+  }
+
+  .player__poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.9s var(--ease);
+  }
+
+  .player:hover .player__poster {
+    transform: scale(1.015);
+  }
+
+  .player__btn {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.28), transparent 45%);
+  }
+
+  .player__play {
+    display: grid;
+    place-items: center;
+    width: clamp(60px, 8vw, 84px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.86);
+    color: #1d1d1f;
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    backdrop-filter: blur(14px) saturate(160%);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.28);
+    transition:
+      transform 0.35s var(--ease),
+      background-color 0.25s var(--ease);
+  }
+
+  .player__play svg {
+    width: 42%;
+    height: 42%;
+    margin-left: 6%;
+  }
+
+  .player__btn:hover .player__play {
+    transform: scale(1.07);
+    background: #fff;
+  }
+
+  .player__time {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    padding: 4px 9px;
+    border-radius: 980px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+
+  .player[data-state='loading'] .player__play {
+    animation: player-pulse 0.9s ease-in-out infinite alternate;
+  }
+
+  .player[data-state='playing'] > :not(mux-player) {
+    display: none;
+  }
+
+  .player mux-player {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    --media-object-fit: contain;
+  }
+
+  @keyframes player-pulse {
+    to {
+      transform: scale(0.9);
+      opacity: 0.7;
+    }
+  }
+
+  /* Silent hover previews inserted by player.ts into any [data-preview] box. */
+  .preview-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: inherit;
+    opacity: 0;
+    transition: opacity 0.45s var(--ease);
+    pointer-events: none;
+  }
+
+  .is-previewing > .preview-video {
+    opacity: 1;
+  }
+</style>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Live neural architecture · Daniil Emtsev</title>
+  <link rel="stylesheet" href="preview.css">
+  <script type="module" src="language.js"></script>
+  <script src="boot.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@4.22.0/dist/tf-core.min.js" integrity="sha384-ZVckeGw84RpbmPMzx1s9LFUqIaeIsG46rmlH/HynDuJikkmGLnTDnEmT0CrKI6Yi" crossorigin="anonymous" onerror="window.__tfLoadError='The graphics runtime could not load.'"></script>
+</head>
+<body>
+  <main>
+    <div id="stage">
+      <canvas id="c" tabindex="0" aria-label="Generated architecture. Drag to rotate, arrow keys to orbit, plus and minus to zoom."></canvas>
+      <p id="msg" role="status">Loading the neural decoder…</p>
+      <span id="metrics" aria-hidden="true">Starting…</span>
+      <pre id="dbg" hidden></pre>
+    </div>
+    <div id="toolbar" aria-label="Architecture preview controls">
+      <button id="pause" type="button" disabled>Pause</button>
+      <button id="next" type="button" disabled>Next building →</button>
+      <label>Building <select id="building" disabled aria-label="Choose an architecture example"></select></label>
+      <button id="rotate" type="button" disabled aria-pressed="true">Rotate</button>
+      <button id="hd" type="button" disabled aria-pressed="false">HD detail</button>
+      <button id="save" type="button" disabled>Save image</button>
+    </div>
+    <div class="caption">
+      <p id="label">Twelve architecture styles, decoded on your device.</p>
+      <p id="credit"></p>
+      <p class="links"><a href="credits.html" target="_blank" rel="noopener">Model credits</a> · <a href="https://daniil-777.github.io/real-time-web-2D3D-generation/morph3d/?model=model-arch3" target="_blank" rel="noopener">Full Pixel Morph demo ↗</a></p>
+    </div>
+    <p id="sr" class="sr-only" role="status"></p>
+  </main>
+  <script src="runtime/m3d-model.js"></script>
+  <script src="runtime/m3d-model2.js"></script>
+  <script src="runtime/m3d-render.js"></script>
+  <script src="runtime/m3d-glgrid.js"></script>
+  <script src="runtime/m3d-neural.js"></script>
+  <script src="runtime/m3d-level.js"></script>
+  <script src="runtime/m3d-walk.js"></script>
+  <script src="ui.js"></script>
+  <script src="runtime/m3d-app.js"></script>
+</body>
+</html>

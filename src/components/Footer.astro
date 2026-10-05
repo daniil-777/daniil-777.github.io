@@ -1,0 +1,101 @@
+---
+import { links, nav, site } from '../data/site';
+import Icon from './Icon.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <p class="footer__copy">© {year} {site.name}. {site.location}.</p>
+    <nav class="footer__nav" aria-label="Footer">
+      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+    <ul class="footer__social">
+      {
+        links.map((link) => (
+          <li>
+            <a href={link.href} aria-label={link.label} rel={link.id === 'mail' ? undefined : 'me noopener'}>
+              <Icon name={link.id} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--bg-alt);
+    border-top: 1px solid var(--line);
+    padding-block: 28px calc(28px + env(safe-area-inset-bottom));
+    font-size: 13px;
+    color: var(--text-2);
+  }
+
+  .footer__grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px 28px;
+  }
+
+  .footer__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+  }
+
+  .footer__nav a,
+  .footer__social a {
+    color: var(--text-2);
+    transition: color 0.2s var(--ease);
+  }
+
+  .footer__nav a:hover,
+  .footer__social a:hover {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .footer__social {
+    display: flex;
+    gap: 6px;
+  }
+
+  .footer__social a {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+  }
+
+  .footer__social :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Fingers need a larger target than a pointer does. */
+  @media (pointer: coarse) {
+    .footer__nav {
+      row-gap: 0;
+    }
+
+    .footer__nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+
+    .footer__social {
+      gap: 0;
+    }
+
+    .footer__social a {
+      width: 44px;
+      height: 44px;
+    }
+  }
+</style>

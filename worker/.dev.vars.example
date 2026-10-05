@@ -1,0 +1,10 @@
+# Copy to .dev.vars (git-ignored) and enter your real key there, never in frontend code.
+OPENAI_API_KEY=replace-with-your-openai-api-key
+CHAT_PROVIDER=openai
+CHAT_MODEL=gpt-6-luna
+ALLOWED_ORIGINS=http://localhost:4321,http://127.0.0.1:4321,http://localhost:4322,http://127.0.0.1:4322
+KB_URL=http://127.0.0.1:4321/chat/kb.json
+DAILY_LIMIT=100
+
+# Optional existing Anthropic support: set CHAT_PROVIDER=anthropic, CHAT_MODEL to a Claude model,
+# and ANTHROPIC_API_KEY. Keys always remain inside this Worker.

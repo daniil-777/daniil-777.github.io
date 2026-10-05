@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page not found" description="This page does not exist.">
+  <section class="section missing">
+    <div class="wrap">
+      <p class="eyebrow">404</p>
+      <h1 class="h2">This page does not exist.</h1>
+      <p class="lead">The link may be old, or the address may have a typo.</p>
+      <p class="missing__cta">
+        <a class="btn btn--primary" href="/">Go to the home page</a>
+        <a class="btn btn--quiet" href="/#work">Browse the work</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .missing {
+    min-height: 70vh;
+    display: grid;
+    align-items: center;
+    text-align: center;
+  }
+
+  .missing .lead {
+    margin-inline: auto;
+  }
+
+  .missing__cta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 32px;
+  }
+</style>

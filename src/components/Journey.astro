@@ -1,0 +1,158 @@
+---
+import { journey } from '../data/site';
+import { projectHref, type Project } from '../lib/projects';
+
+interface Props {
+  projects: Project[];
+}
+
+const titles = new Map(Astro.props.projects.map((project) => [project.id, project.data.title]));
+---
+
+<section class="section journey" id="journey" aria-labelledby="journey-title">
+  <div class="wrap">
+    <header class="section__head reveal">
+      <p class="eyebrow">Journey</p>
+      <h2 class="h2" id="journey-title">From olympiad physics / math to applied AI.</h2>
+      <p class="lead">
+        A degree at MIPT in Moscow, computer vision research at ETH Zurich, then medical AI in industry.
+      </p>
+    </header>
+
+    <ol class="timeline">
+      {
+        journey.map((entry) => (
+          <li class="entry reveal">
+            <p class="entry__period">{entry.period}</p>
+            <div class="entry__body">
+              <p class="entry__kind">{entry.kind === 'work' ? 'Experience' : 'Education'}</p>
+              <h3 class="h3">{entry.title}</h3>
+              <p class="entry__org">
+                {entry.organisation} · {entry.place}
+              </p>
+              <ul class="entry__points">
+                {entry.points.map((point) => (
+                  <li>{point}</li>
+                ))}
+              </ul>
+              {entry.projects.length > 0 && (
+                <ul class="entry__projects" aria-label="Related projects">
+                  {entry.projects
+                    .filter((id) => titles.has(id))
+                    .map((id) => (
+                      <li>
+                        <a class="chip" href={projectHref(id)}>
+                          {titles.get(id)}
+                        </a>
+                      </li>
+                    ))}
+                </ul>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .timeline {
+    display: grid;
+  }
+
+  .entry {
+    display: grid;
+    grid-template-columns: minmax(120px, 220px) minmax(0, 1fr);
+    gap: 12px clamp(24px, 5vw, 72px);
+    padding-block: clamp(28px, 3.6vw, 44px);
+    border-top: 1px solid var(--line);
+  }
+
+  .entry:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .entry__period {
+    font-size: clamp(20px, 2.2vw, 26px);
+    font-weight: 600;
+    letter-spacing: -0.022em;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-3);
+  }
+
+  .entry__kind {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-3);
+    margin-bottom: 6px;
+  }
+
+  .entry__org {
+    margin-top: 6px;
+    font-size: 17px;
+    color: var(--text-2);
+  }
+
+  .entry__points {
+    display: grid;
+    gap: 8px;
+    max-width: 68ch;
+    margin-top: 18px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .entry__points li {
+    position: relative;
+    padding-left: 20px;
+    text-wrap: pretty;
+  }
+
+  .entry__points li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 0.66em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--text-3);
+  }
+
+  .entry__projects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 22px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .entry__projects li {
+    max-width: 100%;
+  }
+
+  /* A long project title wraps inside its chip instead of running off a narrow screen. */
+  .entry__projects .chip {
+    height: auto;
+    min-height: 30px;
+    padding-block: 5px;
+    color: var(--link);
+    white-space: normal;
+  }
+
+  /* Fingers need a larger target than a pointer does. */
+  @media (pointer: coarse) {
+    .entry__projects .chip {
+      min-height: 40px;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .entry {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

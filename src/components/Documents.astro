@@ -1,0 +1,140 @@
+---
+/**
+ * The documents of a project, each shown as its first page with its title and
+ * length. A card opens the preview (see DocDialog.astro); its link goes to the PDF.
+ */
+import { DOCUMENT_KIND, pageCount, thumbSrcset, type ResolvedDocument } from '../lib/documents';
+import Icon from './Icon.astro';
+
+interface Props {
+  documents: ResolvedDocument[];
+}
+
+const { documents } = Astro.props;
+---
+
+<ul class="docs">
+  {
+    documents.map((doc) => (
+      <li class="doc">
+        <a class="doc__open" href={doc.pdf} target="_blank" rel="noopener" data-doc={doc.id}>
+          <img
+            class="doc__thumb"
+            src={doc.thumb.src}
+            srcset={thumbSrcset(doc)}
+            sizes="132px"
+            width={doc.thumb.width}
+            height={doc.thumb.height}
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="doc__text">
+            <span class="doc__kind">
+              <Icon name={DOCUMENT_KIND[doc.kind].icon} />
+              {DOCUMENT_KIND[doc.kind].label} · {pageCount(doc)}
+            </span>
+            <strong class="doc__title">{doc.title}</strong>
+            <span class="doc__action">
+              Preview <Icon name="chevron-right" />
+            </span>
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .docs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: clamp(12px, 1.6vw, 18px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* A single document is not stretched across the whole page. */
+  .doc:only-child {
+    max-width: 640px;
+  }
+
+  .doc {
+    border-radius: var(--r-lg);
+    background: var(--tile);
+    transition: background-color 0.25s var(--ease);
+  }
+
+  .doc:hover {
+    background: var(--field-hover);
+  }
+
+  .doc__open {
+    display: grid;
+    grid-template-columns: clamp(88px, 22vw, 132px) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(16px, 2.4vw, 26px);
+    padding: clamp(16px, 2vw, 22px);
+    border-radius: inherit;
+    color: var(--text);
+  }
+
+  .doc__open:hover {
+    text-decoration: none;
+  }
+
+  .doc__thumb {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 0 0 1px var(--line), var(--shadow-soft);
+    filter: var(--figure-filter);
+  }
+
+  .doc__text {
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+  }
+
+  .doc__kind {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-2);
+  }
+
+  .doc__kind :global(svg) {
+    width: 17px;
+    height: 17px;
+  }
+
+  .doc__title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    overflow: hidden;
+    font-size: clamp(17px, 1.7vw, 20px);
+    font-weight: 600;
+    line-height: 1.26;
+    letter-spacing: -0.018em;
+  }
+
+  .doc__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 15px;
+    color: var(--link);
+  }
+
+  .doc__action :global(svg) {
+    width: 0.9em;
+    height: 0.9em;
+  }
+</style>

@@ -1,0 +1,42 @@
+{
+  "name": "demtsev.com",
+  "description": "Portfolio of Daniil Emtsev",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "media": "node scripts/media.mjs",
+    "mux": "node scripts/mux-upload.mjs",
+    "docs": "node scripts/documents.mjs",
+    "test": "node --test \"tests/**/*.test.ts\"",
+    "eval:chat": "node scripts/chat-eval.mjs",
+    "check:build": "node scripts/check-build.mjs",
+    "check:i18n": "python3 scripts/check-i18n.py",
+    "chat:smoke": "node scripts/chat-smoke.mjs",
+    "voice:assets": "node scripts/whistle-assets.mjs",
+    "cv": "node scripts/cv.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@huggingface/transformers": "4.3.0",
+    "@mux/mux-player": "^3.13.4",
+    "astro": "^7.3.5",
+    "qrcode": "^1.5.4",
+    "stemmer": "^2.0.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/qrcode": "^1.5.6",
+    "happy-dom": "^20.14.5",
+    "sharp": "^0.35.5",
+    "typescript": "^6.0.3",
+    "yaml": "^2.9.1"
+  }
+}

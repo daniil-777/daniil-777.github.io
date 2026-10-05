@@ -1,0 +1,327 @@
+---
+import { Image } from 'astro:assets';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import portrait from '../assets/me/portrait.jpg';
+import { hero, site } from '../data/site';
+import showreel from '../data/showreel.json';
+import { poster } from '../lib/projects';
+import Icon from './Icon.astro';
+
+const reelPoster = poster('showreel');
+// Changing the reel changes its URL, so returning visitors receive the new edit.
+const reelVersion = createHash('sha256').update(readFileSync('public/media/showreel.mp4')).digest('hex').slice(0, 12);
+---
+
+<section class="hero">
+  <div class="wrap hero__copy">
+    <div class="hero__id reveal">
+      <Image
+        class="hero__avatar"
+        src={portrait}
+        alt={`Portrait of ${site.name}`}
+        width={176}
+        height={176}
+        fit="cover"
+        position="top"
+        loading="lazy"
+      />
+      <p>
+        <strong>{site.name}</strong>
+        <span>{hero.eyebrow}</span>
+      </p>
+    </div>
+
+    <h2 class="hero__title reveal" style="--i:1">
+      <span>{hero.headline.before}</span>
+      <span class="grad-text">{hero.headline.accent}</span>
+    </h2>
+    <p class="lead hero__lead reveal" style="--i:2">{hero.lead}</p>
+
+    <div class="hero__cta reveal" style="--i:3">
+      <a class="btn btn--primary" href="#featured">Explore the work</a>
+      <a class="arrow-link" href="#contact">Get in touch <Icon name="chevron-right" /></a>
+    </div>
+  </div>
+
+  {
+    reelPoster && (
+      <div class="wrap reveal" style="--i:4">
+        <div class="reel" data-reel>
+          <Image
+            class="reel__media"
+            src={reelPoster}
+            alt=""
+            widths={[640, 960, 1280, 1600]}
+            sizes="(min-width: 1240px) 1180px, 94vw"
+            loading="lazy"
+          />
+          <video class="reel__media" muted loop playsinline preload="none" aria-label="Showreel: a montage of the projects on this site">
+            <source src={`/media/showreel-small.mp4?v=${reelVersion}`} type="video/mp4" media="(max-width: 760px)" />
+            <source src={`/media/showreel.mp4?v=${reelVersion}`} type="video/mp4" />
+          </video>
+          <button class="reel__toggle" type="button" data-reel-toggle aria-label="Pause showreel">
+            <Icon name="pause" class="reel__pause" />
+            <Icon name="play" class="reel__play" />
+          </button>
+        </div>
+        <ol class="reel__chapters" aria-label="Showreel clips in playback order">
+          {showreel.map((clip, i) => (
+            <li><a href={clip.href}><span>{String(i + 1).padStart(2, '0')}</span> {clip.label}</a></li>
+          ))}
+        </ol>
+      </div>
+    )
+  }
+
+</section>
+
+<script>
+  const reel = document.querySelector<HTMLElement>('[data-reel]');
+  const video = reel?.querySelector('video');
+  const toggle = reel?.querySelector<HTMLButtonElement>('[data-reel-toggle]');
+
+  if (reel && video && toggle) {
+    // With reduced motion the reel waits to be started, behind a large play button.
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+    let wanted = !reduced && !saveData;
+    reel.classList.toggle('is-waiting', !wanted);
+
+    const sync = () => {
+      const playing = !video.paused;
+      reel.classList.toggle('is-playing', playing);
+      toggle.setAttribute('aria-label', playing ? 'Pause showreel' : 'Play showreel');
+    };
+    video.addEventListener('playing', sync);
+    video.addEventListener('pause', sync);
+
+    toggle.addEventListener('click', () => {
+      reel.classList.remove('is-waiting');
+      wanted = video.paused;
+      if (wanted) void video.play().catch(sync);
+      else video.pause();
+    });
+
+    // Only play while on screen, and never before the page has finished loading.
+    const watcher = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && wanted) void video.play().catch(sync);
+        else video.pause();
+      },
+      { threshold: 0.25 },
+    );
+    const start = () => watcher.observe(reel);
+    if (document.readyState === 'complete') start();
+    else window.addEventListener('load', start, { once: true });
+    sync();
+  }
+</script>
+
+<style>
+  .hero {
+    padding-top: clamp(32px, 4.6vw, 64px);
+    padding-bottom: clamp(56px, 8vw, 104px);
+    overflow: clip;
+  }
+
+  .hero__copy {
+    text-align: center;
+    display: grid;
+    justify-items: center;
+  }
+
+  .hero__id {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+    margin-bottom: clamp(24px, 3vw, 34px);
+  }
+
+  .hero__avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: 50% 12%;
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--line);
+  }
+
+  .hero__id p {
+    display: grid;
+    line-height: 1.25;
+  }
+
+  .hero__id strong {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .hero__id span {
+    font-size: 14px;
+    color: var(--text-2);
+  }
+
+  /* Two lines on a desktop, so the showreel is already in view on arrival. */
+  .hero__title {
+    /* Below 408px the minimum eases off, so "AI that sees, guides" still fits one line, down to 320px. */
+    font-size: clamp(min(42px, 10.3vw), 5.25vw, 92px);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .hero__title span {
+    display: block;
+  }
+
+  .hero__title .grad-text {
+    /* Descenders of the last line are clipped by background-clip without this. */
+    padding-bottom: 0.08em;
+  }
+
+  .hero__lead {
+    max-width: 56ch;
+    margin-top: clamp(16px, 2vw, 24px);
+  }
+
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 14px 26px;
+    margin-top: clamp(24px, 2.8vw, 32px);
+  }
+
+  .reel {
+    position: relative;
+    margin: clamp(40px, 5vw, 64px) auto 0;
+    aspect-ratio: 16 / 9;
+    /* Never taller than the screen (a phone held sideways). */
+    width: min(100%, (100svh - var(--nav-h) - 24px) * 16 / 9);
+    border-radius: clamp(20px, 3vw, 36px);
+    background: #000;
+    isolation: isolate;
+  }
+
+  /* A soft band of colour under the tile, the one decorative flourish on the page. */
+  .reel::before {
+    content: '';
+    position: absolute;
+    inset: 12% 3% -5%;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--grad);
+    filter: blur(64px);
+    opacity: 0.5;
+    animation: glow 9s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from {
+      transform: translateX(-3%) scale(0.97);
+      opacity: 0.38;
+    }
+
+    to {
+      transform: translateX(3%) scale(1.02);
+      opacity: 0.58;
+    }
+  }
+
+  .reel__media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+  }
+
+  .reel__chapters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 22px;
+    margin-top: 24px;
+    list-style: none;
+    font-size: 13px;
+  }
+
+  .reel__chapters a { color: var(--text-2); padding-block: 10px; display: inline-block; }
+  .reel__chapters span { color: var(--text-3); font-variant-numeric: tabular-nums; margin-right: 4px; }
+
+  .reel video {
+    opacity: 0;
+    transition: opacity 0.8s var(--ease);
+  }
+
+  .reel.is-playing video {
+    opacity: 1;
+  }
+
+  .reel__toggle {
+    position: absolute;
+    right: clamp(12px, 2vw, 22px);
+    bottom: clamp(12px, 2vw, 22px);
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(40, 40, 42, 0.62);
+    color: #fff;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    transition: background-color 0.2s var(--ease);
+  }
+
+  .reel__toggle:hover {
+    background: rgba(40, 40, 42, 0.86);
+  }
+
+  .reel__toggle :global(svg) {
+    width: 16px;
+    height: 16px;
+    grid-area: 1 / 1;
+  }
+
+  .reel__toggle :global(.reel__pause),
+  .reel.is-playing .reel__toggle :global(.reel__play) {
+    display: none;
+  }
+
+  .reel.is-playing .reel__toggle :global(.reel__pause) {
+    display: block;
+  }
+
+  .reel.is-waiting .reel__toggle {
+    inset: 0;
+    margin: auto;
+    width: clamp(64px, 8vw, 88px);
+    height: clamp(64px, 8vw, 88px);
+    background: rgba(255, 255, 255, 0.88);
+    color: #1d1d1f;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .reel.is-waiting .reel__toggle :global(svg) {
+    width: 40%;
+    height: 40%;
+    margin-left: 6%;
+  }
+
+  /* Fingers need a larger target than a pointer does. */
+  @media (pointer: coarse) {
+    .reel__toggle {
+      width: 44px;
+      height: 44px;
+    }
+  }
+
+</style>

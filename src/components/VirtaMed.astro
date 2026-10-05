@@ -1,0 +1,64 @@
+---
+import { Image } from 'astro:assets';
+import { formatDuration, projectHref, resolveVideos, videoPayload, type Project } from '../lib/projects';
+import Icon from './Icon.astro';
+
+interface Props { projects: Project[]; }
+const projects = Astro.props.projects.filter((project) => project.data.organisation === 'VirtaMed');
+const order = ['ai-proctor-davos', 'ai-proctor-analyser', 'lap-stratafix', 'lap-peg-transfer', 'lap-precision-cutting', 'lap-extracorporeal-knot', 'lap-ligating-loop'];
+const demos = await Promise.all(projects.flatMap((project) => resolveVideos(project).map((video) => ({ project, video })))
+  .sort((a, b) => order.indexOf(a.video.id) - order.indexOf(b.video.id))
+  .map(async (demo) => ({ ...demo, payload: await videoPayload(demo.video) })));
+---
+
+<section class="section surgical" id="virtamed" aria-labelledby="virtamed-title">
+  <div class="wrap">
+    <header class="section__head reveal">
+      <p class="eyebrow">VirtaMed · Surgical AI</p>
+      <h2 class="h2" id="virtamed-title">AI alongside the trainee.</h2>
+      <p class="lead">From a suturing coach to a surgical AI proctor and real-time guidance for laparoscopic exercises. Explore all {demos.length} demos from my work at VirtaMed.</p>
+    </header>
+    <ul class="surgical__demos">
+      {demos.map(({ project, video, payload }) => (
+        <li class="surgical__demo reveal">
+          <button class="surgical__watch" type="button" data-video-open data-video={JSON.stringify(payload)} aria-label={`Watch ${video.title}, ${formatDuration(video.duration)}`}>
+            <Image src={video.poster} alt="" widths={[480, 720, 960]} sizes="(min-width: 900px) 370px, (min-width: 600px) 44vw, 90vw" loading="lazy" />
+            <span class="surgical__play"><Icon name="play" /></span>
+            <span class="surgical__duration">{formatDuration(video.duration)}</span>
+          </button>
+          <div class="surgical__copy">
+            <h3>{video.title}</h3>
+            <p>{video.caption}</p>
+            <a class="arrow-link" href={projectHref(project)}>Read the project <Icon name="chevron-right" /></a>
+          </div>
+        </li>
+      ))}
+    </ul>
+    <div class="surgical__projects">
+      <h3 class="h3">The work behind the demos</h3>
+      <ul>
+        {projects.map((project) => <li><a class="chip" href={projectHref(project)}>{project.data.title} <Icon name="chevron-right" /></a></li>)}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .surgical { border-top: 1px solid var(--line); }
+  .surgical__demos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+  .surgical__demo { overflow: hidden; border-radius: var(--r-lg); background: var(--tile); }
+  .surgical__watch { position: relative; display: block; width: 100%; aspect-ratio: 16 / 10; background: #000; }
+  .surgical__watch :global(img) { width: 100%; height: 100%; object-fit: contain; }
+  .surgical__play { position: absolute; inset: 0; margin: auto; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.9); color: #1d1d1f; }
+  .surgical__play :global(svg) { width: 22px; height: 22px; margin-left: 3px; }
+  .surgical__duration { position: absolute; right: 12px; bottom: 12px; padding: 4px 8px; border-radius: 8px; background: rgba(0,0,0,.7); color: white; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .surgical__copy { padding: 22px; }
+  .surgical__copy h3 { font-size: 20px; line-height: 1.2; letter-spacing: -.02em; }
+  .surgical__copy p { margin-top: 10px; font-size: 15px; color: var(--text-2); }
+  .surgical__copy a { margin-top: 16px; font-size: 15px; }
+  .surgical__projects { margin-top: 40px; }
+  .surgical__projects ul { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .surgical__projects :global(svg) { width: 14px; height: 14px; }
+  @media (max-width: 899px) { .surgical__demos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 599px) { .surgical__demos { grid-template-columns: minmax(0, 1fr); } }
+</style>

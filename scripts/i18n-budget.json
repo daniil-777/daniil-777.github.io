@@ -1,0 +1,6 @@
+{
+  "note": "Seven-language localization requested 2026-10-05. Page-specific catalogs for six additional languages are inline for synchronous switching without reloads or network requests. Original chat and architecture allowances remain unchanged. Catalogs for off-page assistant content remain lazy.",
+  "measured": { "homeCatalogGzipBytes": 68042, "homeHtmlGzipBytes": 91855, "eagerCssGzipBytes": 11927, "eagerJsGzipBytes": 11977 },
+  "allowance": { "html": 71000, "css": 500, "js": 5000 },
+  "pageCatalogMaxGzipBytes": 71000
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "demtsev-chat",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  // Store the key as a server secret: `npx wrangler secret put OPENAI_API_KEY`.
+  "vars": {
+    "CHAT_PROVIDER": "openai",
+    "CHAT_MODEL": "gpt-6-luna",
+    "ALLOWED_ORIGINS": "https://daniil-777.github.io",
+    "KB_URL": "https://daniil-777.github.io/chat/kb.json",
+    // Global requests per UTC day. Set to your acceptable usage; keep a provider billing budget too.
+    "DAILY_LIMIT": "100"
+  },
+  "ratelimits": [
+    // Per visitor address.
+    { "name": "RL_IP", "namespace_id": "1001", "simple": { "limit": 8, "period": 60 } },
+    // All visitors together.
+    { "name": "RL_ALL", "namespace_id": "1002", "simple": { "limit": 40, "period": 60 } }
+  ],
+  "durable_objects": {
+    "bindings": [{ "name": "BUDGET", "class_name": "Budget" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Budget"] }],
+  // Workers Logs keeps the Worker's own log lines (status, tokens, duration). The per-request
+  // invocation log, which records request metadata such as headers, is switched off.
+  "observability": { "enabled": true, "logs": { "enabled": true, "invocation_logs": false } }
+}

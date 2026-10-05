@@ -1,0 +1,51 @@
+[
+  {
+    "source": "public/media/video/ai-proctor-davos.mp4",
+    "start": 42,
+    "duration": 4,
+    "label": "AI suturing coach",
+    "href": "/#virtamed",
+    "technology": "Vision + language models"
+  },
+  {
+    "source": "public/media/video/ai-proctor-analyser.mp4",
+    "start": 94,
+    "duration": 4,
+    "label": "AI Proctor",
+    "href": "/work/ai-proctor/",
+    "technology": "LLM guidance + simulator telemetry"
+  },
+  {
+    "source": "public/media/video/lap-stratafix.mp4",
+    "start": 111,
+    "duration": 4,
+    "fit": "contain",
+    "label": "Stratafix guidance",
+    "href": "/#virtamed",
+    "technology": "On-device computer vision"
+  },
+  {
+    "source": "public/media/video/pixel-morph.mp4",
+    "start": 0.8,
+    "duration": 4,
+    "label": "Real-time 2D & 3D generation",
+    "href": "/work/pixel-morph/",
+    "technology": "Triplane VAE + rectified flow"
+  },
+  {
+    "source": "public/media/video/fx-regime-radar.mp4",
+    "start": 8.5,
+    "duration": 4,
+    "label": "FX Regime Radar",
+    "href": "/work/fx-regime-radar/",
+    "technology": "HMM + XGBoost + SHAP"
+  },
+  {
+    "source": "public/media/video/astro-pilot.mp4",
+    "start": 36,
+    "duration": 6,
+    "label": "Astro Pilot · reinforcement learning",
+    "href": "/work/astro-pilot/",
+    "technology": "Reinforcement learning · PPO"
+  }
+]

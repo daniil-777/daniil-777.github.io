@@ -1,0 +1,185 @@
+---
+/**
+ * The quick actions of a project: watch its video, open the live demo, see
+ * the code, read the paper. Shown on catalog cards and featured tiles.
+ *
+ * Which buttons appear is derived from the project itself: a video if it has
+ * one, a button for each link of kind `live` or `code`, and one for each of
+ * its documents, which opens the preview (see DocDialog.astro).
+ */
+import type { LinkKind } from '../data/taxonomy';
+import { DOCUMENT_KIND, resolveDocuments } from '../lib/documents';
+import { formatDuration, projectHref, resolveVideos, videoPayload, type Project } from '../lib/projects';
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props {
+  project: Project;
+  /** `large` for the featured tiles. */
+  size?: 'small' | 'large';
+  /** Wording of the video button. */
+  videoLabel?: string;
+  /** Offer a link to the project page when there is nothing else to show. */
+  fallback?: boolean;
+}
+
+const { project, size = 'small', videoLabel = 'Video', fallback = true } = Astro.props;
+
+const [video] = resolveVideos(project);
+const payload = video ? await videoPayload(video) : undefined;
+
+const button: Partial<Record<LinkKind, { label: string; icon: IconName }>> = {
+  live: { label: 'Demo', icon: 'globe' },
+  code: { label: 'GitHub', icon: 'github' },
+};
+const order: LinkKind[] = ['live', 'code'];
+const links = order.flatMap((kind) => {
+  const link = project.data.links.find((candidate) => candidate.kind === kind);
+  return link ? [{ ...button[kind]!, href: link.href }] : [];
+});
+const documents = resolveDocuments(project);
+const empty = !video && links.length === 0 && documents.length === 0;
+---
+
+{
+  (!empty || fallback) && (
+    <div class:list={['actions', `actions--${size}`]}>
+      {video && payload && (
+        <button
+          class="act act--video"
+          type="button"
+          data-video-open
+          data-video={JSON.stringify(payload)}
+          aria-label={`${videoLabel} ${formatDuration(video.duration)}: ${video.title}`}
+        >
+          <Icon name="play" />
+          <span class="act__label">{videoLabel}</span>
+          <span class="act__time">{formatDuration(video.duration)}</span>
+        </button>
+      )}
+      {links.map((link) => (
+        <a
+          class="act"
+          href={link.href}
+          target="_blank"
+          rel="noopener"
+          aria-label={`${link.label}: ${project.data.title} (opens in a new tab)`}
+        >
+          <Icon name={link.icon} />
+          <span class="act__label">{link.label}</span>
+        </a>
+      ))}
+      {documents.map((doc) => (
+        <a
+          class="act"
+          href={doc.pdf}
+          target="_blank"
+          rel="noopener"
+          data-doc={doc.id}
+          aria-label={`${DOCUMENT_KIND[doc.kind].label}: ${doc.title} (preview)`}
+        >
+          <Icon name={DOCUMENT_KIND[doc.kind].icon} />
+          <span class="act__label">{DOCUMENT_KIND[doc.kind].label}</span>
+        </a>
+      ))}
+      {empty && (
+        <a class="act" href={projectHref(project)} aria-label={`Details: ${project.data.title}`}>
+          <span class="act__label">Details</span>
+          <Icon name="chevron-right" />
+        </a>
+      )}
+    </div>
+  )
+}
+
+<style>
+  .actions {
+    /* Above the link that makes the whole card or tile clickable. */
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .act {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 34px;
+    padding: 0 14px 0 12px;
+    border-radius: 980px;
+    background: var(--field);
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    transition:
+      background-color 0.25s var(--ease),
+      transform 0.25s var(--ease);
+  }
+
+  .act:hover {
+    background: var(--field-hover);
+    text-decoration: none;
+  }
+
+  .act:active {
+    transform: scale(0.96);
+  }
+
+  .act :global(svg) {
+    flex: none;
+    width: 15px;
+    height: 15px;
+  }
+
+  .act--video {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .act--video:hover {
+    background: var(--accent-hover);
+  }
+
+  .act--video :global(svg) {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Set apart by weight, not by fading: faded white on the blue fails contrast. */
+  .act__time {
+    font-variant-numeric: tabular-nums;
+    font-weight: 400;
+  }
+
+  /* Fingers need a larger target than a pointer does. */
+  @media (pointer: coarse) {
+    .act {
+      min-width: 44px;
+      min-height: 44px;
+      justify-content: center;
+    }
+  }
+
+  .actions--large {
+    gap: 10px;
+  }
+
+  .actions--large .act {
+    height: 40px;
+    padding: 0 18px 0 15px;
+    font-size: 15px;
+  }
+
+  .actions--large .act :global(svg) {
+    width: 17px;
+    height: 17px;
+  }
+
+  .actions--large .act--video :global(svg) {
+    width: 13px;
+    height: 13px;
+  }
+</style>
