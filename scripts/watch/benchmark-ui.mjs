@@ -7,7 +7,9 @@ import { startBrowser } from '../watch-language/browser-helper.mjs';
 const url = process.env.WATCH_QA_URL ?? 'http://127.0.0.1:4331';
 const output = process.env.WATCH_QA_OUTPUT ?? '/tmp/chronos-qa';
 await mkdir(output, { recursive: true });
-const browser = await startBrowser(`${url}/smart-watch/`, { width: 1440, height: 1100 });
+const style = process.env.WATCH_QA_STYLE ?? 'dial';
+const target = new URL('/smart-watch/', url);target.searchParams.set('watchStyle', style);
+const browser = await startBrowser(target.href, { width: 1440, height: 1100 });
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 const planeWorkerPaths = [];
 for (const name of (await readdir('build/_astro')).filter(name => /^worker[-.].*\.js$/.test(name))) {
@@ -39,13 +41,17 @@ try {
   await browser.evaluate('document.querySelector("[data-watch]").scrollIntoView({block:"center"})');
   await wait(1200);
   assertAircraftDisabled(await browser.evaluate(aircraftState));
-  const frames = await browser.evaluate(`new Promise(resolve=>{const intervals=[];let last=performance.now(),start=last,previous='',handChanges=0;
+  const frames = await browser.evaluate(`new Promise(resolve=>{const intervals=[];let last=performance.now(),start=last,previous='',handChanges=0,previousText='',marqueeChanges=0;
     const tick=now=>{intervals.push(now-last);last=now;
       const second=document.querySelector('[data-watch-hand="second"]').getAttribute('transform');
       if(previous&&second!==previous)handChanges++;previous=second;
-      if(now-start<8000)requestAnimationFrame(tick);else{intervals.sort((a,b)=>a-b);const at=p=>intervals[Math.min(intervals.length-1,Math.floor(intervals.length*p))];resolve({frames:intervals.length,medianMs:at(.5),p95Ms:at(.95),p99Ms:at(.99),handChanges,maxPhaseErrorRadians:null,heap:performance.memory?{used:performance.memory.usedJSHeapSize,total:performance.memory.totalJSHeapSize}:null});}
+      const track=document.querySelector('[data-watch-marquee-track]');
+      const text=track?getComputedStyle(track).transform:'';
+      if(previousText&&text!==previousText)marqueeChanges++;previousText=text;
+      if(now-start<8000)requestAnimationFrame(tick);else{intervals.sort((a,b)=>a-b);const at=p=>intervals[Math.min(intervals.length-1,Math.floor(intervals.length*p))];resolve({frames:intervals.length,medianMs:at(.5),p95Ms:at(.95),p99Ms:at(.99),handChanges,marqueeChanges,maxPhaseErrorRadians:null,heap:performance.memory?{used:performance.memory.usedJSHeapSize,total:performance.memory.totalJSHeapSize}:null});}
     };requestAnimationFrame(tick);})`);
   assert.ok(frames.handChanges > 0, 'The analogue clock continues moving while aircraft is disabled');
+  if(style==='marquee')assert.ok(frames.marqueeChanges>0,'Scrolling text moves during the frame sample');
   console.log(JSON.stringify({ frameSample: frames }));
   const app = await browser.evaluate('performance.getEntriesByType("resource").map(r=>r.name).find(name=>/\\/app\\.[^/]+\\.js/.test(name))');
   assert.ok(app, 'Public watch module must have loaded');
@@ -61,8 +67,8 @@ try {
   const appFile = new URL(app).pathname.split('/').at(-1);
   const appSha256 = createHash('sha256').update(await readFile(`build/_astro/${appFile}`)).digest('hex');
   const result = { version, device: 'Apple M3 Pro, macOS 27.2, isolated headless Chrome', viewport: '1440×1100', frames,
-    aircraftEnabled: false, aircraftDownloads: disabled.downloads, learningEnabled: false, repeatedMountUnmount: 5,
-    appAsset: { file: appFile, sha256: appSha256 }, methodology: '8-second foreground RAF sample of the visible analogue clock; aircraft phase and learning are disabled on public watches. Five mount/unmount cycles retain that isolation. Desktop only; browser heap excludes process RSS, GPU and WASM.' };
+    style, aircraftEnabled: false, aircraftDownloads: disabled.downloads, learningEnabled: false, repeatedMountUnmount: 5,
+    appAsset: { file: appFile, sha256: appSha256 }, methodology: '8-second foreground RAF sample of the visible analogue clock and selected thought style; aircraft phase and learning are disabled on public watches. Five mount/unmount cycles retain that isolation. Desktop only; browser heap excludes process RSS, GPU and WASM.' };
   await writeFile(join(output, 'ui-benchmark.json'), JSON.stringify(result, null, 2));
   console.log(JSON.stringify(result));
 } finally { await browser.close(); }

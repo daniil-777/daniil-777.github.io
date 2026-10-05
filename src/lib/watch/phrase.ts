@@ -49,7 +49,7 @@ export function layoutPhrase(sentence: string, measure: (text: string, fontSize:
 }
 
 export function renderPhrase(node: SVGTextElement, sentence: string, style: WatchThoughtStyle = 'dial'): void {
-  if (style === 'card' || style === 'layered') {
+  if (style === 'card' || style === 'layered' || style === 'marquee') {
     node.replaceChildren(); node.dataset.watchThoughtStyle = style; return;
   }
   const canvas = document.createElement('canvas');

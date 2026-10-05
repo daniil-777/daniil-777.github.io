@@ -1,6 +1,6 @@
 export type LanguageMode = 'ai' | 'profile' | 'wellbeing';
 export type WatchMotion = 'system' | 'sweep' | 'tick';
-export const WATCH_THOUGHT_STYLES = ['dial', 'arc', 'card', 'layered'] as const;
+export const WATCH_THOUGHT_STYLES = ['dial', 'arc', 'card', 'layered', 'marquee'] as const;
 export type WatchThoughtStyle = typeof WATCH_THOUGHT_STYLES[number];
 export type WatchKnowledgeDomain = 'all' | 'math' | 'ai' | 'finance' | 'robotics' | 'vision' | 'healthcare' | 'science' | 'security';
 export type InferenceBackend = 'wasm' | 'webgpu';

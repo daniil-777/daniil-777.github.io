@@ -4,6 +4,7 @@ import { mountPlane } from './plane-view.ts';
 import { WatchLanguageClient } from './language/runtime.ts';
 import { WATCH_THOUGHT_STYLES, type WatchSettings, type LanguageMode, type WatchThoughtStyle, type WatchKnowledgeDomain } from './types.ts';
 import { renderPhrase } from './phrase.ts';
+import { mountMarquee } from './marquee.ts';
 
 export interface SmartWatchHandle {
   setSettings(settings: Partial<WatchSettings>): void;
@@ -21,7 +22,7 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
   if (options.inferenceBackend && options.inferenceBackend !== 'wasm') throw new RangeError('This release supports the tested WASM backend.');
   if (options.diameter !== undefined && !Number.isFinite(options.diameter)) throw new RangeError('Watch diameter must be finite.');
   if (options.phraseIntervalMs !== undefined && !Number.isFinite(options.phraseIntervalMs)) throw new RangeError('Thought interval must be finite.');
-  if (options.thoughtStyle !== undefined && !WATCH_THOUGHT_STYLES.includes(options.thoughtStyle)) throw new RangeError('Thought style must be dial, arc, card or layered.');
+  if (options.thoughtStyle !== undefined && !WATCH_THOUGHT_STYLES.includes(options.thoughtStyle)) throw new RangeError('Thought style must be dial, arc, card, layered or marquee.');
   if (options.knowledgeDomain !== undefined && !KNOWLEDGE_DOMAINS.includes(options.knowledgeDomain)) throw new RangeError('Unknown knowledge field.');
   if (options.diameter !== undefined) root.style.setProperty('--watch-diameter', `${Math.min(480, Math.max(320, options.diameter))}px`);
   const phrase = node<SVGTextElement>('[data-watch-phrase]');
@@ -30,6 +31,7 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
   const sources = node<HTMLElement>('[data-watch-sources]');
   const answer = node<HTMLElement>('[data-watch-answer]');
   const cardOutput = node<HTMLElement>('[data-watch-card-output]');
+  const marquee = mountMarquee(cardOutput, fitCardOutput);
   const abort = new AbortController();
   const on = (target: EventTarget, name: string, fn: EventListener) => target.addEventListener(name, fn, { signal: abort.signal });
   const language = new WatchLanguageClient();
@@ -55,11 +57,17 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
   let lastValidated = '', lastDialSentence = '', modelNote = 'The trained local model is being evaluated; reviewed sentences are available now.';
 
   function fitCardOutput() {
-    if (thoughtStyle !== 'card' && thoughtStyle !== 'layered') return;
+    if (thoughtStyle === 'marquee') {
+      const scale = node('[data-watch-dial]').getBoundingClientRect().width / 440;
+      cardOutput.style.fontSize = `${Math.max(15, 24 * scale)}px`;
+      marquee.setText(lastDialSentence, true);
+      if (!marquee.reducedMotion) return;
+    }
+    if (!['card', 'layered', 'marquee'].includes(thoughtStyle)) return;
     const face = node<SVGSVGElement>('[data-watch-dial]').getBoundingClientRect();
     const scale = face.width / 440;
     if (!scale) return;
-    let fittedSize = thoughtStyle === 'layered' ? answerSize : 26;
+    let fittedSize = thoughtStyle === 'layered' ? answerSize : thoughtStyle === 'marquee' ? 22 : 26;
     for (let font = fittedSize; font >= 14; font -= .5) {
       cardOutput.style.fontSize = `${font * scale}px`;
       fittedSize = font;
@@ -67,9 +75,10 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
       const corners = [box.left, box.right].flatMap(x => [box.top, box.bottom].map(y =>
         Math.hypot((x - face.left) / scale - 220, (y - face.top) / scale - 220)));
       // The layered face reserves the outer numerals and six o'clock marker.
-      const clearsNumerals = thoughtStyle !== 'layered' || (box.bottom - face.top) / scale <= 350;
+      const clearsNumerals = thoughtStyle === 'card' || (box.bottom - face.top) / scale <= 350;
       if (corners.every(radius => radius <= 194) && clearsNumerals) break;
     }
+    if (thoughtStyle === 'marquee') marquee.refresh();
     if (thoughtStyle === 'layered') {
       const percentage = Math.round(fittedSize / 24 * 100);
       const limited = fittedSize < answerSize;
@@ -81,7 +90,7 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
     }
   }
   function mirrorCard(text: string, facts: WatchFact[], generated = false) {
-    cardOutput.textContent = text;
+    marquee.setText(text, thoughtStyle === 'marquee');
     node('[data-watch-card-status]').textContent = generated ? 'Local model' : facts.length ? 'Reviewed' : 'Unavailable';
     node('[data-watch-card-source]').textContent = facts[0]?.sourceTitle ?? 'Use Next thought to retry';
     fitCardOutput();
@@ -191,6 +200,7 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
   function syncActivity() {
     language.cancel(); ++sequence;
     plane?.pause(paused || !active || !visible || document.hidden);
+    marquee.pause(paused || !active || !visible || document.hidden);
     if (visible && !document.hidden) dial.resume(); else dial.suspend();
     if (active && visible && !document.hidden) void initialize();
     due = Date.now() + interval;
@@ -211,6 +221,8 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
     thoughtStyle = value;
     root.dataset.watchThoughtStyle = value;
     node<HTMLSelectElement>('[data-watch-thought-layout]').value = value;
+    marquee.setText(lastDialSentence, value === 'marquee');
+    marquee.pause(paused || !active || !visible || document.hidden);
     fitCardOutput();
   }
   function setKnowledgeDomain(value: WatchKnowledgeDomain) {
@@ -222,7 +234,7 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
   function pause(value: boolean) {
     paused = value; node('[data-watch-pause]').setAttribute('aria-pressed', String(value));
     node('[data-watch-pause-label]').textContent = value ? 'Resume' : 'Pause';
-    language.cancel(); ++sequence; plane?.pause(value); due = Date.now() + interval;
+    language.cancel(); ++sequence; plane?.pause(value); marquee.pause(value || !active || !visible || document.hidden); due = Date.now() + interval;
   }
   function open() {
     if (disposed) return;
@@ -230,6 +242,7 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
     active = true; syncActivity();
   }
   on(root, 'click', event => {
+    if (thoughtStyle === 'marquee' && (event.target as Element).closest('[data-watch-card-output]')) pause(!paused);
     const target = (event.target as Element).closest<HTMLElement>('button');
     if (!target) return;
     if (target.hasAttribute('data-watch-open')) open();
@@ -273,7 +286,7 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
   observer.observe(root);
   const sizeObserver = new ResizeObserver(fitCardOutput);
   sizeObserver.observe(node('[data-watch-dial]'));
-  const timer = setInterval(() => { if (!paused && active && visible && !document.hidden && Date.now() >= due) void next(); }, 100);
+  const timer = setInterval(() => { if (!paused && active && visible && !document.hidden && Date.now() >= due && marquee.readyForNext) void next(); }, 100);
   if (active) void initialize();
   void document.fonts?.ready.then(() => { if (!disposed && lastDialSentence) { try { renderPhrase(phrase, lastDialSentence, thoughtStyle); fitCardOutput(); } catch { /* Retain the previous complete thought. */ } } });
   return {
@@ -282,7 +295,7 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
       if (settings.compact !== undefined && settings.compact !== compact) throw new RangeError('Remount the compact component to change its presentation.');
       if (settings.inferenceBackend && settings.inferenceBackend !== 'wasm') throw new RangeError('This release supports the tested WASM backend.');
       if (settings.phraseIntervalMs !== undefined && !Number.isFinite(settings.phraseIntervalMs)) throw new RangeError('Thought interval must be finite.');
-      if (settings.thoughtStyle !== undefined && !WATCH_THOUGHT_STYLES.includes(settings.thoughtStyle)) throw new RangeError('Thought style must be dial, arc, card or layered.');
+      if (settings.thoughtStyle !== undefined && !WATCH_THOUGHT_STYLES.includes(settings.thoughtStyle)) throw new RangeError('Thought style must be dial, arc, card, layered or marquee.');
       if (settings.knowledgeDomain !== undefined && !KNOWLEDGE_DOMAINS.includes(settings.knowledgeDomain)) throw new RangeError('Unknown knowledge field.');
       Object.assign(configuration, settings);
       if (settings.languageMode) setMode(settings.languageMode);
@@ -295,6 +308,6 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
       if (settings.showClouds !== undefined) plane?.setClouds(settings.showClouds);
       if (settings.enableOnlineLearning !== undefined) plane?.learn(settings.enableOnlineLearning);
     },
-    unmount() { if (disposed) return; disposed = true; ++sequence; abort.abort(); clearInterval(timer); observer.disconnect(); sizeObserver.disconnect(); dial.dispose(); plane?.dispose(); void language.dispose(); if (panel instanceof HTMLDialogElement && panel.open) panel.close(); },
+    unmount() { if (disposed) return; disposed = true; ++sequence; abort.abort(); clearInterval(timer); observer.disconnect(); sizeObserver.disconnect(); marquee.dispose(); dial.dispose(); plane?.dispose(); void language.dispose(); if (panel instanceof HTMLDialogElement && panel.open) panel.close(); },
   };
 }

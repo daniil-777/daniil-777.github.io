@@ -30,7 +30,7 @@ test('switchable inner layout still carries the full answer within the upper hal
 
 
 test('the layered and companion faces keep their full answer in the HTML layer above the hands', () => {
-  for (const style of ['card', 'layered'] as const) {
+  for (const style of ['card', 'layered', 'marquee'] as const) {
     let removed = false;
     const node = { replaceChildren() { removed = true; }, dataset: {} } as unknown as SVGTextElement;
     renderPhrase(node, 'The complete thought belongs above the moving analogue hands.', style);
