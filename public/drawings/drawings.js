@@ -9,7 +9,11 @@
   const post = (type, extra = {}) => { if (embedded) parent.postMessage({ channel: CHANNEL, session, type, ...extra }, location.origin); };
   document.documentElement.dataset.theme = qs.get('theme') === 'dark' ? 'dark' : 'light';
 
-  const FIELD = 192;            // decoded field size (the model's native 384 halved: a quarter of the work)
+  // 'pixels' (default): the decoded colour averaged into a coarse grid of flat pixels, inked where contours run; no contour
+  // detection or dot stamping, and a smaller field. 'dots': the original dot drawing.
+  const MODE = qs.get('mode') === 'dots' ? 'dots' : 'pixels';
+  const PIX = Math.min(64, Math.max(16, parseInt(qs.get('pix') || '', 10) || 32)); // pixels across the image
+  const FIELD = MODE === 'pixels' ? (qs.get('field') === '192' ? 192 : 128) : 192; // decoded field (native 384: 1/9 or 1/4 of the work)
   const KEY_MS = 90;            // at most ~11 keyframes a second; frames in between are interpolated
   const DRAW_MS = 32;           // at most ~30 drawn frames a second
   const MAX_CANVAS = 2 * FIELD; // dots are stamped at device resolution, up to this size
@@ -43,7 +47,7 @@
 
   // ---- host protocol (same shape as the 3D preview's)
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  let hostVisible = !embedded, paused = false, disposed = false, failed = false, skip = false, wake = () => {};
+  let hostVisible = !embedded, paused = false, disposed = false, failed = false, skip = false, wake = () => {}, repaint = () => {};
   const setPaused = (value) => { paused = value; post('playback', { paused }); wake(); };
   addEventListener('message', (event) => {
     if (disposed || event.source !== parent || event.origin !== location.origin) return;
@@ -52,7 +56,7 @@
     if (data.type === 'visibility') { hostVisible = data.active === true; wake(); }
     if (data.type === 'toggle') setPaused(!paused);
     if (data.type === 'next') skip = true;
-    if (data.type === 'theme') document.documentElement.dataset.theme = data.theme === 'dark' ? 'dark' : 'light';
+    if (data.type === 'theme') { document.documentElement.dataset.theme = data.theme === 'dark' ? 'dark' : 'light'; repaint(); }
     if (data.type === 'dispose') dispose();
   });
   document.addEventListener('visibilitychange', () => wake());
@@ -158,7 +162,9 @@
     // ---- canvas: dots stamped at device resolution into one ImageData
     const view = document.getElementById('c'), ctx = view.getContext('2d', { alpha: false });
     let W = 0, img = null, g8 = null, g32 = null;
+    if (MODE === 'pixels') view.classList.add('pixels');
     function fit() {
+      if (MODE === 'pixels') { if (W !== PIX) { W = view.width = view.height = PIX; img = ctx.createImageData(W, W); g8 = img.data; g32 = new Uint32Array(g8.buffer); lastSig = ''; } return; }
       const px = Math.max(64, Math.min(MAX_CANVAS, Math.round(Math.min(innerWidth, innerHeight) * (devicePixelRatio || 1))));
       if (px === W) return;
       W = view.width = view.height = px; img = ctx.createImageData(W, W); g8 = img.data; g32 = new Uint32Array(g8.buffer); lastSig = '';
@@ -265,7 +271,36 @@
     }
     const sp = Math.max(1.4, 2 * S / NATIVE), gw = Math.ceil(S / sp) + 1, occ = new Uint8Array(gw * gw), dotsX = new Float32Array(gw * gw), dotsY = new Float32Array(gw * gw);
     const POW14 = new Float32Array(256); for (let q = 0; q < 256; q++) POW14[q] = TONE * Math.pow(q / 255, 1.4);
+    // pixels: per block, the mean colour (saturated, posterised to LEVELS steps) darkened by how much contour ink it holds
+    const LEVELS = 6, INK_PX = 0.55, SAT = 1.7, block = new Float32Array(PIX * PIX * 4);
+    function renderPixels() {
+      for (let by = 0; by < PIX; by++) {
+        const y0 = Math.floor(by * S / PIX), y1 = Math.floor((by + 1) * S / PIX);
+        for (let bx = 0; bx < PIX; bx++) {
+          const x0 = Math.floor(bx * S / PIX), x1 = Math.floor((bx + 1) * S / PIX);
+          let r = 0, g = 0, b = 0, ink = 0, n = 0;
+          for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+            const d = dist[y * S + x], ci = ((y >> 1) * HS + (x >> 1)) * 3;
+            r += col[ci]; g += col[ci + 1]; b += col[ci + 2]; ink += d < 0 ? 1 : d > 1 ? 0 : 1 - d; n++;
+          }
+          const o = (by * PIX + bx) * 4; block[o] = r / n; block[o + 1] = g / n; block[o + 2] = b / n; block[o + 3] = ink / n;
+        }
+      }
+      // contrast: stretch the frame's luminance to its own range (the decoded colour is pale), keeping the white paper white
+      let lo = 1, hi = 0;
+      for (let o = 0; o < block.length; o += 4) { const L = 0.299 * block[o] + 0.587 * block[o + 1] + 0.114 * block[o + 2]; if (L < lo) lo = L; if (L > hi) hi = L; }
+      const span = Math.max(0.25, hi - lo), q = (v) => Math.round((v < 0 ? 0 : v > 1 ? 1 : v) * (LEVELS - 1)) * 255 / (LEVELS - 1);
+      const dark = document.documentElement.dataset.theme === 'dark';
+      for (let o = 0; o < block.length; o += 4) {
+        const k = 1 - INK_PX * Math.min(1, Math.max(0, 3 * block[o + 3] - 0.35)), m = (block[o] + block[o + 1] + block[o + 2]) / 3;
+        for (let c = 0; c < 3; c++) g8[o + c] = q(((m + SAT * (block[o + c] - m)) - lo) / span * k);
+        if (dark && g8[o] === 255 && g8[o + 1] === 255 && g8[o + 2] === 255) g8[o] = g8[o + 1] = g8[o + 2] = 0; // paper follows the page
+        g8[o + 3] = 255;
+      }
+      ctx.putImageData(img, 0, 0);
+    }
     function render() {
+      if (MODE === 'pixels') return renderPixels();
       autoLevels(); detectLines(INK);
       g32.fill(0xffffffff); occ.fill(0);
       const sc = W / S, r = 0.42 * sp * sc, minD2 = sp * sp * 0.8;
@@ -375,6 +410,7 @@
         post('ready', { paused });
       }
     }
+    repaint = () => { if (MODE === 'pixels' && ready) render(); };
     wake = () => { if (!raf && running()) { lastKick = 0; raf = requestAnimationFrame(frame); } };
     fit();
     wake();

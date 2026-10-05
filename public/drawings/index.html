@@ -10,8 +10,9 @@
     :root[data-theme=dark] { color-scheme: dark; --bg: #000; }
     html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); }
     canvas { display: block; width: 100vmin; height: 100vmin; margin: calc((100vh - 100vmin) / 2) auto 0; }
-    /* Dark paper: invert lightness, keep the dots' hues. */
-    :root[data-theme=dark] canvas { filter: invert(1) hue-rotate(180deg); }
+    canvas.pixels { image-rendering: crisp-edges; image-rendering: pixelated; }
+    /* Dark paper for dots: invert lightness, keep the hues (pixels swap the paper colour themselves). */
+    :root[data-theme=dark] canvas:not(.pixels) { filter: invert(1) hue-rotate(180deg); }
   </style>
 </head>
 <body>

@@ -1,7 +1,7 @@
 {
   "repository": "https://github.com/daniil-777/real-time-web-2D3D-generation",
   "commit": "0b02e184be388bce1caa73fd1ae5f24ba174bd7e",
-  "note": "Fast drawing model with its first anchor chunk (six objects) only. meta.json keeps that one chunk and drops credit_html; sources.json keeps the six photos; drawings.js is a dots-only port of the page engine at a 192-px field.",
+  "note": "Fast drawing model with its first anchor chunk (six objects) only. meta.json keeps that one chunk and drops credit_html; sources.json keeps the six photos; drawings.js ports the page engine: a pixelated mode (default; 128-px field, colour averaged into 32x32 flat pixels) and the dots mode at a 192-px field (?mode=dots).",
   "files": [
     {
       "upstream": "pixel-morph/model/decoder.bin.gz",
@@ -35,8 +35,8 @@
       "upstream": "pixel-morph/index.html",
       "local": "drawings/drawings.js",
       "upstreamSha256": "2afb35ce5487620e6fe319907aecd4a1dbec2d41085ab84987a311e466930e2e",
-      "localSha256": "7ebd9e1ced33c8a0e27a5a58fed8af9a4b9fd50b42958c17bc72e6b1ec5ab668",
-      "localBytes": 25547
+      "localSha256": "9af40eff51670de4bc4f5706e7d425da405390a4202c8ccf4f6e5007a1999a26",
+      "localBytes": 28423
     }
   ]
 }
