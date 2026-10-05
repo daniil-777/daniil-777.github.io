@@ -24,7 +24,7 @@ Fifteen Python/ONNX parity cases passed. Fifteen isolated browser CPU/WASM cases
 
 ## Aircraft learning and conditional results
 
-The 1,699-parameter aircraft policy uses real Double DQN with 20,000 expert warmstart updates and 500,000 simulation steps. A pure Double DQN comparison also completed 500,000 steps. Learn performs genuine bounded worker updates; a 4096-transition replay buffer is 552,960 bytes, with pause/reset/cleanup and checkpoint compatibility checks. Safety assist is labelled and checks reachable paths.
+The 1,699-parameter aircraft policy uses real Double DQN with 20,000 expert warmstart steps and 500,000 simulation steps. A pure Double DQN comparison also completed 500,000 steps. Learn performs genuine bounded worker updates; a 4096-transition replay buffer is 552,960 bytes, with pause/reset/cleanup and checkpoint compatibility checks. Safety assist is labelled and checks reachable paths.
 
 Fresh seeds 1,000,000–1,000,999 evaluated 1,000 one-minute episodes per controller in the v4 environment:
 
@@ -58,7 +58,7 @@ npm run check
 npm run build
 npm test
 npm run check:build -- --vectors
-npm run check:i 18 n
+npm run check:i18n
 npm run eval:chat
 npx tsc -p worker/tsconfig.json --noEmit
 npm run chat:smoke
