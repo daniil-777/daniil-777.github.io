@@ -53,6 +53,8 @@ test('the drawing page shares the 3D preview runtime pins and stays light', () =
 test('the 2D and 3D previews use separate channels and pages', async () => {
   const { ARCHITECTURE, DRAWING } = await import('../src/lib/architecture/preview.ts');
   assert.notEqual(DRAWING.channel, ARCHITECTURE.channel);
-  assert.equal(DRAWING.src('session=a', true), '/drawings/?session=a&play=1');
-  assert.match(ARCHITECTURE.src('session=a', false), /^\/architecture\/\?session=a&.*&play=0$/);
+  assert.equal(DRAWING.src('session=a', true, false), '/drawings/?session=a&play=1');
+  assert.match(ARCHITECTURE.src('session=a', false, false), /^\/architecture\/\?session=a&.*&hd=1&neural=1&.*&play=0$/);
+  // touch devices: no 256^3 HD grid and no per-pixel network pass, the GPU memory that crashed iOS Safari
+  assert.match(ARCHITECTURE.src('session=a', false, true), /&hd=0&neural=0&/);
 });

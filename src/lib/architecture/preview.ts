@@ -6,14 +6,15 @@ export interface PreviewKind {
   title: string;
   loading: string;
   failure: string;
-  src(query: string, manual: boolean): string;
+  /** `light`: a touch device, where GPU memory is tight (iOS Safari restarts a tab that runs out). */
+  src(query: string, manual: boolean, light: boolean): string;
 }
 export const ARCHITECTURE: PreviewKind = {
   channel: 'portfolio-architecture',
   title: 'Live neural architecture generation — Pixel Morph',
   loading: 'Loading live 3D…',
   failure: 'This browser could not start the 3D preview. Try Play again, or open the full Pixel Morph demo from Selected work.',
-  src: (query, manual) => `/architecture/?${query}&anchor=8&walk=tour&trans=blend&hd=1&neural=1&compact=1&speed=0.8&play=${manual ? 1 : 0}`,
+  src: (query, manual, light) => `/architecture/?${query}&anchor=8&walk=tour&trans=blend&hd=${light ? 0 : 1}&neural=${light ? 0 : 1}&compact=1&speed=0.8&play=${manual ? 1 : 0}`,
 };
 export const DRAWING: PreviewKind = {
   channel: 'portfolio-drawing',
@@ -99,13 +100,15 @@ export function setupPreview(root: HTMLElement, kind: PreviewKind = ARCHITECTURE
   next.addEventListener('click', () => send('next'));
 
   return {
+    /** Removes a running preview without a message, e.g. when another one starts on a touch device. */
+    stop() { if (frame) teardown(); },
     start(manual = true) {
       if (frame) { frame.focus(); send('focus'); return; }
       session = crypto.randomUUID();
       visible = panel.getBoundingClientRect().top < innerHeight && root.getBoundingClientRect().bottom > 0;
       frame = document.createElement('iframe');
       frame.title = kind.title;
-      frame.src = kind.src(`session=${encodeURIComponent(session)}&lang=${currentLocale()}&theme=${appearance()}`, manual);
+      frame.src = kind.src(`session=${encodeURIComponent(session)}&lang=${currentLocale()}&theme=${appearance()}`, manual, matchMedia('(pointer: coarse)').matches);
       frame.addEventListener('load', () => { sendTheme(); sendLanguage(); onVisibility(); });
       document.addEventListener(LANGUAGE_EVENT, sendLanguage);
       window.addEventListener('message', onMessage);

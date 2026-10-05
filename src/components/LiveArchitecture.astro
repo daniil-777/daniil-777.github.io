@@ -28,22 +28,32 @@ const id = kind === '3d' ? 'architecture' : 'drawing';
 
 <script>
   import { activateWhenVisible } from '../lib/architecture/activation';
-  for (const root of document.querySelectorAll<HTMLElement>('[data-live-preview]')) {
+  type Preview = { start(manual?: boolean): void; stop(): void };
+  // Touch devices have little GPU memory, and iOS Safari reloads a tab that runs out ("A problem repeatedly occurred"):
+  // there only one preview runs at a time, only the first one starts by itself, and none does after such a crash.
+  const touch = matchMedia('(pointer: coarse)').matches;
+  const RUNNING = 'portfolio-live-preview-running';
+  let crashed = false;
+  try { crashed = sessionStorage.getItem(RUNNING) === '1'; sessionStorage.removeItem(RUNNING); } catch { /* storage blocked */ }
+  addEventListener('pagehide', () => { try { sessionStorage.removeItem(RUNNING); } catch { /* storage blocked */ } });
+  const controllers = new Map<HTMLElement, Promise<Preview>>();
+  [...document.querySelectorAll<HTMLElement>('[data-live-preview]')].forEach((root, index) => {
     const play = root.querySelector<HTMLAnchorElement>('[data-play]')!;
     const drawing = root.dataset.livePreview === '2d';
-    let controller: Promise<{ start(manual?: boolean): void }> | undefined;
     let stopAuto = () => {};
     const activate = (manual: boolean) => {
       stopAuto();
-      controller ??= import('../lib/architecture/preview').then(({ setupPreview, ARCHITECTURE, DRAWING }) => setupPreview(root, drawing ? DRAWING : ARCHITECTURE));
-      void controller.then((preview) => preview.start(manual)).catch(() => { controller = undefined; if (manual) location.assign(play.href); });
+      if (touch) for (const [other, controller] of controllers) if (other !== root) void controller.then((preview) => preview.stop());
+      try { sessionStorage.setItem(RUNNING, '1'); } catch { /* storage blocked */ }
+      if (!controllers.has(root)) controllers.set(root, import('../lib/architecture/preview').then(({ setupPreview, ARCHITECTURE, DRAWING }) => setupPreview(root, drawing ? DRAWING : ARCHITECTURE)));
+      void controllers.get(root)!.then((preview) => preview.start(manual)).catch(() => { controllers.delete(root); if (manual) location.assign(play.href); });
     };
     play.addEventListener('click', (event) => {
       if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
       event.preventDefault(); activate(true);
     });
-    stopAuto = activateWhenVisible(root, () => activate(false));
-  }
+    if (!crashed && (!touch || index === 0)) stopAuto = activateWhenVisible(root, () => activate(false));
+  });
 </script>
 
 <style>
