@@ -4,7 +4,7 @@ interface Props { kind?: '3d' | '2d' }
 const { kind = '3d' } = Astro.props;
 const copy = {
   '3d': { href: '/architecture/', play: 'Play live 3D', title: 'Live 3D, in your browser.', lead: 'Neural architecture in HD, transforming live.', credits: '/architecture/credits.html', creditsLabel: 'Model credits' },
-  '2d': { href: '/drawings/', play: 'Play live 2D', title: 'Live 2D, in your browser.', lead: 'Neural drawings, morphing live in dots.', credits: '/drawings/credits.html', creditsLabel: 'Photo credits' },
+  '2d': { href: '/drawings/', play: 'Play live 2D', title: 'Live 2D, in your browser.', lead: 'Neural pixel art, morphing live.', credits: '/drawings/credits.html', creditsLabel: 'Photo credits' },
 }[kind];
 const id = kind === '3d' ? 'architecture' : 'drawing';
 ---
