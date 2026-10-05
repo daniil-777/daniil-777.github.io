@@ -25,6 +25,7 @@ const budgetFile = path.join(root, 'scripts/chat-budget.json');
 const ALLOWANCE = { html: 900, css: 400, js: 600 };
 const architectureBudget = JSON.parse(readFileSync(path.join(root, 'scripts/architecture-budget.json'), 'utf8'));
 const localizationBudget = JSON.parse(readFileSync(path.join(root, 'scripts/i18n-budget.json'), 'utf8'));
+const watchBudget = JSON.parse(readFileSync(path.join(root, 'scripts/watch-budget.json'), 'utf8'));
 const BINARY_MAX = 1024 * 1024;
 
 const problems = [];
@@ -54,6 +55,7 @@ function eagerScripts(html) {
 const home = readFileSync(path.join(build, 'index.html'), 'utf8');
 const hasArchitecture = home.includes('data-architecture');
 const hasLocalization = home.includes('data-i18n-pack');
+const hasWatch = home.includes('data-watch');
 const styles = [...home.matchAll(/<link[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map((match) => match[1]);
 const scripts = eagerScripts(home);
 const sizes = {
@@ -73,8 +75,9 @@ if (process.argv.includes('--record')) {
     const growth = sizes[kind] - baseline[kind];
     const feature = hasArchitecture ? architectureBudget.allowance[kind] : 0;
     const localization = hasLocalization ? localizationBudget.allowance[kind] : 0;
-    const allowance = ALLOWANCE[kind] + feature + localization;
-    console.log(`${kind.padEnd(4)} ${String(sizes[kind]).padStart(6)} bytes gzip (baseline ${baseline[kind]}, ${growth >= 0 ? '+' : ''}${growth}, chat +${ALLOWANCE[kind]}, architecture +${feature}, localization +${localization})`);
+    const watch = hasWatch ? watchBudget.allowance[kind] : 0;
+    const allowance = ALLOWANCE[kind] + feature + localization + watch;
+    console.log(`${kind.padEnd(4)} ${String(sizes[kind]).padStart(6)} bytes gzip (baseline ${baseline[kind]}, ${growth >= 0 ? '+' : ''}${growth}, chat +${ALLOWANCE[kind]}, architecture +${feature}, localization +${localization}, watch +${watch})`);
     if (growth > allowance) problems.push(`eager ${kind} grew by ${growth} bytes gzip; the combined budget is ${allowance}`);
   }
 }
@@ -109,7 +112,14 @@ if (home.includes('data-live-preview="2d"')) {
   if (drawingBytes > architectureBudget.drawingActivatedLocalMaxBytes) problems.push('drawing activated local payload exceeds its explicit budget');
 }
 for (const file of files) {
-  if (/\.(wasm|onnx)$/.test(file) && statSync(path.join(build, file)).size > BINARY_MAX) problems.push(`${file} is a model or runtime binary over 1 MB`);
+  if (!/\.(wasm|onnx)$/.test(file)) continue;
+  const limit = file.startsWith('watch/language/') ? (file.endsWith('.onnx') ? watchBudget.deferredModelMaxBytes : watchBudget.deferredRuntimeMaxBytes) : BINARY_MAX;
+  if (statSync(path.join(build, file)).size > limit) problems.push(`${file} exceeds its scoped binary budget of ${limit} bytes`);
+}
+if (hasWatch) {
+  const watchBytes = files.filter(file => file.startsWith('watch/')).reduce((sum, file) => sum + statSync(path.join(build, file)).size, 0);
+  console.log(`watch deferred public assets: ${watchBytes} bytes (cap ${watchBudget.activatedTotalMaxBytes})`);
+  if (watchBytes > watchBudget.activatedTotalMaxBytes) problems.push('watch public assets exceed their bounded payload budget');
 }
 
 // The knowledge base: public only, and every source resolves to a page and an element.
@@ -152,9 +162,19 @@ if (!existsSync(kbFile)) {
 for (const file of files.filter((name) => /\.(html|json|xml|txt|js|css|svg)$/.test(name))) {
   const content = readFileSync(path.join(build, file), 'utf8');
   // Scripts and styles are full of long numbers; only prose and data are checked for phone numbers.
-  const prose = /\.(js|css|svg)$/.test(file) ? null : content.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<[^>]+>/g, ' ');
+  let prose = /\.(js|css|svg)$/.test(file) ? null : content.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<svg[^>]*data-watch-dial[\s\S]*?<\/svg>|<[^>]+>/g, ' ');
+  // Watch telemetry contains legitimate integer byte counts, seeds and training
+  // steps. Its string fields still receive the same privacy scan as all prose.
+  if (/^watch\/(?:plane|language)\/.*\.json$/.test(file)) {
+    const strings = [];
+    const visit = value => { if (typeof value === 'string') strings.push(value); else if (value && typeof value === 'object') Object.values(value).forEach(visit); };
+    visit(JSON.parse(content)); prose = strings.join('\n');
+  }
   // Minified third-party code is full of short path-like strings ("dist/", "me/"); there only the unmistakable names count.
-  const found = new Set(prose === null ? [] : privacyProblems(content).filter((problem) => /private folder/.test(problem)));
+  // This public dependency notice names the upstream JDAI-CV/DNNLibrary
+  // repository. Preserve the required notice while avoiding the CV/ heuristic.
+  const privacyText = file === 'watch/language/runtime/1.23.0/ThirdPartyNotices.txt' ? content.replaceAll('JDAI-CV/DNNLibrary', 'JDAI-CV DNNLibrary') : content;
+  const found = new Set(prose === null ? [] : privacyProblems(privacyText).filter((problem) => /private folder/.test(problem)));
   if (/ethicon/i.test(content)) found.add('the word "ethicon"');
   if (/(?<![\w/])(?:MIPT|Amgen|VirtaMed)\/[\w.-]/.test(content)) found.add('a path into a private folder');
   if (prose !== null && privacyProblems(prose).some((problem) => /phone/.test(problem))) found.add('something that looks like a phone number');

@@ -37,6 +37,8 @@ worker/site/.wrangler/
 worker/node_modules/
 # The embedding model downloaded by the build.
 .cache/
+__pycache__/
+*.pyc
 
 # Document the non-secret frontend endpoint variable.
 !/.env.example
@@ -46,3 +48,7 @@ worker/node_modules/
 /docs/*
 !/docs/live-architecture-provenance.json
 !/docs/live-drawing-provenance.json
+!/docs/watch-language.md
+!/docs/watch-plane.md
+!/docs/chronos-watch.md
+!/docs/chronos-watch-review.json

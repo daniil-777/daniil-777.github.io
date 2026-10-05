@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "absoluteTolerance": 0.0002,
+  "runtimeVersion": "1.23.0",
+  "backend": "single-threaded CPU/WASM",
+  "runtimeHashesVerified": true,
+  "cases": 15,
+  "maximumError": 0.000011444091796875,
+  "greedyParity": true,
+  "coldLoadMs": 336,
+  "runMs": [
+    23.099999994039536,
+    1.199999988079071,
+    1,
+    1,
+    1,
+    1.9000000059604645,
+    0.9000000059604645,
+    0.9000000059604645,
+    0.800000011920929,
+    0.800000011920929,
+    1.7999999821186066,
+    0.9000000059604645,
+    1.5,
+    0.9000000059604645,
+    0.800000011920929
+  ],
+  "modelBytes": 9546398,
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+  "hardwareConcurrency": 12,
+  "jsHeap": {
+    "used": 27240288,
+    "total": 30351668
+  },
+  "residentMemory": "Not measurable using standard browser APIs; JS heap excludes WASM and total resident memory.",
+  "gpuMlBytes": 0,
+  "chromeVersion": "Google Chrome 154.0.8037.98",
+  "os": "darwin",
+  "architecture": "arm64",
+  "method": "Headless isolated Chrome profile; one WASM session; 15 cached-token parity runs. Not representative mobile hardware."
+}

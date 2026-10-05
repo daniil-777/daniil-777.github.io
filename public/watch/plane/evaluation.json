@@ -1,0 +1,128 @@
+{
+  "format": "chronos-plane-evaluation-v1",
+  "evaluatedAt": "2026-10-05T20:45:08.220Z",
+  "checkpointSha256": "30f4a150755847a0e2d5bee411849417ca141927398247ae975c6fd5444f82d4",
+  "trainingSteps": 500000,
+  "seedStart": 700000,
+  "seedEnd": 700999,
+  "windowSeconds": 60,
+  "physicsHz": 20,
+  "angularSpeed": 0.10471975511965977,
+  "settings": {
+    "maxSpeed": 0.7,
+    "acceleration": 2.8,
+    "planeRadialHalfWidth": 0.13,
+    "planeAngularHalfWidth": 0.023,
+    "cloudRadialMin": 0.1,
+    "cloudRadialMax": 0.18,
+    "cloudAngularMin": 0.028,
+    "cloudAngularMax": 0.052,
+    "leadSeconds": 3,
+    "spacingMin": 3.4,
+    "spacingMax": 4.6,
+    "spawnHorizon": 4.2,
+    "survivalReward": 0.08,
+    "collisionReward": -2,
+    "passReward": 0.4,
+    "speedPenalty": 0.015,
+    "accelerationPenalty": 0.0008,
+    "potentialStrength": 0.4,
+    "potentialDiscount": 0.99
+  },
+  "device": "Apple M3 Pro",
+  "node": "v24.18.0",
+  "totalSeconds": 89.59262237499999,
+  "targetCollisionFreeRate": 0.95,
+  "targetAchieved": false,
+  "results": [
+    {
+      "name": "fixed-middle",
+      "episodes": 1000,
+      "collisionFreeEpisodes": 0,
+      "collisionFreeRate": 0,
+      "wilson95": [
+        2.168404344971009e-19,
+        0.0038267584855551234
+      ],
+      "meanReturn": -1.6769596209615585,
+      "meanPassedClouds": 0.106,
+      "seconds": 0.649383709,
+      "policyInferenceMeanMicroseconds": null,
+      "decisions": 0,
+      "rejectedLayouts": 3168,
+      "shieldInterventions": 0
+    },
+    {
+      "name": "random",
+      "episodes": 1000,
+      "collisionFreeEpisodes": 0,
+      "collisionFreeRate": 0,
+      "wilson95": [
+        2.168404344971009e-19,
+        0.0038267584855551234
+      ],
+      "meanReturn": -1.6542179567390785,
+      "meanPassedClouds": 0.166,
+      "seconds": 0.746630584,
+      "policyInferenceMeanMicroseconds": null,
+      "decisions": 0,
+      "rejectedLayouts": 4432,
+      "shieldInterventions": 0
+    },
+    {
+      "name": "look-ahead",
+      "episodes": 1000,
+      "collisionFreeEpisodes": 1000,
+      "collisionFreeRate": 1,
+      "wilson95": [
+        0.996173241514445,
+        1
+      ],
+      "meanReturn": 11.217570443274383,
+      "meanPassedClouds": 16.115,
+      "seconds": 32.76029,
+      "policyInferenceMeanMicroseconds": null,
+      "decisions": 0,
+      "rejectedLayouts": 0,
+      "shieldInterventions": 0
+    },
+    {
+      "name": "learned-unshielded",
+      "episodes": 1000,
+      "collisionFreeEpisodes": 922,
+      "collisionFreeRate": 0.922,
+      "wilson95": [
+        0.9037173834289277,
+        0.9370528324092638
+      ],
+      "meanReturn": 10.61371859962782,
+      "meanPassedClouds": 15.522,
+      "seconds": 27.568680333999996,
+      "policyInferenceMeanMicroseconds": 2.088214238417557,
+      "decisions": 1158331,
+      "rejectedLayouts": 144,
+      "shieldInterventions": 0
+    },
+    {
+      "name": "learned-shielded",
+      "episodes": 1000,
+      "collisionFreeEpisodes": 999,
+      "collisionFreeRate": 0.999,
+      "wilson95": [
+        0.9943574414020421,
+        0.9998234536293739
+      ],
+      "meanReturn": 11.161390100919373,
+      "meanPassedClouds": 16.104,
+      "seconds": 27.863064374999993,
+      "policyInferenceMeanMicroseconds": 1.9691620933773755,
+      "decisions": 1199210,
+      "rejectedLayouts": 0,
+      "shieldInterventions": 1117
+    }
+  ],
+  "shieldUsed": true,
+  "trainingMethod": "double-dqn-expert-warmstart",
+  "expertWarmstartSteps": 20000,
+  "expertLossWeight": 16
+}

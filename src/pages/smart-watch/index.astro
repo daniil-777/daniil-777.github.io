@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+import SmartWatch from '../../components/SmartWatch.astro';
+---
+<Base title="Chronos · Smart watch" description="An original watch experiment: precise time, reviewed thoughts and a locally trained aircraft controller.">
+  <section class="section" aria-labelledby="chronos-page-title">
+    <div class="wrap">
+      <header class="section__head">
+        <p class="eyebrow">An independent experiment</p>
+        <h1 class="h2" id="chronos-page-title">Smart watch</h1>
+        <p class="lead">Swiss-inspired timekeeping, thoughtful AI and a little flight around the dial.</p>
+      </header>
+      <SmartWatch id="chronos-demo" />
+      <div class="watch-experiment-notes" data-no-translate lang="en">
+        <h2>Inside Chronos.</h2>
+        <p>The face keeps device time, with an optional Zurich setting. English thoughts come from reviewed public facts with source links. A real, compact transformer has been trained and tested locally; generation stays gated while its held-out language quality falls below the release thresholds.</p>
+        <p>The aircraft follows a genuinely trained 1,699-parameter neural policy. A labelled safety assist checks reachable paths. Enable Learn to update that policy in a local simulation worker, without changing the clock’s timing.</p>
+        <p>Nothing is sent to a cloud chat service. The model and browser runtime are downloaded only for a released checkpoint, when the watch is used.</p>
+        <p><a href="/watch/language/model-card.json">Language model card</a> · <a href="/watch/plane/evaluation.json">Aircraft evaluation</a> · <a href="/smart-watch/embed/">Compact embed demo</a></p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .watch-experiment-notes { max-width: 760px; margin: 64px auto 0; padding: 32px 0; border-top: 1px solid var(--line); }
+  .watch-experiment-notes h2 { font-size: 24px; font-weight: 550; letter-spacing: -.025em; margin-bottom: 20px; }
+  .watch-experiment-notes p { font-size: 15px; color: var(--text-2); line-height: 1.7; margin-top: 16px; }
+  .watch-experiment-notes a { color: var(--link); }
+</style>

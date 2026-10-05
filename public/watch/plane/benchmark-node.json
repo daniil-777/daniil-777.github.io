@@ -1,0 +1,27 @@
+{
+  "format": "chronos-plane-node-benchmark-v1",
+  "measuredAt": "2026-10-05T20:45:11.029Z",
+  "checkpointSha256": "30f4a150755847a0e2d5bee411849417ca141927398247ae975c6fd5444f82d4",
+  "device": "Apple M3 Pro",
+  "os": "darwin 27.2.0",
+  "runtime": "v24.18.0",
+  "provider": "JavaScript CPU",
+  "gpuMlAllocationsBytes": 0,
+  "methodology": "10,000 warmup forwards;50,000 timed reused-workspace forwards across1,000 real simulation observations. Includes per-call timer overhead. This is Node, not a browser/frame benchmark.",
+  "samples": 50000,
+  "meanMicroseconds": 1.9818116800001873,
+  "p50Microseconds": 1.9169999999917309,
+  "p95Microseconds": 2.041999999988775,
+  "p99Microseconds": 2.9590000000041528,
+  "parameterBytes": 6796,
+  "forwardWorkspaceBytes": 268,
+  "processMemory": {
+    "rss": 98729984,
+    "heapTotal": 20856832,
+    "heapUsed": 14702592,
+    "external": 8959300,
+    "arrayBuffers": 185355
+  },
+  "peakProcessRssKiB": 96416,
+  "memoryLimitations": "Whole-process Node memory includes TypeScript/runtime, benchmark states and timings; not incremental browser memory."
+}

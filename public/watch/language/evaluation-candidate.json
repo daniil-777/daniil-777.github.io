@@ -1,0 +1,15 @@
+{
+  "version": "chronos-a-finetune-20261005",
+  "split": "test",
+  "samples": 24,
+  "releasePassed": false,
+  "completeWithinWordLimitRate": 0.08333333333333333,
+  "canonicalExactMatchRate": 0.08333333333333333,
+  "repetitionRate": 0.9166666666666666,
+  "unsupportedNumericalOutputCount": 0,
+  "supportedClaimRate": null,
+  "seriousHealthFailures": null,
+  "unsupportedPersonalAchievements": null,
+  "reviewMethod": "Automated syntax/numeric screening only; independent entailment/safety review remains required.",
+  "rawVersusAccepted": "Raw candidate outputs; no reviewed fallback is used in this evaluation."
+}

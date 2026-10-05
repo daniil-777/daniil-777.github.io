@@ -1,0 +1,7 @@
+{
+  "note": "Explicit Chronos allowance above original chat, architecture and locale baselines. Clock/simulation loads on visibility; language model/runtime stays gated and lazy.",
+  "allowance": { "html": 5200, "css": 4000, "js": 1500 },
+  "deferredModelMaxBytes": 10000000,
+  "deferredRuntimeMaxBytes": 25000000,
+  "activatedTotalMaxBytes": 50000000
+}

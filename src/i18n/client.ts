@@ -71,7 +71,7 @@ function rememberAttributes(element: Element) {
     const link = element as HTMLAnchorElement;
     if (!link.hasAttribute('href')) return;
     const url = new URL(link.href, location.href);
-    if (url.origin !== location.origin || !(/^\/(?:work\/[^/]+\/|ask\/|(?:architecture|drawings)\/(?:credits\.html)?|)$/.test(url.pathname))) return;
+    if (url.origin !== location.origin || !(/^\/(?:work\/[^/]+\/|ask\/|smart-watch\/(?:embed\/)?|(?:architecture|drawings)\/(?:credits\.html)?|)$/.test(url.pathname))) return;
     url.searchParams.set('lang', locale);
     link.href = `${url.pathname}${url.search}${url.hash}`;
   }

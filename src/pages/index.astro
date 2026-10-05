@@ -7,6 +7,7 @@ import Hero from '../components/Hero.astro';
 import Journey from '../components/Journey.astro';
 import Research from '../components/Research.astro';
 import SkillsAndAwards from '../components/SkillsAndAwards.astro';
+import SmartWatch from '../components/SmartWatch.astro';
 import VirtaMed from '../components/VirtaMed.astro';
 import Base from '../layouts/Base.astro';
 import { getProjects } from '../lib/projects';
@@ -26,4 +27,20 @@ const projects = await getProjects();
   <Research />
   <SkillsAndAwards />
   <Contact />
+  <section id="smart-watch" class="section" aria-labelledby="smart-watch-title">
+    <div class="wrap">
+      <header class="section__head">
+        <p class="eyebrow">An independent experiment</p>
+        <h2 class="h2" id="smart-watch-title">Smart watch</h2>
+        <p class="lead">Swiss-inspired timekeeping, thoughtful AI and a little flight around the dial.</p>
+      </header>
+      <SmartWatch />
+      <p class="watch-section-link"><a href="/smart-watch/">Explore Chronos <span aria-hidden="true">↗</span></a></p>
+    </div>
+  </section>
 </Base>
+
+<style>
+  .watch-section-link { margin-top: 24px; text-align: center; font-size: 14px; }
+  .watch-section-link a { color: var(--link); }
+</style>

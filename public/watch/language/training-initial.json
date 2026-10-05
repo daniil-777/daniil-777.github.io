@@ -1,0 +1,85 @@
+{
+  "version": "chronos-a-finetune-20261005",
+  "trained": true,
+  "stage": "finetune",
+  "architecture": {
+    "layers": 4,
+    "width": 192,
+    "ffn": 512,
+    "heads": 6,
+    "kvHeads": 2,
+    "headDim": 32,
+    "vocab": 4096,
+    "context": 256
+  },
+  "step": 250,
+  "seed": 20261005,
+  "bestValidationLoss": 8.023200829823812,
+  "curves": [
+    {
+      "step": 50,
+      "trainLoss": 2.959881901741028,
+      "validationLoss": 8.023200829823812,
+      "gradientNorm": 1.8049798011779785,
+      "elapsedSeconds": 1.1360343749984168
+    },
+    {
+      "step": 100,
+      "trainLoss": 2.4873462915420532,
+      "validationLoss": 10.247769411404928,
+      "gradientNorm": 1.3124775886535645,
+      "elapsedSeconds": 2.4156026669952553
+    },
+    {
+      "step": 150,
+      "trainLoss": 0.5571112930774689,
+      "validationLoss": 9.504963076114654,
+      "gradientNorm": 1.0094733238220215,
+      "elapsedSeconds": 3.801015417004237
+    },
+    {
+      "step": 200,
+      "trainLoss": 2.3568187952041626,
+      "validationLoss": 9.796584992607434,
+      "gradientNorm": 1.6512410640716553,
+      "elapsedSeconds": 4.9758196670154575
+    },
+    {
+      "step": 250,
+      "trainLoss": 1.7160826325416565,
+      "validationLoss": 9.056482570866743,
+      "gradientNorm": 1.5434776544570923,
+      "elapsedSeconds": 6.141059834015323
+    }
+  ],
+  "dataVersion": "chronos-facts-2026-10-05-v1",
+  "config": {
+    "seed": 20261005,
+    "device": "cpu",
+    "steps": 500,
+    "gradientAccumulation": 2,
+    "microbatch": 1,
+    "evaluateEvery": 50,
+    "earlyStoppingPatience": 4,
+    "learningRate": 0.0008,
+    "warmupSteps": 25,
+    "dataVersion": "chronos-facts-2026-10-05-v1"
+  },
+  "quality": {
+    "releasePassed": false,
+    "independentReview": false
+  },
+  "measurements": {
+    "hardwareDevice": "cpu",
+    "trainRows": 45,
+    "validationRows": 15,
+    "rejectedTrainBudget": 0,
+    "rejectedValidationBudget": 0,
+    "learnedAnswerTokens": 12796,
+    "wallSeconds": 6.141327042016201,
+    "answerTokensPerSecond": 2083.5886615466457,
+    "peakProcessRssBytes": 334331904,
+    "mpsAllocatedBytes": 0,
+    "pretrainingPerformed": false
+  }
+}

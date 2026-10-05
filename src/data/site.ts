@@ -28,6 +28,7 @@ export const nav = [
   { label: 'Journey', href: '/#journey' },
   { label: 'Research', href: '/#research' },
   { label: 'Contact', href: '/#contact' },
+  { label: 'Smart watch', href: '/#smart-watch' },
 ];
 
 export type LinkId = 'github' | 'linkedin' | 'scholar' | 'mail';

@@ -1,0 +1,155 @@
+{
+  "version": "chronos-a-finetune-20261005",
+  "trained": true,
+  "stage": "finetune",
+  "architecture": {
+    "layers": 4,
+    "width": 192,
+    "ffn": 512,
+    "heads": 6,
+    "kvHeads": 2,
+    "headDim": 32,
+    "vocab": 4096,
+    "context": 256
+  },
+  "step": 1500,
+  "seed": 20261005,
+  "bestValidationLoss": 7.378758986790975,
+  "curves": [
+    {
+      "step": 100,
+      "trainLoss": 2.9344699382781982,
+      "validationLoss": 7.378758986790975,
+      "gradientNorm": 4.33395528793335,
+      "elapsedSeconds": 2.308032708009705
+    },
+    {
+      "step": 200,
+      "trainLoss": 2.239924192428589,
+      "validationLoss": 7.629333353042602,
+      "gradientNorm": 2.009063482284546,
+      "elapsedSeconds": 5.009127792000072
+    },
+    {
+      "step": 300,
+      "trainLoss": 0.852971538901329,
+      "validationLoss": 7.918513603508472,
+      "gradientNorm": 1.5492099523544312,
+      "elapsedSeconds": 7.519936791999498
+    },
+    {
+      "step": 400,
+      "trainLoss": 0.4490021951496601,
+      "validationLoss": 7.974800942341487,
+      "gradientNorm": 1.6574227809906006,
+      "elapsedSeconds": 10.83580191701185
+    },
+    {
+      "step": 500,
+      "trainLoss": 0.40110448002815247,
+      "validationLoss": 8.654729195963592,
+      "gradientNorm": 1.4561036825180054,
+      "elapsedSeconds": 13.185670542006847
+    },
+    {
+      "step": 600,
+      "trainLoss": 0.13423489034175873,
+      "validationLoss": 10.371222680062056,
+      "gradientNorm": 1.2618192434310913,
+      "elapsedSeconds": 15.502735957998084
+    },
+    {
+      "step": 700,
+      "trainLoss": 0.05139976739883423,
+      "validationLoss": 10.999824613130961,
+      "gradientNorm": 0.335884690284729,
+      "elapsedSeconds": 17.913172583008418
+    },
+    {
+      "step": 800,
+      "trainLoss": 0.01746289199218154,
+      "validationLoss": 11.728007836814504,
+      "gradientNorm": 0.10046166926622391,
+      "elapsedSeconds": 20.191110292013036
+    },
+    {
+      "step": 900,
+      "trainLoss": 0.012604107148945332,
+      "validationLoss": 12.140606458225133,
+      "gradientNorm": 0.057138387113809586,
+      "elapsedSeconds": 22.562465666997014
+    },
+    {
+      "step": 1000,
+      "trainLoss": 0.004736152244731784,
+      "validationLoss": 12.583966565078784,
+      "gradientNorm": 0.023844532668590546,
+      "elapsedSeconds": 24.923607292003
+    },
+    {
+      "step": 1100,
+      "trainLoss": 0.0032714385306462646,
+      "validationLoss": 12.863333337311634,
+      "gradientNorm": 0.013808092102408409,
+      "elapsedSeconds": 27.32407845801208
+    },
+    {
+      "step": 1200,
+      "trainLoss": 0.002095312054734677,
+      "validationLoss": 13.10729526373713,
+      "gradientNorm": 0.008623960427939892,
+      "elapsedSeconds": 30.054083750001155
+    },
+    {
+      "step": 1300,
+      "trainLoss": 0.0011677634320221841,
+      "validationLoss": 13.256162528662632,
+      "gradientNorm": 0.005028777755796909,
+      "elapsedSeconds": 32.866182458004914
+    },
+    {
+      "step": 1400,
+      "trainLoss": 0.0009040942823048681,
+      "validationLoss": 13.372378573798779,
+      "gradientNorm": 0.003809029469266534,
+      "elapsedSeconds": 35.25262116699014
+    },
+    {
+      "step": 1500,
+      "trainLoss": 0.000733857013983652,
+      "validationLoss": 13.46992962955507,
+      "gradientNorm": 0.0031490218825638294,
+      "elapsedSeconds": 37.659385625011055
+    }
+  ],
+  "dataVersion": "chronos-facts-2026-10-05-v1",
+  "config": {
+    "seed": 20261005,
+    "device": "cpu",
+    "steps": 1500,
+    "gradientAccumulation": 2,
+    "microbatch": 1,
+    "evaluateEvery": 100,
+    "earlyStoppingPatience": 20,
+    "learningRate": 0.0003,
+    "warmupSteps": 50,
+    "dataVersion": "chronos-facts-2026-10-05-v1"
+  },
+  "quality": {
+    "releasePassed": false,
+    "independentReview": false
+  },
+  "measurements": {
+    "hardwareDevice": "cpu",
+    "trainRows": 45,
+    "validationRows": 15,
+    "rejectedTrainBudget": 0,
+    "rejectedValidationBudget": 0,
+    "learnedAnswerTokens": 76798,
+    "wallSeconds": 37.659785833006026,
+    "answerTokensPerSecond": 2039.2574586104656,
+    "peakProcessRssBytes": 338362368,
+    "mpsAllocatedBytes": 0,
+    "pretrainingPerformed": false
+  }
+}

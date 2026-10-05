@@ -1,0 +1,18 @@
+{
+  "seed": 20261005,
+  "device": "cpu",
+  "cpuThreads": 2,
+  "dataset": "/tmp/chronos-language-data/dataset.jsonl",
+  "tokenizer": "/tmp/chronos-language-data/tokenizer.json",
+  "output": "/tmp/chronos-language-trained",
+  "steps": 500,
+  "microbatch": 1,
+  "gradientAccumulation": 2,
+  "learningRate": 0.0008,
+  "warmupSteps": 25,
+  "weightDecay": 0.01,
+  "gradientClip": 1.0,
+  "evaluateEvery": 50,
+  "earlyStoppingPatience": 4,
+  "dataVersion": "chronos-facts-2026-10-05.1"
+}

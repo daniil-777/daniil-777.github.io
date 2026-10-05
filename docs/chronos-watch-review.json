@@ -1,0 +1,330 @@
+{
+  "schema": "chronos-watch-review-v1",
+  "reviewDate": "2026-10-05",
+  "decision": "Release functional widget with explicitly reviewed source thoughts; keep experimental language generation gated; label aircraft Safety assist.",
+  "authorization": "User explicitly requested development, testing, deployment to the website and Git publication.",
+  "sourceSnapshotSha256": "fcc7344c0a593acc97d48a35f4d7559cf6675ee8a841cb7f0a9855f8906fb194",
+  "sourceHashes": {
+    "package-lock.json": "76ed18c7a8f816a26b0217b3d68ffb18ab405e50b1fcaf6d413e43deddd19791",
+    "package.json": "21526df0a06cc65309572911d8bf1a6ae0b7ddafaf3224dca74985950b240279",
+    "public/watch/facts.v1.json": "9a4dc95ca474533c388b54750e75d9afcb4da43d9e02591b8889903e71f4d25d",
+    "public/watch/language/asset-sizes.json": "d323486f453e5ed15cffd4e40b9ac251038d1069078aa068ff5c89babdfc1432",
+    "public/watch/language/benchmark-browser.json": "837309f7a5d2b001c100337184ed12bfa459bbb079db0b0f2b94a0627d06d367",
+    "public/watch/language/dataset-statistics.json": "964df43c29ed1bf66a99632db528013e8fcb7d885a09f2fc1c39c3d6e2b71ddf",
+    "public/watch/language/evaluation-candidate.json": "71e5b475ef85c7bdc90e67aa447e6f81b66f9d102dc9dd0ec7d6074b5532242b",
+    "public/watch/language/evaluation-familiar.json": "9c956babe26f919e4a2528421525841021217048da79b2597895e461f8ba890f",
+    "public/watch/language/manifest.json": "3b448277716c2bc4613412e9f2866d40df9d47dc7ca2fe1e01e812158db074ec",
+    "public/watch/language/model-card.json": "3dfedb17691f36c53fd3454b047a456a81750e1a3d0a40d75c4815912b0276bd",
+    "public/watch/language/model.fp32.onnx": "ea5f97d6b2131ef6d982b24a441add7a90891bfd8b7b0eb55d1548332cea1403",
+    "public/watch/language/runtime/1.23.0/LICENSE": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c",
+    "public/watch/language/runtime/1.23.0/ThirdPartyNotices.txt": "e9e90971a8e75a9a8ac0c6412e29c1202d079998389915aa485f46c816c3b4cc",
+    "public/watch/language/runtime/1.23.0/ort-wasm-simd-threaded.mjs": "c0bc2244e2c95fbf39a5eccb595bca31defb9eefdffa6f9ce0325a1c47524461",
+    "public/watch/language/runtime/1.23.0/ort-wasm-simd-threaded.wasm": "3260fcdb33b4fc4ec33e89caf392e13625823e01049d3bf32c38464f9dbfe14c",
+    "public/watch/language/runtime/1.23.0/runtime-assets.json": "46c201d1045998f3a434bfa2bb3f244bf11ceacf1128ce6546aeae96c710e709",
+    "public/watch/language/tokenizer-parity.json": "4076b7c1463790250ae1e52a378b0ad34c8e17064f37b94aad31e3e5733cafc9",
+    "public/watch/language/tokenizer.json": "74fb461231574e34b090b8859970ae1a923b18f2ea2d82c9dc81417c05e4db02",
+    "public/watch/language/training-candidate.json": "bda2388d57d8c6a615475ddee919f5c1457d43e9aa898f48d46920cd24e24974",
+    "public/watch/language/training-initial.json": "a9e9ab08c946f07458ccd27df0330658682097c6b4fd29224bdd98e7d883307b",
+    "public/watch/plane/benchmark-node.json": "e757a694da05272860efb40bebf217255196ca5698e983bf17afca7de4175c66",
+    "public/watch/plane/evaluation.json": "9031fc96b5a6fdf01e29710e3d419fdf052a307ec822e67a2adca30862e8bb37",
+    "public/watch/plane/manifest.json": "a5fe84be81c2aafcefdcaad0395171a550a84dfc9f22c5d7456b4ffb627b5680",
+    "public/watch/plane/policy-training.json": "d165f879f506152cfe19b102f76005adbb9736ea6fa8d7fc58549e929d274e1e",
+    "public/watch/plane/policy.json": "30f4a150755847a0e2d5bee411849417ca141927398247ae975c6fd5444f82d4",
+    "public/watch/plane/pure-dqn-comparison-training.json": "65f1283f4aa3a30b48245edbebc4e61e3322ecc04983517b2fd013f623611915",
+    "public/watch/plane/pure-dqn-comparison.json": "9380f1563a9b9bb0a96d39911c9620ea6d527f6ad26f4f94ae8b4d409ffc4969",
+    "public/watch/plane/pure-dqn-evaluation.json": "1afddf2ddfb18322dc66f35fc5feca56cc3c8c9ad01e40f67e0a52c35c35acad",
+    "scripts/check-build.mjs": "e18d6d771c1c9272e9c26ed20adaed6425ceb7ce18e02dfd8b34cd423b49b743",
+    "scripts/watch/benchmark-ui.mjs": "17ee99d9b3d4ee2d6ee707d37b141db949066e5c20f853754175f74253cac427",
+    "scripts/watch/browser-qa.mjs": "84b9c436e3090bca1e8e1548db1d705590c6442b4255db8a9e60102cd1b9d465",
+    "scripts/watch/create-fact-pack.py": "77deb29134e932bf355c14f314d4bcab3a7342eddff4f70a8397c299edb9efe1",
+    "scripts/watch/localize-chapter.py": "a876a76b5d36beab50e267563b8b846b870a972a12f94af75e8ec041339cbd28",
+    "scripts/watch/serve-preview.mjs": "af7489489362c4df30e3db8b3f2062324f3b4bd87d8036c1b2207cb8c299858a",
+    "scripts/watch-budget.json": "b994b9d4a8e1b24613fa1afb5b60295fdd46a57637cb895b0e9b3fc24cddb8ad",
+    "scripts/watch-language/benchmark-browser.mjs": "de2a426068f691075643b5bef503fe6b4ac0d45b46e63b9363c27fdff641199a",
+    "scripts/watch-language/browser-helper.mjs": "a1c7959e42c36b5aaf1e885e8792ae282d3311162809446a27e622aea2b76ce2",
+    "scripts/watch-language/config.example.json": "7f92ade0240e0fdb2c4c52613992b72223c12a753988c6bf066a72e7542cb332",
+    "scripts/watch-language/dataset.py": "166d6438a039d0c1ef8e15782d2b0801d2b427992ad07bfe2a0838501428399c",
+    "scripts/watch-language/evaluate.py": "b8e1cbafcd4cc969a6219dc5ca136dc5e562c5c4d831c35bf58849809f2843a0",
+    "scripts/watch-language/export.py": "a81271537d21cdaff11bac3c668bf5ee0aaeb9eeec4941684405126c74a69065",
+    "scripts/watch-language/model.py": "cf96cc4b69b224b83ac3093cfe16d299c865bdcc4ec2cff94d6cd42e3400caac",
+    "scripts/watch-language/requirements.txt": "45787ba8c5dbd136fd958351cdecac8377b795540a843a78060e05c1d4198b7f",
+    "scripts/watch-language/test_pipeline.py": "bf19fb52daf6d160083361a39a7d33c9b451acf40a1f09b6b9c8d9371aa76e89",
+    "scripts/watch-language/tokenizer.py": "62c57316772637baeddefb25c69f057787db879dee13fa0bde64701f4d21c426",
+    "scripts/watch-language/train.py": "57bdb95ead651b04fc073378d3f51246997c029b25633025ccfd7a8e822eba24",
+    "scripts/watch-plane/benchmark.ts": "507451368f9375237f9578af6574b0c5de7cdcd97dd36519b692f07536366fa0",
+    "scripts/watch-plane/evaluate.ts": "936107c61e95ef074c2602eb5e3cfc8685d49513d4bce176d8b4761fa0784ad3",
+    "scripts/watch-plane/export.ts": "8f0348644acd4093668a1c70c60313a1b46ea4eff1a47efc8b18023811391b3f",
+    "scripts/watch-plane/train.ts": "7bb3203324e9c6cc2d1a6260a1df050ba8e9809aa068ae7767d90961afaec7b0",
+    "src/components/SmartWatch.astro": "5adf9ea440e712a42bb33924492ae7970c9a840f593c2829c96d6ee2916ca621",
+    "src/data/site.ts": "61a04af7717f8625e1ec86753a36f7f28cee6dde6730adadb734ecc8391c8148",
+    "src/i18n/client.ts": "8f263d2fab2c26a335aefd6013f07771b3e0db87ac7bef1dc50f14abba0a7922",
+    "src/i18n/locales/de.json": "24b27672c08f4fc524245f96950fffaff10a5956b55671e42325ff52b024c3d0",
+    "src/i18n/locales/en.json": "53dc7b3fd84b784fdb10165051e62a1d4c567636a1633e67cdfc03604f84704b",
+    "src/i18n/locales/es.json": "37e99699f39da652717081f8e98ac22d3fe2fd91cae7dcf3b39be06a0dc5f3a7",
+    "src/i18n/locales/fr.json": "09fecd5523b00f5002aaf6f885830393a3b58d28e9dc397c800db8fc411883a8",
+    "src/i18n/locales/it.json": "74c682285f632ded87217c312053c0eb0cdd7208d95fbbdd7cf92582730d3a0e",
+    "src/i18n/locales/ru.json": "5b83ea87a4a891dea15dbf9cb204dc7455341d4e556fd72f27c41896a55e740b",
+    "src/i18n/locales/zh.json": "18c2f3fafc7cdf17644e9d7e2364b8348703d068fafe8d339b06cbcdab35e731",
+    "src/lib/watch/app.ts": "4c20bf9f0183877183d6bd503600bdeb603e81eb58f6b09c925f0b93ad989eb0",
+    "src/lib/watch/clock.ts": "3ba7a9da4f3ca6f38a74b0425a3689f25c339b313d6435e68d0e1ec36b2e0be0",
+    "src/lib/watch/dial.ts": "7420631f919bc2dad84567f2789ce4f2418c578d203f088e43d27b7fe17b3550",
+    "src/lib/watch/facts.ts": "5134f64eb1a7aa9781d4696ba3f93444f3cf6e09e0acef074b0a5e7074993e37",
+    "src/lib/watch/geometry.ts": "9177652018769627a88a2479efad0cc2ef53fe7ec922d129aa96155d34020aaf",
+    "src/lib/watch/language/model.ts": "73cf1b0a0c379b9b96c0083b803b2a2b59194383996a0e84ab6513d07fbe3952",
+    "src/lib/watch/language/protocol.ts": "683a31efa6afcd73dcb24291db8a05f472f4e0e5b5ccfb050015745b9be6194f",
+    "src/lib/watch/language/runtime.ts": "ecaa53c1e68aa5fe628246fbfc8ec35524fa0496cf7b71687eec2e30701f4cc7",
+    "src/lib/watch/language/tokenizer.ts": "587f78fcc0434c456befca6f9d726e078d7c0212db53bf77f8417fe3d5c5a0c9",
+    "src/lib/watch/language/worker.ts": "5f3e86578ece5051b5e49e8f26ed6b5e50b845c3a1a3a6286484b42d6d3e09ff",
+    "src/lib/watch/phrase.ts": "51d390668648e23ebc232b9e94224b5cf99d8c8002caca664ac4128a162df61d",
+    "src/lib/watch/plane/controller.ts": "8715b2af93222459511096874a510c656f9e305ac7f7845afd8e6508d9b67711",
+    "src/lib/watch/plane/environment.ts": "69bd75538bef35f2a3903ee9f5f0d183b5f47aea95e1d2fc1dfff0e97396fdc5",
+    "src/lib/watch/plane/network.ts": "f36c6db5e6d2f717d0c49fb7836431e4c591aedbafc39ff021c40df3f2ad852b",
+    "src/lib/watch/plane/trainer.ts": "6d9c427f398ec4b04c5d586cfb79bb515a610c324dcb48b19eff7b2b6b47b25b",
+    "src/lib/watch/plane/worker.ts": "f6d4a532b0d634225067d1873939edb0c3c34c253a3431e60256f3702d0df118",
+    "src/lib/watch/plane-view.ts": "cda31441c8d9b5334ad53d27b8b8fb4c081accb5dc853052383e004bffa0a4b9",
+    "src/lib/watch/types.ts": "a94b47874a420248a4ed07dc0b03c4c34353fdb5e78e78f1ed7bd696215ef294",
+    "src/pages/index.astro": "5c97e30498c9a9fc4fbaa2b41e4f0f33998b92043168f7bd274d7f9d2a033490",
+    "src/pages/smart-watch/embed.astro": "444025057bacd70482b3fef17c73f086c485c0c90a7c3354200d9b82f54d5fe2",
+    "src/pages/smart-watch/index.astro": "c0224038086a0cc582320024b29272dc8f1d825bd48d4dcfcb607ce851339925",
+    "src/scripts/watch.ts": "abdbf2b2a50c05d629487817efe1ecd4857d6b1d09ef0a529f7e7efb50bdf215",
+    "src/styles/watch.css": "b39e210599b1b16ec47ccbf83db49f8f32c3dd1f29b7a586a1ec6527b742f32d",
+    "tests/watch-clock-dom.test.ts": "151e6d838dae4bc8cda2d424aabb3cd9fe5f06355c779c59ff236fa9d474de7e",
+    "tests/watch-clock.test.ts": "1b3259acb0701e49657f39bdc53a946e069840f4503144eb256ee1b06156fe94",
+    "tests/watch-facts.test.ts": "4c675e91bca4bd7ccce86d881fa20b49716ef522dc69ce746fdc718a3769fcbc",
+    "tests/watch-language-lifecycle.test.ts": "73d5dda1c4a9a74038894a31e3ee26c40a35877fb73badb6b259763201c7de3b",
+    "tests/watch-language.test.ts": "4ee0f737a31bbca94996ed8360c12e69319c1e80e6c235c3f65cc41fa7f040f8",
+    "tests/watch-plane-assets.test.ts": "995d55baef2b119d7c3d69d978f68a050f07a126b320dc68f2c74033cb415b06",
+    "tests/watch-plane-controller.test.ts": "c5ed0bc49edaae05016f6c1305f129db8e91749ac98a01215b32a595775d8500",
+    "tests/watch-plane-environment.test.ts": "be6e5ad2764c0bbf372bb20d6f0ba639cb7f19fa34eaf49ebe7564149ac63fb8",
+    "tests/watch-plane-network.test.ts": "a0ce93dab90392c1c0fe28f1c0f3ecdb7606f6c0d913bdd2547d2d7619408436"
+  },
+  "tests": {
+    "typescriptTests": 526,
+    "typescriptSuites": 83,
+    "pythonPipelineTests": 6,
+    "astroFilesChecked": 143,
+    "astroErrors": 0,
+    "astroWarnings": 0,
+    "localizationHtmlFiles": 23,
+    "localizationSourceStrings": 1127,
+    "chatRetrievalGate": "passed; 88/88 unanswerable queries hedged or declined",
+    "workerTypes": "passed",
+    "noCostChatSmoke": "passed",
+    "browser": {
+      "browser": "Chrome/154.0.8037.98",
+      "mobile": "Desktop Chromium viewport emulation; physical mobile hardware untested.",
+      "results": [
+        {
+          "test": "no unused watch download",
+          "passed": true
+        },
+        {
+          "test": "mode ai",
+          "passed": true,
+          "sentence": "Attention compares a query with keys, weighting values to build a context-dependent representation. ",
+          "caption": "Attention compares a query with keys, weighting values to build a context-dependent representation.",
+          "status": "Reviewed thought \u00b7 English"
+        },
+        {
+          "test": "mode profile",
+          "passed": true,
+          "sentence": "Daniil Emtsev is an AI research engineer based in Zurich, Switzerland. ",
+          "caption": "Daniil Emtsev is an AI research engineer based in Zurich, Switzerland.",
+          "status": "Reviewed thought \u00b7 English"
+        },
+        {
+          "test": "mode wellbeing",
+          "passed": true,
+          "sentence": "Even a little physical activity contributes more than none, according to WHO guidance. ",
+          "caption": "Even a little physical activity contributes more than none, according to WHO guidance.",
+          "status": "Reviewed thought \u00b7 English"
+        },
+        {
+          "test": "in-scope retrieval and medical abstention",
+          "passed": true
+        },
+        {
+          "test": "unreleased model does not download",
+          "passed": true
+        },
+        {
+          "test": "all 34 complete thoughts fit curved dial at 320, 380 and 480px",
+          "passed": true,
+          "sentencesChecked": 102,
+          "minimumSvgFont": 8
+        },
+        {
+          "test": "reduced motion disables aircraft and ticks hands",
+          "passed": true
+        },
+        {
+          "test": "responsive 320px",
+          "passed": true
+        },
+        {
+          "test": "responsive 390px",
+          "passed": true
+        },
+        {
+          "test": "responsive 768px",
+          "passed": true
+        },
+        {
+          "test": "compact lazy opening and keyboard Escape",
+          "passed": true
+        },
+        {
+          "test": "cached public facts survive a blocked network request",
+          "passed": true
+        },
+        {
+          "test": "first-use missing facts have a complete error state and retry",
+          "passed": true
+        },
+        {
+          "test": "clock fixture 6:30 and lower-window visual review",
+          "passed": true
+        },
+        {
+          "test": "clock fixture 7:25 and lower-window visual review",
+          "passed": true
+        },
+        {
+          "test": "offscreen watch suspends clock rendering",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "uiBenchmark": {
+    "version": "Chrome/154.0.8037.98",
+    "device": "Apple M3 Pro, macOS 27.2, isolated headless Chrome",
+    "viewport": "1440\u00d71100",
+    "frames": {
+      "frames": 481,
+      "medianMs": 16.699999999999818,
+      "p95Ms": 16.700000000000728,
+      "p99Ms": 16.800000000000182,
+      "maxPhaseErrorRadians": 3.513420627876407e-06,
+      "heap": {
+        "used": 2709540,
+        "total": 3968932
+      }
+    },
+    "learningProgress": "Learning in simulation \u00b7 512 steps \u00b7 epsilon 0.10 \u00b7 recent return 0.00 \u00b7 0.0% collisions \u00b7 policy 1249",
+    "learningStopped": true,
+    "repeatedMountUnmount": 5,
+    "appAsset": {
+      "file": "app.BGPvDsHT.js",
+      "sha256": "27868837a980b2096dbc2566aba221679d41426a947c00abc78b776eb889f0c9"
+    },
+    "methodology": "8-second foreground RAF sample, visible clock/aircraft; phase measured from displayed hand/plane transforms. Desktop only; browser heap excludes process RSS, GPU and WASM."
+  },
+  "javascriptCssAssets": [
+    {
+      "file": "SmartWatch.Dte-y52V.css",
+      "bytes": 7469,
+      "gzipBytes": 2277,
+      "sha256": "a4093ecf2b44ca4a6bbd9b6fa057c14d0c7a28709dc421b9d373b9356a17be06"
+    },
+    {
+      "file": "SmartWatch.astro_astro_type_script_index_0_lang.CCH6xK_7.js",
+      "bytes": 1431,
+      "gzipBytes": 723,
+      "sha256": "0efe949b25ebf11410e2bcbd968633138f3e086f435309df7eee5a1b4c20d27b"
+    },
+    {
+      "file": "app.BGPvDsHT.js",
+      "bytes": 28594,
+      "gzipBytes": 10909,
+      "sha256": "27868837a980b2096dbc2566aba221679d41426a947c00abc78b776eb889f0c9"
+    },
+    {
+      "file": "ort.wasm.min-D6pZ9Njk.js",
+      "bytes": 48410,
+      "gzipBytes": 15407,
+      "sha256": "3966d85a531d55b38b8076cc9fbd1dd4f40fe585f1b288bf68a1e13c607dadc1"
+    },
+    {
+      "file": "worker-Bz9WiD7-.js",
+      "bytes": 8482,
+      "gzipBytes": 3330,
+      "sha256": "cb3c5d132841330f565276d094bb73ead0093b4593154c784702d63f58928d9f"
+    },
+    {
+      "file": "worker-D_CxI-cp.js",
+      "bytes": 14108,
+      "gzipBytes": 5021,
+      "sha256": "e709238446ade48868a38fc423d27a87b0fba2bb7d46e69256f783ec7091112f"
+    }
+  ],
+  "language": {
+    "version": "chronos-a-finetune-20261005-lr0003-step1500",
+    "parameters": 2361024,
+    "releaseStatus": "experimental",
+    "rawHeldOutSamples": 24,
+    "completeExactAnswers": 2,
+    "independentEntailmentReview": false,
+    "teacherSpendUsd": 0,
+    "modelSha256": "ea5f97d6b2131ef6d982b24a441add7a90891bfd8b7b0eb55d1548332cea1403",
+    "modelBytes": 9546398,
+    "modelGzipBytes": 8744733,
+    "wasmBytes": 11815498,
+    "wasmGzipBytes": 3045563,
+    "benchmarkReferenceColdMs": 336,
+    "benchmarkReferencePrefillMs": 23.1,
+    "benchmarkCachedStepMsRange": [
+      0.8,
+      1.9
+    ],
+    "browserMaximumParityError": 1.1444091796875e-05,
+    "supportedClaimRate": null,
+    "seriousHealthFailures": null,
+    "unsupportedPersonalAchievements": null
+  },
+  "aircraft": {
+    "environmentVersion": "chronos-plane-2",
+    "parameters": 1699,
+    "rawParameterBytes": 6796,
+    "checkpointBytes": 34652,
+    "checkpointGzipBytes": 16298,
+    "checkpointSha256": "30f4a150755847a0e2d5bee411849417ca141927398247ae975c6fd5444f82d4",
+    "trainingMethod": "double-dqn-expert-warmstart",
+    "trainingSteps": 500000,
+    "bellmanUpdates": 124873,
+    "expertWarmstartSteps": 20000,
+    "evaluationSeeds": [
+      700000,
+      700999
+    ],
+    "secondsPerEpisode": 60,
+    "baselineRates": {
+      "fixed-middle": 0,
+      "random": 0,
+      "look-ahead": 1,
+      "learned-unshielded": 0.922,
+      "learned-shielded": 0.999
+    },
+    "unshieldedWilson95": [
+      0.9037173834289277,
+      0.9370528324092638
+    ],
+    "assistedWilson95": [
+      0.9943574414020421,
+      0.9998234536293739
+    ],
+    "assistInterventions": 1117,
+    "assistDecisions": 1199210,
+    "unshielded95PercentTargetPassed": false
+  },
+  "limitations": [
+    "No independently reviewed language release; raw held-out sentence quality failed.",
+    "No broad language pretraining or 5,000-example paid teacher pilot; teacher spending was zero.",
+    "Pure DQN reached 9.1%; deterministic look-ahead reached 100%; no claim RL outperforms rules.",
+    "Whole browser resident-memory and incremental 96-MiB target unverified; JS heap excludes WASM, native and GPU memory.",
+    "Physical mobile hardware, WebGPU and quantization untested.",
+    "Useful accepted generation latency unverified; numerical reference timing is not sentence-generation latency.",
+    "Curved dial text uses 8\u20139.5 SVG units; 12\u201314px dial typography target unmet; complete accessible caption remains 18px.",
+    "Desktop Chrome viewport emulation and finite seeded suites do not establish universal performance, safety or browser compatibility."
+  ]
+}

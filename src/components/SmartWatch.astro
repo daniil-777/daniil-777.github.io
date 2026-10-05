@@ -1,0 +1,159 @@
+---
+import '../styles/watch.css';
+import { minuteIndex } from '../lib/watch/geometry';
+import { readClock } from '../lib/watch/clock';
+import type { LanguageMode } from '../lib/watch/types';
+
+interface Props {
+  id?: string;
+  compact?: boolean;
+  diameter?: number;
+  timeZone?: string;
+  phraseIntervalMs?: number;
+  languageMode?: LanguageMode;
+}
+const { id = 'chronos', compact = false, diameter = 380, timeZone = '', phraseIntervalMs = 20000, languageMode = 'ai' } = Astro.props;
+const dialSize = Math.max(96, Math.min(480, diameter));
+const indices = Array.from({ length: 60 }, (_, index) => minuteIndex(index));
+const clock = readClock(new Date(), timeZone);
+const gradient = (name: string) => `${id}-${name}`;
+const Panel = compact ? 'dialog' : 'div';
+const unavailable = 'Reviewed thoughts are available while the trained local language model is being evaluated.';
+---
+
+<article class:list={['chronos', { 'chronos--compact': compact }]}
+  data-watch data-compact={String(compact)} data-watch-zone-value={timeZone}
+  data-watch-interval-value={phraseIntervalMs} data-watch-mode-value={languageMode}
+  style={`--watch-diameter: ${dialSize}px;`} aria-label="Chronos smart watch" lang="en" data-no-translate>
+  {compact && <button class="chronos__launcher" data-watch-open aria-haspopup="dialog" aria-controls={`${id}-panel`} aria-label="Open Chronos smart watch">
+    <svg viewBox="0 0 96 96" aria-hidden="true">
+      <circle cx="48" cy="48" r="46" fill="#090b0c" stroke="#acafb0" stroke-width="2" />
+      <circle cx="48" cy="48" r="42" fill="none" stroke="#303337" />
+      {Array.from({ length: 12 }, (_, index) => <line x1="48" y1="11" x2="48" y2={index % 3 === 0 ? 18 : 15} stroke="#f0f1ee" stroke-width={index % 3 === 0 ? 2 : 1} transform={`rotate(${index * 30} 48 48)`} />)}
+      <text x="48" y="32" text-anchor="middle" fill="#eee" font-size="5.4" letter-spacing="1">CHRONOS</text>
+      <path d="M45.7 49L47 24L48 21L49 24L50.3 49Z" fill="#e8ece9" data-watch-hand="minute" data-watch-center="48" transform={`rotate(${clock.angles.minute} 48 48)`} />
+      <path d="M45.5 49L46 32L48 29L50 32L50.5 49Z" fill="#c3caca" data-watch-hand="hour" data-watch-center="48" transform={`rotate(${clock.angles.hour} 48 48)`} />
+      <path d="M48 18V55" stroke="#ecece5" stroke-width=".65" data-watch-hand="second" data-watch-center="48" transform={`rotate(${clock.angles.second} 48 48)`} />
+      <circle cx="48" cy="48" r="2.2" fill="#e6e8e5" />
+      <text x="48" y="70" text-anchor="middle" fill="#a4abab" font-size="5.5" letter-spacing=".8">OPEN</text>
+    </svg>
+  </button>}
+
+  <Panel id={`${id}-panel`} class:list={['chronos__panel', { 'chronos__dialog': compact }]} data-watch-panel aria-labelledby={`${id}-title`}>
+    {compact && <button class="chronos__close" data-watch-close aria-label="Close smart watch"><span aria-hidden="true">×</span></button>}
+    <div class="chronos__instrument">
+      <div class="chronos__watch">
+        <div class="chronos__crown" aria-hidden="true"></div>
+        <svg class="chronos__face" viewBox="0 0 440 440" data-watch-dial role="img" aria-label="Analogue clock showing device time">
+          <defs>
+            <linearGradient id={gradient('steel')} x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" style="stop-color:var(--watch-steel-light)" /><stop offset=".16" style="stop-color:var(--watch-metal)" />
+              <stop offset=".28" stop-color="#fafbfc" /><stop offset=".46" stop-color="#727c80" />
+              <stop offset=".65" stop-color="#c2c9cb" /><stop offset=".83" stop-color="#737c80" /><stop offset="1" stop-color="#d4d9da" />
+            </linearGradient>
+            <linearGradient id={gradient('bezel')} x1="0" y1="0" x2="0" y2="1">
+              <stop stop-color="#31383b" /><stop offset=".48" stop-color="#0e1214" /><stop offset="1" stop-color="#596166" />
+            </linearGradient>
+            <radialGradient id={gradient('dial')} cx=".4" cy=".25" r=".8">
+              <stop style="stop-color:var(--watch-dial-highlight)" /><stop offset=".5" stop-color="#101416" /><stop offset="1" style="stop-color:var(--watch-ink)" />
+            </radialGradient>
+            <linearGradient id={gradient('hand')} x1="0" y1="0" x2="1" y2="0">
+              <stop stop-color="#677479" /><stop offset=".32" stop-color="#e5ebec" /><stop offset=".5" stop-color="#bac5c9" /><stop offset=".51" stop-color="#778890" /><stop offset="1" stop-color="#cedadd" />
+            </linearGradient>
+            <linearGradient id={gradient('aperture')} x1="0" y1="0" x2="0" y2="1"><stop stop-color="#121819" /><stop offset="1" stop-color="#090d0f" /></linearGradient>
+          </defs>
+          <circle cx="220" cy="220" r="214" fill={`url(#${gradient('steel')})`} />
+          <circle cx="220" cy="220" r="210.5" fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width=".6" />
+          <circle cx="220" cy="220" r="205" fill={`url(#${gradient('bezel')})`} stroke="#080c0d" stroke-width="1.5" />
+          <circle cx="220" cy="220" r="198" fill={`url(#${gradient('dial')})`} stroke="#788387" stroke-opacity=".65" stroke-width=".65" />
+          <circle cx="220" cy="220" r="194.5" fill="none" stroke="#859093" stroke-opacity=".1" stroke-width=".5" />
+          <circle cx="220" cy="220" r="161" fill="none" stroke="#d4e0df" stroke-opacity=".12" stroke-width=".5" />
+          <g data-watch-clouds class="chronos__clouds" aria-hidden="true"></g>
+          <g class="chronos__indices" aria-hidden="true">
+            {indices.map(({ start, end, major }) => <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke={major ? '#f4f5ef' : '#b4bdbe'} style={`stroke-width:var(--watch-${major ? 'major' : 'minor'}-index-width)`} stroke-linecap="butt" />)}
+          </g>
+          <g class="chronos__numerals" fill="#f1f3ee" text-anchor="middle" dominant-baseline="central" aria-hidden="true">
+            <text x="220" y="99">12</text><text x="341" y="220">3</text><text x="220" y="289">6</text><text x="99" y="220">9</text>
+          </g>
+          <g class="chronos__signature" fill="#e9edeb" text-anchor="middle" aria-hidden="true">
+            <path d="M214 139L220 132L226 139L220 146Z" fill="none" stroke="#b2c0bd" stroke-width="1.1" />
+            <text x="220" y="167" font-size="17" letter-spacing="4">CHRONOS</text>
+            <text x="220" y="184" font-size="7.5" letter-spacing="2.2" fill="#a1aeab">A LOCAL COMPANION</text>
+          </g>
+          <path d="M117 307H323A135 135 0 0 1 117 307Z" fill={`url(#${gradient('aperture')})`} stroke="#73807e" stroke-opacity=".45" stroke-width=".75" />
+          <text class="chronos__dial-phrase" data-watch-phrase x="220" y="320" text-anchor="middle" aria-hidden="true"></text>
+          <g class="chronos__hands" aria-hidden="true">
+            <g data-watch-hand="hour" transform={`rotate(${clock.angles.hour} 220 220)`}>
+              <path d="M214 229L214.4 161L220 148L225.6 161L226 229L220 234Z" fill={`url(#${gradient('hand')})`} stroke="#d5e1e1" stroke-width=".7" />
+              <path d="M218.1 216L218.1 162L220 157L221.9 162L221.9 216Z" style="fill:var(--watch-lume)" />
+              <path d="M220 149V233" stroke="#516469" stroke-opacity=".42" stroke-width=".5" />
+            </g>
+            <g data-watch-hand="minute" transform={`rotate(${clock.angles.minute} 220 220)`}>
+              <path d="M216 229L216.8 144L220 134L223.2 144L224 229L220 233Z" fill={`url(#${gradient('hand')})`} stroke="#d5e1e1" stroke-width=".6" />
+              <path d="M218.8 214L218.8 146L220 141L221.2 146L221.2 214Z" fill="#f4f5e8" />
+              <path d="M220 135V232" stroke="#6c8286" stroke-width=".5" stroke-opacity=".45" />
+            </g>
+            <g data-watch-hand="second" transform={`rotate(${clock.angles.second} 220 220)`}>
+              <path d="M220 88V242" fill="none" stroke="#dce9e4" stroke-width="1" />
+              <circle cx="220" cy="240" r="4.1" fill="none" stroke="#c2d5ce" stroke-width="1.1" />
+            </g>
+            <circle cx="220" cy="220" r="6.4" fill={`url(#${gradient('steel')})`} stroke="#081012" stroke-width=".8" />
+            <circle cx="220" cy="220" r="2.6" fill="#d5e0dd" /><circle cx="220" cy="220" r="1" fill="#7a8b86" />
+          </g>
+          <g data-watch-plane class="chronos__plane" transform="translate(220 41.5) rotate(90)" aria-hidden="true">
+            <path d="M0-4.5L1-1L3.3 1L3.3 2L.9 1.4L.6 3.4L1.5 4H-1.5L-.6 3.4L-.9 1.4L-3.3 2L-3.3 1L-1-1Z" fill="#d6e1de" stroke="#f1f5f2" stroke-width=".3" transform="scale(.8)" />
+          </g>
+        </svg>
+      </div>
+      <time class="chronos__time" data-watch-time datetime={new Date(clock.epochMs).toISOString()} aria-live="off">{clock.label}</time>
+      <p class="chronos__edition">CHRONOS · NO. 001</p>
+    </div>
+
+    <div class="chronos__companion">
+      <p class="chronos__overline">THE SMART WATCH EXPERIMENT</p>
+      <h3 id={`${id}-title`}>A moment of<br />intelligence.</h3>
+      <p class="chronos__intro">A precise clock. A useful thought. A tiny aircraft learning its way around the dial.</p>
+      <div class="chronos__modes" role="group" aria-label="Choose a language mode">
+        <button type="button" data-watch-mode="ai" aria-pressed={languageMode === 'ai'}>AI</button>
+        <button type="button" data-watch-mode="profile" aria-pressed={languageMode === 'profile'}>About me</button>
+        <button type="button" data-watch-mode="wellbeing" aria-pressed={languageMode === 'wellbeing'}>Wellbeing</button>
+      </div>
+      <div class="chronos__thought">
+        <p class="chronos__status" data-watch-status>Reviewed facts · model unavailable</p>
+        <p class="chronos__caption" data-watch-caption aria-live="off" data-no-translate>{unavailable}</p>
+        <div class="chronos__transport">
+          <button type="button" data-watch-pause aria-pressed="false"><span class="chronos__pause-icon" aria-hidden="true"></span><span data-watch-pause-label>Pause</span></button>
+          <button type="button" data-watch-next>Next thought <span aria-hidden="true">→</span></button>
+        </div>
+      </div>
+      <details class="chronos__details" data-watch-details>
+        <summary>Source &amp; details <span aria-hidden="true">+</span></summary>
+        <div data-watch-sources class="chronos__sources" data-no-translate>Sources and model availability appear here when the watch is opened.</div>
+        <p class="chronos__metrics" data-watch-metrics></p>
+      </details>
+      <details class="chronos__settings">
+        <summary>Make it yours <span aria-hidden="true">+</span></summary>
+        <div class="chronos__settings-grid">
+          <label>Time zone<select data-watch-zone><option value="" selected={!timeZone}>Device time</option><option value="Europe/Zurich" selected={timeZone === 'Europe/Zurich'}>Zurich</option></select></label>
+          <label>Motion<select data-watch-motion><option value="sweep">Sweeping</option><option value="tick">Ticking</option></select></label>
+          <label class="chronos__interval">New thought every <output data-watch-interval-label>{Math.round(phraseIntervalMs / 1000)} seconds</output><input data-watch-interval type="range" min="15" max="60" step="5" value={Math.round(phraseIntervalMs / 1000)} aria-label="Seconds between thoughts" /></label>
+          <label class="chronos__switch"><span>Aircraft</span><input data-watch-plane-toggle type="checkbox" checked /></label>
+          <label class="chronos__switch"><span>Clouds</span><input data-watch-clouds-toggle type="checkbox" checked /></label>
+          <label class="chronos__switch"><span>Learn in simulation</span><input data-watch-learn type="checkbox" /></label>
+          <button class="chronos__reset" data-watch-reset-learn type="button">Reset learning</button>
+          <p class="chronos__learning" data-watch-learning aria-live="off">Frozen policy. Learning starts only when enabled.</p>
+        </div>
+      </details>
+      <form class="chronos__question" data-watch-question>
+        <label for={`${id}-question`}>Ask within this mode</label>
+        <div><input id={`${id}-question`} data-watch-input type="text" name="question" maxlength="160" placeholder="One short question…" autocomplete="off" /><button type="submit" aria-label="Ask your question"><span aria-hidden="true">↗</span></button></div>
+        <p data-watch-answer role="status" aria-live="polite" data-no-translate></p>
+      </form>
+      <p class="chronos__privacy">Questions stay on your device. Reviewed sources, no account or cloud chat.</p>
+    </div>
+  </Panel>
+</article>
+
+<script>
+  import '../scripts/watch';
+</script>

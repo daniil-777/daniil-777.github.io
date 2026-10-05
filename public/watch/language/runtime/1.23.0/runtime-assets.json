@@ -1,0 +1,15 @@
+{
+  "version": "1.23.0",
+  "files": [
+    {
+      "url": "./runtime/1.23.0/ort-wasm-simd-threaded.mjs",
+      "sha256": "c0bc2244e2c95fbf39a5eccb595bca31defb9eefdffa6f9ce0325a1c47524461",
+      "bytes": 20321
+    },
+    {
+      "url": "./runtime/1.23.0/ort-wasm-simd-threaded.wasm",
+      "sha256": "3260fcdb33b4fc4ec33e89caf392e13625823e01049d3bf32c38464f9dbfe14c",
+      "bytes": 11815498
+    }
+  ]
+}

@@ -28,6 +28,7 @@
     "@huggingface/transformers": "4.3.0",
     "@mux/mux-player": "^3.13.4",
     "astro": "^7.3.5",
+    "onnxruntime-web": "1.23.0",
     "qrcode": "^1.5.4",
     "stemmer": "^2.0.1"
   },

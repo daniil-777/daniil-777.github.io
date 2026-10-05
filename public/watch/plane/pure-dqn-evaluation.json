@@ -1,0 +1,60 @@
+{
+  "format": "chronos-plane-evaluation-v1",
+  "evaluatedAt": "2026-10-05T20:43:51.479Z",
+  "checkpointSha256": "9380f1563a9b9bb0a96d39911c9620ea6d527f6ad26f4f94ae8b4d409ffc4969",
+  "trainingSteps": 500000,
+  "seedStart": 700000,
+  "seedEnd": 700999,
+  "windowSeconds": 60,
+  "physicsHz": 20,
+  "angularSpeed": 0.10471975511965977,
+  "settings": {
+    "maxSpeed": 0.7,
+    "acceleration": 2.8,
+    "planeRadialHalfWidth": 0.13,
+    "planeAngularHalfWidth": 0.023,
+    "cloudRadialMin": 0.1,
+    "cloudRadialMax": 0.18,
+    "cloudAngularMin": 0.028,
+    "cloudAngularMax": 0.052,
+    "leadSeconds": 3,
+    "spacingMin": 3.4,
+    "spacingMax": 4.6,
+    "spawnHorizon": 4.2,
+    "survivalReward": 0.08,
+    "collisionReward": -2,
+    "passReward": 0.4,
+    "speedPenalty": 0.015,
+    "accelerationPenalty": 0.0008,
+    "potentialStrength": 0.4,
+    "potentialDiscount": 0.99
+  },
+  "device": "Apple M3 Pro",
+  "node": "v24.18.0",
+  "totalSeconds": 11.709027083,
+  "targetCollisionFreeRate": 0.95,
+  "targetAchieved": false,
+  "results": [
+    {
+      "name": "learned-unshielded",
+      "episodes": 1000,
+      "collisionFreeEpisodes": 91,
+      "collisionFreeRate": 0.091,
+      "wilson95": [
+        0.07470470437164412,
+        0.11042558406953998
+      ],
+      "meanReturn": 2.4929531102642657,
+      "meanPassedClouds": 6.015,
+      "seconds": 11.704852500000001,
+      "policyInferenceMeanMicroseconds": 3.4924289017931978,
+      "decisions": 484745,
+      "rejectedLayouts": 11824,
+      "shieldInterventions": 0
+    }
+  ],
+  "shieldUsed": false,
+  "trainingMethod": "double-dqn",
+  "expertWarmstartSteps": 0,
+  "expertLossWeight": 0
+}

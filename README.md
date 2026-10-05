@@ -287,6 +287,12 @@ Official API references: https://developers.openai.com/api/docs/guides/streaming
 https://developers.openai.com/api/docs/guides/prompt-caching,
 https://developers.openai.com/api/docs/models/gpt-6-luna.
 
+## Chronos smart watch
+
+The new bottom chapter is at `/#smart-watch`, with a full demo at `/smart-watch/` and a 96px launcher demo at `/smart-watch/embed/`. It has three English modes, cited reviewed thoughts, precise device/Zurich time, an original SVG dial and a genuinely trained aircraft policy. The language candidate remains experimental and does not download for public inference; Safety assist is labelled separately from learned aircraft performance.
+
+See [the completion report](docs/chronos-watch.md), [language training and evaluation](docs/watch-language.md), and [aircraft training and evaluation](docs/watch-plane.md). `scripts/watch/browser-qa.mjs` and `scripts/watch/benchmark-ui.mjs` use an isolated local headless browser. `mountSmartWatch(root, options)` returns `setSettings`, `open` and `unmount`; compact presentation is determined by the component markup and this release supports WASM only.
+
 ## Deploy to demtsev.com
 
 The public repository is https://github.com/daniil-777/daniil-777.github.io. Its GitHub Actions workflow tests, builds and publishes the static origin on every push to `main`. Cloudflare's gateway serves that origin on the registered custom domain.

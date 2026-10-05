@@ -1,0 +1,22 @@
+{
+  "datasetVersion": "chronos-grounded-v1",
+  "factPackVersion": "chronos-facts-2026-10-05.1",
+  "seed": 20261005,
+  "accepted": 78,
+  "rejected": 0,
+  "distinctFacts": 34,
+  "sourceGroups": 10,
+  "splits": {
+    "train": 45,
+    "validation": 15,
+    "test": 18
+  },
+  "modes": {
+    "ai": 29,
+    "profile": 27,
+    "wellbeing": 22
+  },
+  "pilotQuotaReached": false,
+  "teacherSpendUsd": 0,
+  "note": "Small reviewed canonical feasibility corpus; not a 5,000-example teacher pilot or independent clinical review."
+}

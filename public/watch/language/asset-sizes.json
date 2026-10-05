@@ -1,0 +1,102 @@
+{
+  "version": "chronos-language-assets-v1",
+  "files": [
+    {
+      "path": "benchmark-browser.json",
+      "bytes": 1186,
+      "gzipBytes": 645,
+      "sha256": "837309f7a5d2b001c100337184ed12bfa459bbb079db0b0f2b94a0627d06d367"
+    },
+    {
+      "path": "dataset-statistics.json",
+      "bytes": 519,
+      "gzipBytes": 317,
+      "sha256": "964df43c29ed1bf66a99632db528013e8fcb7d885a09f2fc1c39c3d6e2b71ddf"
+    },
+    {
+      "path": "evaluation-candidate.json",
+      "bytes": 614,
+      "gzipBytes": 372,
+      "sha256": "71e5b475ef85c7bdc90e67aa447e6f81b66f9d102dc9dd0ec7d6074b5532242b"
+    },
+    {
+      "path": "evaluation-familiar.json",
+      "bytes": 598,
+      "gzipBytes": 377,
+      "sha256": "9c956babe26f919e4a2528421525841021217048da79b2597895e461f8ba890f"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 3505,
+      "gzipBytes": 1544,
+      "sha256": "3b448277716c2bc4613412e9f2866d40df9d47dc7ca2fe1e01e812158db074ec"
+    },
+    {
+      "path": "model-card.json",
+      "bytes": 6429,
+      "gzipBytes": 2623,
+      "sha256": "3dfedb17691f36c53fd3454b047a456a81750e1a3d0a40d75c4815912b0276bd"
+    },
+    {
+      "path": "model.fp32.onnx",
+      "bytes": 9546398,
+      "gzipBytes": 8744733,
+      "sha256": "ea5f97d6b2131ef6d982b24a441add7a90891bfd8b7b0eb55d1548332cea1403"
+    },
+    {
+      "path": "runtime/1.23.0/LICENSE",
+      "bytes": 1073,
+      "gzipBytes": 644,
+      "sha256": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c"
+    },
+    {
+      "path": "runtime/1.23.0/ThirdPartyNotices.txt",
+      "bytes": 326866,
+      "gzipBytes": 31752,
+      "sha256": "e9e90971a8e75a9a8ac0c6412e29c1202d079998389915aa485f46c816c3b4cc"
+    },
+    {
+      "path": "runtime/1.23.0/ort-wasm-simd-threaded.mjs",
+      "bytes": 20321,
+      "gzipBytes": 8208,
+      "sha256": "c0bc2244e2c95fbf39a5eccb595bca31defb9eefdffa6f9ce0325a1c47524461"
+    },
+    {
+      "path": "runtime/1.23.0/ort-wasm-simd-threaded.wasm",
+      "bytes": 11815498,
+      "gzipBytes": 3045563,
+      "sha256": "3260fcdb33b4fc4ec33e89caf392e13625823e01049d3bf32c38464f9dbfe14c"
+    },
+    {
+      "path": "runtime/1.23.0/runtime-assets.json",
+      "bytes": 403,
+      "gzipBytes": 242,
+      "sha256": "46c201d1045998f3a434bfa2bb3f244bf11ceacf1128ce6546aeae96c710e709"
+    },
+    {
+      "path": "tokenizer-parity.json",
+      "bytes": 1268,
+      "gzipBytes": 422,
+      "sha256": "4076b7c1463790250ae1e52a378b0ad34c8e17064f37b94aad31e3e5733cafc9"
+    },
+    {
+      "path": "tokenizer.json",
+      "bytes": 7124,
+      "gzipBytes": 2664,
+      "sha256": "74fb461231574e34b090b8859970ae1a923b18f2ea2d82c9dc81417c05e4db02"
+    },
+    {
+      "path": "training-candidate.json",
+      "bytes": 4181,
+      "gzipBytes": 1380,
+      "sha256": "bda2388d57d8c6a615475ddee919f5c1457d43e9aa898f48d46920cd24e24974"
+    },
+    {
+      "path": "training-initial.json",
+      "bytes": 2147,
+      "gzipBytes": 876,
+      "sha256": "a9e9ab08c946f07458ccd27df0330658682097c6b4fd29224bdd98e7d883307b"
+    }
+  ],
+  "note": "Download/artifact bytes only; not browser memory or initial-widget bytes."
+}
