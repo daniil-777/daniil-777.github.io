@@ -27,12 +27,14 @@ const state = () => browser.evaluate(`(()=>{
   const track=p.querySelector('[data-watch-marquee-track]'),a=track?.getAnimations()[0];
   const face=root.querySelector('[data-watch-dial]').getBoundingClientRect(),b=p.getBoundingClientRect(),scale=face.width/440;
   const w=p.querySelector('.chronos__marquee-window')?.getBoundingClientRect(),t=track?.getBoundingClientRect();
+  const css=getComputedStyle(p),ctx=document.createElement('canvas').getContext('2d');ctx.font=css.fontStyle+' '+css.fontWeight+' '+css.fontSize+' '+css.fontFamily;
+  const glyphs=ctx.measureText(p.textContent);
   return {style:root.dataset.watchThoughtStyle,text:p.textContent,caption:root.querySelector('[data-watch-caption]').textContent,
     scale,top:(b.top-face.top)/scale,bottom:(b.bottom-face.top)/scale,width:b.width/scale,height:b.height/scale,
     font:parseFloat(getComputedStyle(p).fontSize),static:root.dataset.watchMarqueeStatic,
     animationTime:a?.currentTime,animationState:a?.playState,readMs:Number(p.dataset.watchMarqueeReadMs),
     x:track?new DOMMatrix(getComputedStyle(track).transform).m41:null,opacity:track?Number(getComputedStyle(track).opacity):null,
-    lineHeight:parseFloat(getComputedStyle(p).lineHeight),whiteSpace:track?getComputedStyle(track).whiteSpace:null,
+    glyphHeight:glyphs.actualBoundingBoxAscent+glyphs.actualBoundingBoxDescent,lineHeight:parseFloat(getComputedStyle(p).lineHeight),whiteSpace:track?getComputedStyle(track).whiteSpace:null,
     trackWidth:t?.width,windowWidth:w?.width,windowHeight:w?.height,scrollWidth:track?.parentElement.scrollWidth,
     copyWidth:track?parseFloat(getComputedStyle(track,'::after').width):0,
     hours:[...root.querySelector('[data-watch-layered-hours]').children].filter(h=>{const x=h.getBoundingClientRect();
@@ -42,7 +44,7 @@ const state = () => browser.evaluate(`(()=>{
 const checkBounds = s => {
   assert.equal(s.style, 'marquee'); assert.equal(s.text, s.caption);
   assert.ok(s.top > 220 && s.bottom <= 350.1, JSON.stringify(s));
-  assert.ok(s.maxRadius < 194); assert.deepEqual(s.hours, []);
+  assert.ok(s.maxRadius < 194); assert.deepEqual(s.hours, []);assert.ok(s.glyphHeight<=s.windowHeight+.5,'Serif letter tops and tails are not clipped');
 };
 try {
   await browser.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
@@ -51,11 +53,22 @@ try {
   assert.equal(await browser.evaluate('document.querySelector("[data-watch-thought-layout]").value'), 'marquee');
   await paused(true);
   const design = await state(); checkBounds(design);
-  assert.ok(Math.abs(design.width-202.4)<1&&Math.abs(design.height-Math.max(33,22/design.scale))<1,'Bar stays46%wide and7.5%high');
+  assert.ok(Math.abs(design.width-202.4)<1&&Math.abs(design.height-Math.max(39.6,28/design.scale))<1,'Bar stays46%wide and9%high');
   assert.equal(design.whiteSpace,'nowrap');assert.ok(design.windowHeight<design.lineHeight*1.1,'Exactly one line');
   assert.ok(design.windowWidth/design.font<9,'Only a few words fit in the narrow window');
-  assert.ok(design.font >= 15); assert.ok(design.readMs > 2000);
-  results.push({ test: 'URL and fifth visible flag select a horizontal bar below centre', passed: true, ...design });
+  assert.ok(design.font >= 17); assert.ok(design.readMs > 2000);
+  results.push({ test: 'URL and fifth visible flag select unboxed lettering below centre', passed: true, ...design });
+  const classic=await browser.evaluate(`(()=>{
+    const r=document.querySelector('[data-watch]'),p=r.querySelector('[data-watch-card-output]'),c=getComputedStyle(p);
+    const hands=['hour','minute'].map(name=>{const n=r.querySelector('[data-watch-dial] [data-watch-hand="'+name+'"]'),m=new DOMMatrix(getComputedStyle(n.firstElementChild).transform);
+      return {name,opacity:Number(getComputedStyle(n).opacity),scale:m.a,tipRadius:(name==='hour'?72:86)*m.a,width:(name==='hour'?12:8)*m.a,centerX:m.a*220+m.e,centerY:m.d*220+m.f};});
+    return {background:c.backgroundColor,border:parseFloat(c.borderTopWidth),radius:c.borderRadius,shadow:c.boxShadow,family:c.fontFamily,color:c.color,weight:c.fontWeight,hands,
+      textAboveHands:parseInt(c.zIndex)>parseInt(getComputedStyle(r.querySelector('[data-watch-dial]')).zIndex)};
+  })()`);
+  assert.equal(classic.background,'rgba(0, 0, 0, 0)');assert.equal(classic.border,0);assert.equal(classic.radius,'0px');assert.equal(classic.shadow,'none');
+  assert.match(classic.family,/Baskerville.*Georgia.*serif/);assert.equal(classic.color,'rgb(255, 255, 255)');assert.equal(classic.weight,'400');assert.equal(classic.textAboveHands,true);
+  for(const h of classic.hands){assert.equal(h.opacity,.9);assert.ok(h.tipRadius>110&&h.tipRadius<166);assert.ok(h.width>14);assert.ok(Math.abs(h.centerX-220)<.01&&Math.abs(h.centerY-220)<.01);}
+  results.push({test:'reference styling has unboxed white serif lettering and long polished hands beneath the text',passed:true,...classic});
   const loop=await browser.evaluate(`(()=>{
     const t=document.querySelector('[data-watch-marquee-track]'),a=t.getAnimations()[0],timing=a.effect.getTiming();
     const w=t.parentElement.getBoundingClientRect(),r=document.createRange();r.setStart(t.firstChild,0);r.setEnd(t.firstChild,1);
@@ -84,15 +97,15 @@ try {
           const s = await state(); checkBounds(s);
           assert.equal(s.text, fact.answer);
           assert.equal(s.static, String(reduced));
-          assert.equal(s.whiteSpace,'nowrap');assert.ok(Math.abs(s.width-202.4)<1&&Math.abs(s.height-Math.max(33,22/s.scale))<1);
-          assert.ok(s.font>=15);
+          assert.equal(s.whiteSpace,'nowrap');assert.ok(Math.abs(s.width-202.4)<1&&Math.abs(s.height-Math.max(39.6,28/s.scale))<1);
+          assert.ok(s.font>=17);
           if (reduced)assert.equal(s.animationTime,undefined);
           else assert.ok(s.animationTime>=0);
           typography.push({ width, reduced, fact: fact.id, ...s });
           await browser.evaluate('document.querySelector("[data-watch-next]").click()');
         }
       }
-      if (width === 380) await writeFile(join(output, reduced ? 'marquee-static-mobile.png' : 'marquee-mobile.png'), await browser.screenshot());
+      if (width === 380) { await wait(260); await writeFile(join(output, reduced ? 'marquee-static-mobile.png' : 'marquee-mobile.png'), await browser.screenshot()); }
     }
   }
   results.push({ test: 'all364complete sentences retain the same narrow single-line viewport under motion and reduced-motion settings at three widths', passed: true, cases: typography.length });

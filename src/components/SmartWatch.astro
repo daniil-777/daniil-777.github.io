@@ -140,7 +140,7 @@ const unavailable = 'Reviewed thoughts are available while the trained local lan
       </div>
       <time class="chronos__time" data-watch-time datetime={new Date(clock.epochMs).toISOString()} aria-live="off">{clock.label}</time>
       <label class="chronos__layout-control">Thought layout<select data-watch-thought-layout><option value="dial" selected={thoughtStyle === 'dial'}>Inside dial</option><option value="arc" selected={thoughtStyle === 'arc'}>Around rim</option><option value="card" selected={thoughtStyle === 'card'}>Companion face</option><option value="layered" selected={thoughtStyle === 'layered'}>Layered face</option><option value="marquee" selected={thoughtStyle === 'marquee'}>Scrolling face</option></select></label>
-      <p class="chronos__marquee-hint">Hover to hold · tap the bar or Pause to stop</p>
+      <p class="chronos__marquee-hint" data-no-translate>Hover to hold · tap the text or Pause to stop</p>
       <label class="chronos__answer-size" data-watch-answer-size-control>
         <span>Answer size</span><output data-watch-answer-size-label for={`${id}-answer-size`}>100%</output>
         <input id={`${id}-answer-size`} data-watch-answer-size type="range" min="16" max="28" step="1" value="24" aria-label="Answer size" />

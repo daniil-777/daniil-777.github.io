@@ -60,7 +60,7 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
   function fitCardOutput() {
     if (thoughtStyle === 'marquee') {
       const scale = node('[data-watch-dial]').getBoundingClientRect().width / 440;
-      cardOutput.style.fontSize = `${Math.max(15, 23 * scale)}px`;
+      cardOutput.style.fontSize = `${Math.max(17, 30 * scale)}px`;
       marquee.setText(lastDialSentence, true);
       return;
     }

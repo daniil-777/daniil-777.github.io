@@ -185,13 +185,13 @@
 /* Keep the flight experiment in code, outside every public watch view. */
 .chronos[data-watch-aircraft="false"] :is([data-watch-plane], [data-watch-clouds], [data-watch-flight-control], [data-watch-metrics]) { display: none !important; }
 
-/* A slender glass ribbon keeps the watch face open and the sentence legible. */
+/* Classic dial lettering: unboxed white serif text floats below the pinion. */
 .chronos__marquee-hint { display: none; }
 .chronos[data-watch-thought-style='marquee'] .chronos__card-output {
-  display: flex; align-items: center; left: 27%; top: 55%; width: 46%; height: 7.5%; min-height: 22px; padding: 0 2.2%;
-  box-sizing: border-box; border: 1px solid #adc9ba38; border-radius: 6px; overflow: hidden;
-  background: linear-gradient(110deg, #22382be6, #13201ded 60%, #21342bf2); box-shadow: inset 0 1px #ffffff12, 0 5px 16px #0005;
-  font-weight: 450; line-height: 1.15; letter-spacing: -.02em; text-align: left; pointer-events: auto; cursor: pointer;
+  display: flex; align-items: center; left: 27%; top: 61%; width: 46%; height: 9%; min-height: 28px; padding: 0 2.2%;
+  box-sizing: border-box; border: 0; border-radius: 0; overflow: hidden;
+  background: transparent; box-shadow: none;
+  font-family: "Iowan Old Style", "Baskerville", "Georgia", serif; color: #fff; font-weight: 400; line-height: 1.15; letter-spacing: .005em; text-align: left; pointer-events: auto; cursor: pointer;
 }
 .chronos__marquee-window { display: block; width: 100%; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 7px, #000 calc(100% - 7px), transparent); }
 [data-watch-marquee-track] { display: block; position: relative; width: max-content; padding-inline: 8px; white-space: nowrap; }
@@ -199,3 +199,13 @@
 .chronos[data-watch-thought-style='marquee'] .chronos__marquee-hint { display: block; margin: 10px 0 0; color: var(--text-2); font-size: 10px; text-align: center; }
 .chronos[data-watch-marquee-static='true'] .chronos__marquee-window { overflow-x: auto; mask-image: none; scrollbar-width: none; }
 .chronos[data-watch-marquee-static='true'] [data-watch-marquee-track]::after { display: none; }
+
+/* Polished, full-length hands belong to the classic scrolling face. */
+.chronos[data-watch-thought-style='marquee'] [data-watch-hand='hour'],
+.chronos[data-watch-thought-style='marquee'] [data-watch-hand='minute'] { opacity: .9; }
+.chronos[data-watch-thought-style='marquee'] [data-watch-hand='hour'] > g { transform: translate(220px, 220px) scale(1.65) translate(-220px, -220px); }
+.chronos[data-watch-thought-style='marquee'] [data-watch-hand='minute'] > g { transform: translate(220px, 220px) scale(1.85) translate(-220px, -220px); }
+.chronos[data-watch-thought-style='marquee'] [data-watch-hand='second'] { opacity: .8; }
+.chronos[data-watch-thought-style='marquee'] .chronos__hands > circle { opacity: 1; }
+.chronos[data-watch-thought-style='marquee'] .chronos__layered-label { display: none; }
+.chronos[data-watch-thought-style='marquee'] [data-watch-dial] [data-watch-hand='second'] > :is(path, circle) { transform: translate(220px, 220px) scale(1.28) translate(-220px, -220px); }
