@@ -18,7 +18,7 @@ highlights:
     label: observations, video clips and shareable reports
 links:
   - label: Open the app
-    href: https://guide.demtsev.com/
+    href: https://cueveris.demtsev.com/
     kind: live
   - label: Source on GitHub
     href: https://github.com/daniil-777/universal-ai-proctor
