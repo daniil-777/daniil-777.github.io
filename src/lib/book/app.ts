@@ -13,7 +13,7 @@ export interface AiBookOptions {
   letterDelayMs?: number;
 }
 
-/** A quiet, resumable ink animation. Inference begins only after a visitor asks for it. */
+/** Automatic illustrated spreads; language inference uses a visitor-approved local model. */
 export function mountAiBook(root: HTMLElement, options: AiBookOptions = {}): AiBookHandle {
   const node = <T extends HTMLElement>(selector: string) => root.querySelector<T>(selector);
   const output = node('[data-book-output]');
@@ -97,21 +97,21 @@ export function mountAiBook(root: HTMLElement, options: AiBookOptions = {}): AiB
     }));
   }
   function scheduleCycle() {
-    clearCycle();
-    if (!canAnimate() || !animationEnabled || writing || consent?.hidden === false) return;
+    if (!canAnimate() || !animationEnabled || writing || busy || root.dataset.bookTurning === 'true') { clearCycle(); return; }
+    // Repeated visibility/art callbacks must not postpone a completed page's dwell time.
+    if (cycle) return;
     cycle = window.setTimeout(() => {
       cycle = 0;
-      if (!canAnimate() || !animationEnabled) return;
-      if (busy || root.dataset.bookGenerated === 'true') write(inscription);
-      else nextPreview();
+      if (!canAnimate() || !animationEnabled || busy || root.dataset.bookTurning === 'true') return;
+      void nextPreview(false, Boolean(model));
     }, options.cycleDelayMs ?? 4000);
   }
-  function nextPreview(reset = false, generateAfter = false) {
+  async function nextPreview(reset = false, generateAfter = false) {
     previewIndex = reset ? 0 : previewIndex + 1;
     clearCycle();
-    void pages.show(reviewedThought(selectedTopic(), previewIndex, pack), selectedTopic(), 'Reviewed thought', reset).then(moved => {
-      if (moved && generateAfter && canAnimate()) void generateText(false, true);
-    });
+    const moved = await pages.show(reviewedThought(selectedTopic(), previewIndex, pack), selectedTopic(), 'Reviewed thought', reset);
+    if (moved && generateAfter && canAnimate()) void generateText(false, true);
+    return moved;
   }
   function resumeWriting(forceMotion = false) {
     paused = false;
@@ -220,13 +220,20 @@ export function mountAiBook(root: HTMLElement, options: AiBookOptions = {}): AiB
   }
   async function generateText(downloadAgreed = false, inPlace = false) {
     if (busy || disposed || root.closest('[hidden]')) return;
+    if (!inPlace && !intersecting) {
+      // The controls can be visible below the paper on a phone. Show the requested curl.
+      writingArea.scrollIntoView?.({ block: 'center', behavior: 'instant' });
+      intersecting = true;
+    }
     const revision = ++run;
     const request = new AbortController(); controller = request;
     pages.cancel();
     resumeWriting(); setBusy(true); clearCycle();
     setModelNote();
     setStatus('Thinking…');
-    if (!writing) write(inscription);
+    // Start a fresh learned drawing and paper curl before waiting for the language model.
+    const pageReady = inPlace ? Promise.resolve(true) : nextPreview();
+    const current = () => !disposed && revision === run && !request.signal.aborted;
     syncAnimation();
     try {
       if (!model) {
@@ -242,13 +249,14 @@ export function mountAiBook(root: HTMLElement, options: AiBookOptions = {}): AiB
           if (disposed || revision !== run) { if (choice.kind === 'ready') choice.model.dispose(); else if (choice.kind === 'download') choice.dispose(); return; }
           if (choice.kind === 'download') {
             candidate?.dispose(); candidate = choice;
+            if (!await pageReady || !current()) return;
             if (consent) consent.hidden = false;
             setModelNote('A local model is available for this device. Choose Download & write to continue.');
             return;
           }
           if (choice.kind === 'unavailable') {
+            if (!await pageReady || !current()) return;
             setModelNote('This model is unavailable here. Showing a reviewed thought.');
-            if (inPlace) pages.replace(reviewedThought(selectedTopic(), ++previewIndex, pack), 'Reviewed thought'); else nextPreview();
             return;
           }
           model = choice.model;
@@ -268,17 +276,18 @@ export function mountAiBook(root: HTMLElement, options: AiBookOptions = {}): AiB
       });
       if (disposed || revision !== run) return;
       const text = result.kind === 'answer' && !result.stopped && !result.cutShort ? cleanBookSentence(result.blocks.join(' ')) : undefined;
+      if (!await pageReady || !current()) return;
       if (!text) {
         setModelNote('The model could not finish this thought. Showing a reviewed thought.');
-        if (inPlace) pages.replace(reviewedThought(selectedTopic(), ++previewIndex, pack), 'Reviewed thought'); else nextPreview();
         return;
       }
       const cited = result.kind === 'answer' ? result.cites.flatMap(id => { const chunk = evidence.byId.get(id); return chunk ? [{ title: chunk.title, url: chunk.url }] : []; }) : [];
       const thought: BookThought = { text, sources: cited, reviewed: false };
-      if (inPlace) pages.replace(thought, 'Written by local AI'); else void pages.show(thought, selectedTopic(), 'Written by local AI');
+      pages.replace(thought, 'Written by local AI');
     } catch {
-      if (!disposed && revision === run) { setModelNote('The model could not finish this thought. Showing a reviewed thought.'); if (inPlace) pages.replace(reviewedThought(selectedTopic(), ++previewIndex, pack), 'Reviewed thought'); else nextPreview(); }
+      if (await pageReady && current()) setModelNote('The model could not finish this thought. Showing a reviewed thought.');
     } finally {
+      await pageReady;
       if (!disposed && revision === run) { controller = undefined; setBusy(false); if (writing) setStatus('Writing in ink…'); else setStatus('Ready to write'); syncAnimation(); }
     }
   }

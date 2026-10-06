@@ -64,6 +64,7 @@ export function createBookPages(root: HTMLElement, initial: BookPage, options: {
   async function prepare(page: BookPage, target: number, reset = false) {
     cancel();
     const serial = revision;
+    root.dataset.bookTurning = 'true'; options.start(); navigation();
     const direction: 'backward' | 'forward' = target < index ? 'backward' : 'forward';
     const commit = () => {
       if (disposed || serial !== revision) return;
@@ -82,7 +83,6 @@ export function createBookPages(root: HTMLElement, initial: BookPage, options: {
       } catch { if (request.signal.aborted || disposed) return; /* Existing artwork remains readable offline. */ }
       if (disposed || serial !== revision || request.signal.aborted) return;
     }
-    root.dataset.bookTurning = 'true'; options.start(); navigation();
     const leftNext = left?.cloneNode(true) as HTMLElement | undefined;
     if (leftNext && page.art) applyBookArt(leftNext, page.art);
     const rightNext = right?.cloneNode(true) as HTMLElement | undefined;

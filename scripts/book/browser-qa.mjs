@@ -97,7 +97,7 @@ try {
   const firstThought = await browser.evaluate('document.querySelector("[data-book-accessible]").textContent');
   const firstArt = await browser.evaluate('document.querySelector("[data-book-contour]").getAttribute("d")');
   await browser.evaluate('document.querySelector("[data-book-next]").click()');
-  await until('document.querySelector("[data-book]").dataset.bookTurning === "true"');
+  await until('Boolean(document.querySelector(".ai-book__turn-sheet"))');
   assert.equal(await browser.evaluate(`document.querySelector('.ai-book__turn-face--front').textContent.includes(${JSON.stringify(firstThought)})`), true, 'The turning front retains the outgoing inscription');
   await wait(250);
   assert.notEqual(await browser.evaluate('getComputedStyle(document.querySelector(".ai-book__turn-sheet")).transform'), 'none');

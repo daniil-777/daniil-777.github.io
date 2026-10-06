@@ -33,6 +33,7 @@ function page({ reduced = false, animate = true } = {}) {
     <select data-book-topic><option value="ai">AI</option><option value="profile">About me</option><option value="wellbeing">Wellbeing</option></select>
     <input type="checkbox" data-book-animate ${animate ? 'checked' : ''}>
     <button data-book-generate><span data-book-generate-label></span></button>
+    <span data-book-page-count></span>
     <button data-book-replay>Replay</button><button data-book-pause aria-pressed="false"><span data-book-pause-label></span></button>
     <div data-book-consent hidden><button data-book-download>Download &amp; write</button></div><button data-book-cancel hidden>Cancel</button>
   </article>`;
@@ -164,7 +165,7 @@ test('pause, hiding the widget, and disposal cancel automatic previews', async (
   } finally { if (!disposed) handle.unmount(); await p.win.happyDOM.close(); }
 });
 
-test('a generated thought is replayed automatically without another inference request', async () => {
+test('a generated thought advances automatically to a fresh spread using the approved local model', async () => {
   const p = page();
   let prepares = 0, generations = 0;
   const handle = mountAiBook(p.root, {
@@ -173,7 +174,7 @@ test('a generated thought is replayed automatically without another inference re
       prepares++;
       return { kind: 'ready', model: { label: 'On-device AI', dispose() {}, generator: {
         id: 'builtin', conversational: true,
-        async *generate() { generations++; yield { type: 'block', text: generated, cites: [] }; yield { type: 'done', stop: 'end_turn' }; },
+        async *generate() { generations++; yield { type: 'block', text: generations === 1 ? generated : 'A fresh page makes room for a gentle thought and a new possibility.', cites: [] }; yield { type: 'done', stop: 'end_turn' }; },
       } } };
     },
   });
@@ -182,10 +183,11 @@ test('a generated thought is replayed automatically without another inference re
     await until(() => p.root.dataset.bookGenerated === 'true', 'the requested local sentence is accepted');
     assert.equal(p.thought(), generated);
     await until(() => p.output() === generated && p.root.dataset.bookWriting === 'false', 'generated ink finishes');
-    await until(() => p.root.dataset.bookWriting === 'true' && p.output().length < generated.length, 'the generated inscription is replayed after its dwell time');
-    assert.equal(p.thought(), generated, 'autoplay preserves the actual model output');
+    await until(() => generations === 2 && p.root.dataset.bookGenerated === 'true', 'autoplay requests a new thought after its dwell time');
+    assert.notEqual(p.thought(), generated, 'autoplay writes a fresh local output');
+    assert.equal(p.node('[data-book-page-count]').textContent, '05 — 06', 'autoplay turns to a new spread');
     assert.equal(p.node('[data-book-origin]').textContent, 'Written by local AI');
     assert.equal(prepares, 1);
-    assert.equal(generations, 1, 'autoplay never spends another model request');
+    assert.equal(generations, 2, 'one local inference is run for each new spread');
   } finally { handle.unmount(); await p.win.happyDOM.close(); }
 });

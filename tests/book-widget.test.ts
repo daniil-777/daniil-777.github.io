@@ -129,6 +129,7 @@ test('the primary action becomes Stop writing and cancels a pending model reques
   await tick();
   assert.equal(root.dataset.bookBusy, 'false');
   assert.equal(root.querySelector('[data-book-generate-label]')!.textContent, 'New thought');
-  assert.equal(root.querySelector('[data-book-output]')!.textContent, sample);
+  assert.equal(root.dataset.bookGenerated, 'false', 'cancelled inference never becomes generated ink');
+  assert.equal(root.querySelector('[data-book-output]')!.textContent, root.querySelector('[data-book-accessible]')!.textContent, 'the immediately opened reviewed page remains readable');
   handle.unmount(); await win.happyDOM.close();
 });
