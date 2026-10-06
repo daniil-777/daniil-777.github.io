@@ -18,7 +18,7 @@ highlights:
     label: observations, video clips and shareable reports
 links:
   - label: Open the app
-    href: https://daniil-777.github.io/universal-ai-proctor/
+    href: https://guide.demtsev.com/
     kind: live
   - label: Source on GitHub
     href: https://github.com/daniil-777/universal-ai-proctor
@@ -47,4 +47,4 @@ The layout adapts to phones and tablets, with adjustable guidance and Guardian p
 
 ## How it is built
 
-A React and TypeScript interface connects to a Fastify backend for vision models, frame sampling, voice and reports. The published entry point links to the app and its source code.
+A React and TypeScript interface connects to a Fastify backend for vision models, frame sampling, voice and reports. The full app runs on an Oracle server with HTTPS and persistent storage for accounts and saved reports. Its branded address redirects directly to the hosted app. The GitHub Pages version remains an interface preview, with a link to the full app.
