@@ -11,12 +11,20 @@ import * as transformers from '@huggingface/transformers';
 import { LOCAL_LLM } from '../../data/chat.ts';
 import { createEmbedder, type Embedder, type Transformers } from '../../lib/chat/embed.ts';
 
+// The matching runtime is served locally; no CDN scripts or blob module factories.
+transformers.env.backends.onnx.wasm!.wasmPaths = {
+  mjs: '/chat/runtime/ort-wasm-simd-threaded.asyncify.mjs',
+  wasm: '/chat/runtime/ort-wasm-simd-threaded.asyncify.wasm',
+};
+transformers.env.backends.onnx.wasm!.numThreads = 1;
+transformers.env.useWasmCache = false;
+
 export type ToWorker =
   | { type: 'embed-load' }
   | { type: 'embed'; id: number; text: string }
   | { type: 'llm-load'; dtype: string }
-  | { type: 'generate'; id: number; system: string; prompt: string }
-  | { type: 'stop' };
+  | { type: 'generate'; id: number; system: string; prompt: string; maxNewTokens?: number }
+  | { type: 'stop'; id: number };
 
 export type FromWorker =
   | { type: 'progress'; loaded: number; total: number }
@@ -48,9 +56,14 @@ let embedder: Embedder | undefined;
 type Tokenizer = Awaited<ReturnType<typeof AutoTokenizer.from_pretrained>>;
 let llm: { tokenizer: Tokenizer; model: Awaited<ReturnType<typeof AutoModelForCausalLM.from_pretrained>> } | undefined;
 const stopper = new InterruptableStoppingCriteria();
+let currentId: number | undefined;
+const canceled = new Set<number>();
+const pending = new Set<number>();
 
-async function generate(id: number, system: string, prompt: string) {
+async function generate(id: number, system: string, prompt: string, maxNewTokens = 1024) {
   if (!llm) throw new Error('the model is not loaded');
+  if (canceled.delete(id)) { post({ type: 'end', id }); return; }
+  currentId = id;
   stopper.reset();
   const inputs = llm.tokenizer.apply_chat_template(
     [
@@ -61,10 +74,12 @@ async function generate(id: number, system: string, prompt: string) {
   );
   const streamer = new TextStreamer(llm.tokenizer, { skip_prompt: true, skip_special_tokens: true, callback_function: (text: string) => post({ type: 'token', id, text }) });
   // Greedy decoding: the same passages give the same answer.
-  await llm.model.generate({ ...(inputs as object), max_new_tokens: 200, do_sample: false, repetition_penalty: 1.05, streamer, stopping_criteria: stopper });
+  await llm.model.generate({ ...(inputs as object), max_new_tokens: Math.min(1024, Math.max(1, maxNewTokens)), do_sample: false, repetition_penalty: 1.05, streamer, stopping_criteria: stopper });
   post({ type: 'end', id });
+  currentId = undefined;
 }
 
+let generating = Promise.resolve();
 scope.onmessage = async ({ data }) => {
   try {
     if (data.type === 'embed-load') {
@@ -77,15 +92,22 @@ scope.onmessage = async ({ data }) => {
       const vector = await embedder.embed(data.text);
       post({ type: 'vector', id: data.id, vector }, [vector.buffer]);
     } else if (data.type === 'llm-load') {
+      files.clear();
       const source = { revision: LOCAL_LLM.revision };
       const tokenizer = await AutoTokenizer.from_pretrained(LOCAL_LLM.id, source);
       const model = await AutoModelForCausalLM.from_pretrained(LOCAL_LLM.id, { ...source, dtype: data.dtype as 'q4', device: 'webgpu', progress_callback: progress });
       llm = { tokenizer, model };
       post({ type: 'ready' });
     } else if (data.type === 'generate') {
-      await generate(data.id, data.system, data.prompt);
+      pending.add(data.id);
+      const run = generating.then(() => generate(data.id, data.system, data.prompt, data.maxNewTokens)).finally(() => {
+        pending.delete(data.id); canceled.delete(data.id); if (currentId === data.id) currentId = undefined;
+      });
+      generating = run.catch(() => {});
+      await run;
     } else if (data.type === 'stop') {
-      stopper.interrupt();
+      if (currentId === data.id) stopper.interrupt();
+      else if (pending.has(data.id)) canceled.add(data.id);
     }
   } catch (error) {
     post({ type: 'error', id: 'id' in data ? data.id : undefined, message: reason(error) });

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import type { Chunk } from '../../src/lib/chat/kb.ts';
-import { conversationalFallback, requestsResources, safeResource, selectResources, type Resource } from '../../src/lib/chat/resources.ts';
+import { conversationalFallback, offlineReply, requestsResources, safeResource, selectResources, type Resource } from '../../src/lib/chat/resources.ts';
 
 const resources: Resource[] = [
   { id: 'cv', kind: 'cv', title: 'Daniil Emtsev CV', url: '/documents/daniil-emtsev-cv.pdf', download: true },
@@ -82,6 +82,18 @@ describe('resource intent and conversation context', () => {
     assert.equal(new Set(picked.map((resource) => resource.url)).size, 4);
     assert.deepEqual(ids('What did he build at VirtaMed?'), []);
   });
+  it('keeps overlapping project titles and patent attachments relevant', () => {
+    const extra: Resource[] = [
+      { id: 'ai', kind: 'project', title: 'AI Proctor', url: '/work/ai-proctor/', project: 'ai-proctor' },
+      { id: 'ai-video', kind: 'video', title: 'AI Proctor demo', url: '/media/ai.mp4', project: 'ai-proctor' },
+      { id: 'universal', kind: 'project', title: 'Universal AI Proctor', url: '/work/universal-ai-proctor/', project: 'universal-ai-proctor' },
+      { id: 'universal-video', kind: 'video', title: 'Universal demo', url: '/media/universal.mp4', project: 'universal-ai-proctor' },
+      { id: 'patent', kind: 'document', title: 'Camera pose', url: '/papers/camera-pose-patent.pdf', description: 'patent', project: 'camera-pose' },
+    ];
+    assert.deepEqual(selectResources('Show Universal AI Proctor videos', extra).map(r => r.id), ['universal-video']);
+    assert.equal(selectResources('Show Universal AI Proctor and AI Proctor videos', extra).length, 2);
+    assert.deepEqual(selectResources('Is his patent granted?', [...resources, ...extra]).map(r => r.id), ['patent']);
+  });
 });
 
 const chunk = (id: string, text: string, sensitive = false): Chunk => ({ id, kind: id.startsWith('project:') ? 'project' : 'fact', title: 'Daniil', heading: '', url: '/#about', tags: [], asks: [], text, sensitive });
@@ -93,6 +105,10 @@ const chunks = [
 ];
 
 describe('transparent conversational fallback', () => {
+  it('does not guess current weather or prices from an offline model', () => {
+    for (const q of ['What is the weather in Zurich today?', 'What is the bitcoin price?', 'Who is the current president?']) assert.match(offlineReply(q)!.text.join(' '), /no live/);
+    for (const q of ['How are weather forecasts made?', 'What is an exchange rate?', 'What is his current role?']) assert.equal(offlineReply(q), undefined);
+  });
   it('compares the financial manager opening with documented technical work and unestablished qualifications', () => {
     const reply = conversationalFallback('Can I hire u for financial manager position?', chunks)!;
     const text = reply.text.join(' ');

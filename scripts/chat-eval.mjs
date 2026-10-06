@@ -19,12 +19,13 @@ import { DENSE_CLOSEST, DENSE_WEIGHT, denseScores, ranking, topK } from '../src/
 import { displayTitle } from '../src/lib/chat/text.ts';
 import { HEDGED, PRIVATE, UNANSWERABLE, allGolden, isHit } from '../tests/chat/golden.ts';
 import { loadKb } from '../tests/chat/load.ts';
+import { mkdir, writeFile } from 'node:fs/promises';
 
 const GATE = { hit3: 0.92, hit5: 0.95 };
 const HEDGES = ['none', 'closest', 'declined'];
 const flags = new Set(process.argv.slice(2));
 if (flags.has('--llm')) {
-  console.error('The on-device answer evaluation (--llm) is not implemented yet. DEVICE_MODE must stay "off".');
+  console.error('Use npm run chat:device-qa for real browser generation evaluation.');
   process.exit(2);
 }
 
@@ -114,5 +115,17 @@ if (embedder) {
   const { hit3, hit5 } = results.fused;
   const passed = hit3 >= GATE.hit3 && hit5 >= GATE.hit5 && wrong.length === 0;
   console.log(`\nFused gate (hit@3 ≥ ${GATE.hit3}, hit@5 ≥ ${GATE.hit5}, nothing unanswerable answered): ${passed ? 'passed' : 'FAILED'}`);
+  if (flags.has('--report')) {
+    await mkdir('docs/ask-ai', { recursive: true });
+    await writeFile('docs/ask-ai/retrieval-evaluation.json', `${JSON.stringify({
+      v: 1, date: new Date().toISOString(), kb: kb.hash, chunks: kb.chunks.length,
+      model: EMBED.model, dtype: EMBED.dtype, backend: 'Node CPU; cached local embedding model',
+      results, queryEmbeddingMeanMs: Number((embedMs / golden.length).toFixed(2)),
+      answerableWithoutHedging: plain, refusalChecks: mustHedge.length,
+      refusalFailures: wrong, gate: GATE, passed,
+      misses: all.filter(({ entry, i }) => !isHit(rankers.fused[i].slice(0, 5), entry.accept))
+        .map(({ entry, i }) => ({ question: entry.q, expected: entry.accept, got: rankers.fused[i].slice(0, 5) })),
+    }, null, 2)}\n`);
+  }
   process.exit(passed ? 0 : 1);
 }

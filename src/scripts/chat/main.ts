@@ -7,19 +7,22 @@
 import styles from '../../styles/chat.css?inline';
 import { CHAT_ENABLED } from '../../data/chat-status.ts';
 import { COPY, DEVICE_MODE, INPUT_MAX, LOCAL_LLM, SUGGESTED } from '../../data/chat.ts';
+import { createRag } from '../../lib/chat/rag.ts';
+import { generalQuestion } from '../../lib/chat/prompt.ts';
 import { composeExtractive, type Answer } from '../../lib/chat/answer.ts';
 import { buildIndex } from '../../lib/chat/bm25.ts';
 import { EMBED } from '../../lib/chat/embed.ts';
 import type { Chunk, Kb } from '../../lib/chat/kb.ts';
 import { offerModes, type Capabilities } from '../../lib/chat/modes.ts';
 import { denseScores, matchTrigger, ranking, subjectTerms } from '../../lib/chat/retrieve.ts';
-import { conversationalFallback, requestsResources, safeResource, selectResources } from '../../lib/chat/resources.ts';
+import { conversationalFallback, offlineReply, requestsResources, safeResource, selectResources } from '../../lib/chat/resources.ts';
 import { displayTitle } from '../../lib/chat/text.ts';
 import type { Generator } from '../../lib/chat/types.ts';
+import { chatConnection } from '../../lib/chat/connection.ts';
 import { closeOnBackdrop } from '../player.ts';
 import { createCloud } from './cloud.ts';
 import { conversationHistory, earlier, generateAnswer, searchInContext, type FallbackReason } from './pipeline.ts';
-import type { Progress, Semantic } from './semantic.ts';
+import { createOptionalModels } from './optional-models.ts';
 import { restoreTurns, type Turn } from './transcript.ts';
 import { createView, type AnswerRecord, type Mode, type Source } from './view.ts';
 import { currentLocale, englishSource, LANGUAGE_EVENT, loadFullCatalog, prose, refreshTranslations, t } from '../../i18n/client';
@@ -27,10 +30,16 @@ import { currentLocale, englishSource, LANGUAGE_EVENT, loadFullCatalog, prose, r
 // As text, not as a stylesheet of the page: Astro would add that to every page, opened or not.
 document.head.append(Object.assign(document.createElement('style'), { textContent: styles }));
 
-const ENDPOINT = (import.meta.env.PUBLIC_CHAT_ENDPOINT ?? '').trim();
+const { local: LOCAL_ENDPOINT, endpoint: ENDPOINT } = chatConnection();
 /** How many turns survive a page change (sessionStorage). */
 const TURNS_MAX = 10;
 const FOLLOW_UP_MAX = 80;
+async function cancellable(work: Promise<void>, signal: AbortSignal) {
+  if (signal.aborted) return;
+  let abort!: () => void;
+  try { await Promise.race([work, new Promise<void>(resolve => { abort = resolve; signal.addEventListener('abort', abort, { once: true }); })]); }
+  finally { signal.removeEventListener('abort', abort); }
+}
 
 /** Storage can be blocked (private mode, a strict policy): every choice then lasts for this page only. */
 function read(area: 'local' | 'session', key: string): string | null {
@@ -72,7 +81,8 @@ function capabilities(): Capabilities {
 const NOTICE: Record<FallbackReason, string> = {
   failed: COPY.notice.cloudFailed,
   busy: COPY.notice.cloudBusy,
-  budget: COPY.notice.cloudBusy,
+  budget: COPY.notice.localFallback,
+  credits: COPY.notice.credits,
   unverified: COPY.notice.unverified,
   device: COPY.notice.deviceFailed,
 };
@@ -105,6 +115,8 @@ async function start(dialog: HTMLDialogElement) {
   });
   const byId = new Map(kb.chunks.map((chunk) => [chunk.id, chunk]));
   const subjects = subjectTerms(kb.chunks);
+  const rag = createRag(kb.chunks, buildIndex(kb.chunks));
+  const recruiter = rag.recruiter;
   const sourceOf = (chunk: Chunk): Source => ({ label: displayTitle(chunk), url: chunk.url });
 
   let offer = offerModes(capabilities());
@@ -116,13 +128,12 @@ async function start(dialog: HTMLDialogElement) {
   let asking = false;
   /** Counts the chats of this page view; an answer that arrives after "New chat" belongs to none. */
   let chatNo = 0;
-  let semantic: Semantic | undefined;
-  let device: { generator: Generator } | undefined;
+  let modeRevision = 0;
   /** Modes that failed in a way that will not get better during this page view, and why. */
   const disabled: Partial<Record<Mode, string>> = {};
-  const cloud = ENDPOINT ? createCloud(ENDPOINT) : undefined;
+  const cloud = ENDPOINT ? createCloud(ENDPOINT, fetch, LOCAL_ENDPOINT ? 90_000 : undefined) : undefined;
 
-  const view = createView(dialog, kb.built, { ask, stop: () => stopper?.abort(), mode: setMode, reset, semantic: offerSemantic });
+  const view = createView(dialog, kb.built, { ask, stop: () => stopper?.abort(), mode: setMode, reset, semantic: () => optional.offerSemantic() });
   dialog.addEventListener('close', () => {
     stopper?.abort();
     dialog.querySelectorAll('video').forEach((video) => video.pause());
@@ -134,21 +145,29 @@ async function start(dialog: HTMLDialogElement) {
   const offered = (): Mode[] => ['quotes' as const, ...(offer.cloud ? ['cloud' as const] : []), ...(offer.builtin || offer.webgpu ? ['device' as const] : [])];
   const usable = (candidate: string | null): candidate is Mode => offered().includes(candidate as Mode) && disabled[candidate as Mode] === undefined;
   // A new default opts upgraded visitors into conversation when it is connected.
-  const saved = read('local', 'chat:mode:v2');
-  // A model on the device is never switched on by itself: only a stored choice selects it.
-  let mode: Mode = usable(saved) ? saved : usable('cloud') ? 'cloud' : 'quotes';
+  const saved = read('local', 'chat:mode:v3');
+  // A local download needs consent even when a billing failure selects the mode.
+  // Until capability probing finishes, a saved local preference stays source-only.
+  // It must never temporarily send a question to OpenAI.
+  let mode: Mode = saved === 'device' ? 'quotes' : usable(saved) ? saved : usable('cloud') ? 'cloud' : 'quotes';
 
-  const canSearchSmarter = () => offer.semantic && kb.embedding !== null && 'Worker' in window && !semantic;
+  const optional = createOptionalModels({ kb, dialog, view, offer: () => offer, mode: () => mode,
+    select: next => setMode(next, false), changed: draw, failed: deviceFailed, stop: () => stopper?.abort(),
+    read: key => read('local', key), write: (key, value) => write('local', key, value) });
   function draw() {
-    view.modes(offered().map((option) => ({ mode: option, disabled: disabled[option] })), mode);
-    view.semanticOffer(mode === 'quotes' && canSearchSmarter());
+    view.modes([{ mode: 'cloud', label: LOCAL_ENDPOINT ? 'Local server' : 'OpenAI', disabled: !cloud ? 'Not configured' : disabled.cloud },
+      { mode: 'device', disabled: disabled.device ?? (!(offer.builtin || offer.webgpu) ? COPY.device.unavailable : undefined) },
+      { mode: 'quotes' }], mode);
+    view.semanticOffer(mode === 'quotes' && optional.canSearch());
   }
 
   function setMode(next: Mode, remember = true) {
+    if (remember && asking) return;
+    modeRevision++;
     mode = usable(next) ? next : 'quotes';
-    if (remember) write('local', 'chat:mode:v2', mode);
+    if (remember) write('local', 'chat:mode:v3', mode);
     draw();
-    if (mode === 'device' && !device) void prepareDevice();
+    if (mode === 'device') void optional.local();
   }
 
   function save() {
@@ -159,6 +178,8 @@ async function start(dialog: HTMLDialogElement) {
   function reset() {
     chatNo += 1;
     stopper?.abort();
+    optional.cancel();
+    view.cancelConsent();
     turns = [];
     save();
     view.clear();
@@ -166,59 +187,10 @@ async function start(dialog: HTMLDialogElement) {
     view.focus();
   }
 
-  /* --------------------------------------------------------- optional models */
-
-  async function loadSemantic(progress: Progress, signal: AbortSignal) {
-    try {
-      semantic = await (await import('./semantic.ts')).loadSemantic(kb, progress, signal);
-      write('local', 'chat:semantic', '1');
-      view.hint('Smarter search is on.');
-      view.status('Smarter search is on');
-    } catch {
-      if (!signal.aborted) view.hint(COPY.notice.semanticFailed);
-    }
-    draw();
-  }
-
-  function offerSemantic() {
-    if (canSearchSmarter()) view.consent(COPY.semantic, loadSemantic);
-  }
-
   function deviceFailed() {
-    disabled.device = '';
+    disabled.device = COPY.notice.deviceFailed;
     view.hint(COPY.notice.deviceFailed);
     setMode('quotes', false);
-  }
-
-  /** The browser's own model needs nothing; the downloadable one asks first, once. */
-  async function prepareDevice() {
-    const { createBuiltin, createWebgpu, removeModel } = await import('./device.ts');
-    if (offer.builtin) {
-      device = { generator: createBuiltin() };
-      return;
-    }
-    if (!offer.webgpu) return;
-    const model = createWebgpu(offer.webgpu, dialog);
-    const load = (progress: Progress, signal: AbortSignal) =>
-      model.load(progress, signal).then(
-        () => {
-          device = model;
-          write('local', 'chat:device', '1');
-          view.hint('', {
-            label: COPY.device.remove,
-            run: () => {
-              model.dispose();
-              device = undefined;
-              write('local', 'chat:device', '');
-              void removeModel().catch(() => {});
-              setMode('quotes');
-            },
-          });
-        },
-        () => (signal.aborted ? setMode('quotes') : deviceFailed()),
-      );
-    if (read('local', 'chat:device')) void load(() => {}, new AbortController().signal);
-    else view.consent(COPY.device, load, () => setMode('quotes'));
   }
 
   /* ----------------------------------------------------------- one question */
@@ -249,9 +221,11 @@ async function start(dialog: HTMLDialogElement) {
   /** The model that writes this answer, if one does. A fixed reply and a FAQ entry never go to a model. */
   function writer(question: string, answer: Answer): Generator | undefined {
     if (answer.kind === 'declined') return undefined;
-    if (mode === 'cloud') return cloud;
     if (matchTrigger(question, kb.chunks)) return undefined;
-    if (mode === 'device' && answer.confidence === 'ok' && answer.kind !== 'faq') return device?.generator;
+    // Personal replies use published text and reviewed assessments. A small
+    // language model's fluent wording is not evidence for a new biographical claim.
+    if (mode === 'cloud') return cloud;
+    if (mode === 'device' && generalQuestion(question, kb.chunks, turns.map(turn => ({ q: turn.q, a: '' })))) return optional.generator();
     return undefined;
   }
 
@@ -260,7 +234,9 @@ async function start(dialog: HTMLDialogElement) {
     const question = raw.trim().slice(0, INPUT_MAX);
     if (!question || asking) return false;
     asking = true;
+    const askedIn = chatNo;
     void answer(question).catch(() => {
+      if (askedIn !== chatNo) return;
       view.busy(false);
       view.answer({ mode: 'quotes', text: [], lead: 'The assistant could not finish that request. Please try again, or contact Daniil directly.', passages: [], chips: [], email: 'line', followUps: SUGGESTED, meta: '' });
       view.status('Please try again');
@@ -278,14 +254,16 @@ async function start(dialog: HTMLDialogElement) {
     // After a fixed reply or a miss there is no topic to carry over.
     const last = turns[turns.length - 1];
     const retrievalQuestion = englishSource(question);
+    const offline = offlineReply(retrievalQuestion);
     const { query, result } = searchInContext(index, retrievalQuestion, last, subjects, localKb.chunks);
     const timings = [`search ${(performance.now() - began).toFixed(1)} ms`];
 
     let similar: Float32Array | undefined;
-    if (semantic && !matchTrigger(question, kb.chunks)) {
+    const semantic = optional.semantic();
+    if (semantic && !offline && !matchTrigger(question, kb.chunks) && !requestsResources(question)) {
       const embedding = performance.now();
       const vector = await semantic.embed(query);
-      if (chat !== chatNo) return;
+      if (chat !== chatNo || !dialog.open) return;
       if (vector) {
         similar = denseScores(vector, semantic.vectors.data, semantic.vectors.count, EMBED.dim);
         timings.push(`embed ${Math.round(performance.now() - embedding)} ms`);
@@ -295,12 +273,14 @@ async function start(dialog: HTMLDialogElement) {
     const { scores, top, level } = ranking(result, similar);
     const answer = composeExtractive(retrievalQuestion, { top, scores, terms: result.terms, index }, level, localKb, asked);
     const quotes = toRecord(answer, asked, timings.join(' · '));
-    const local = answer.kind !== 'declined' ? conversationalFallback(retrievalQuestion, kb.chunks, last?.q) : undefined;
+    const card = answer.kind !== 'declined' ? recruiter.match(retrievalQuestion) : undefined;
+    const detail = answer.kind !== 'declined' ? rag.detailed(retrievalQuestion, last) : undefined;
+    const local = offline ?? (detail ? { ...detail, followUps: undefined } : card ? { text: card.answer.split('\n\n'), cites: card.sourceIds, followUps: undefined } : answer.kind !== 'declined' ? conversationalFallback(retrievalQuestion, kb.chunks, last?.q) : undefined);
     if (local) {
       quotes.text = local.text;
       quotes.passages = [];
       quotes.chips = local.cites.flatMap((id) => byId.has(id) ? [sourceOf(byId.get(id)!)] : []);
-      quotes.followUps = local.followUps ?? quotes.followUps;
+      quotes.followUps = local.followUps ?? (card ? SUGGESTED.filter(q => !asked.includes(q) && q !== question) : quotes.followUps);
       quotes.offerSemantic = false;
       quotes.email = undefined;
     }
@@ -313,9 +293,9 @@ async function start(dialog: HTMLDialogElement) {
       quotes.email = undefined;
     }
     const first = answer.kind === 'declined' ? undefined : byId.get(local?.cites[0] ?? answer.passages[0]?.chunkId);
-    const generator = writer(question, answer);
-    const chosen = mode;
-    const finish = (record: AnswerRecord, status: string, about = first?.title, url = first?.url) => {
+    let generator = offline || (mode !== 'cloud' && (detail || card)) || (quotes.resources.length && requestsResources(question)) ? undefined : writer(question, answer);
+    let chosen = mode;
+    const finish = (record: AnswerRecord, status: string, about?: string, url?: string) => {
       // A video/code/demo follow-up keeps the project it actually shared as
       // context, even if keyword search happened to retrieve another project.
       const selected = new Set(record.resources?.map((resource) => resource.project).filter(Boolean));
@@ -325,14 +305,14 @@ async function start(dialog: HTMLDialogElement) {
         url = project.url;
         if (requestsResources(question)) record.followUps = [`What is the stack of ${project.title}?`, `What was the result of ${project.title}?`, 'Show me his CV'].filter((q) => q.length <= FOLLOW_UP_MAX && !asked.includes(q));
       }
-      turns.push({ q: question, answer: record, about, url, sent: generator?.id === 'cloud', at: Date.now() });
+      turns.push({ q: question, answer: record, about, url, sent: !!generator, at: Date.now() });
       save();
       view.status(status);
       return record;
     };
     const quoted = (extra: Partial<AnswerRecord> = {}) => {
       const sources = quotes.passages.length + quotes.chips.length;
-      return finish({ ...quotes, ...extra }, extra.notice ? COPY.status.fallback : extra.note ? COPY.status.stopped : sources ? COPY.status.ready(sources) : quotes.resources?.length ? 'Resources ready' : COPY.status.notCovered);
+      return finish({ ...quotes, ...extra }, extra.notice ? COPY.status.fallback : extra.note ? COPY.status.stopped : sources ? COPY.status.ready(sources) : quotes.resources?.length ? 'Resources ready' : COPY.status.notCovered, first?.title, first?.url);
     };
     if (!generator) return view.answer(quoted());
 
@@ -340,18 +320,53 @@ async function start(dialog: HTMLDialogElement) {
     const stop = (stopper = new AbortController());
     view.busy(true);
     const writing = performance.now();
-    const outcome = await generateAnswer({
-      generator,
-      question,
+    // A source-only resource reply can change the topic between cloud turns.
+    // Send a public, retrieved title as context; never upload the earlier local question.
+    const withTopic = last?.answer.mode !== 'cloud' && query !== retrievalQuestion && first ? `${question}\nPublic portfolio topic: ${first.title}` : question;
+    const modelQuestion = withTopic.length <= INPUT_MAX ? withTopic : question;
+    const generate = () => generateAnswer({
+      generator: generator!,
+      question: modelQuestion,
       locale: currentLocale(),
-      // Only questions that were themselves sent: nothing typed in "Site quotes" and no private question leaves the browser later.
-      prev: generator.id === 'cloud' ? earlier(turns) : [],
-      history: generator.id === 'cloud' ? conversationHistory(turns) : [],
-      chunks: top.map((i) => kb.chunks[i]),
+      // Only earlier cloud questions/replies are sent back to the cloud.
+      prev: generator!.id === 'cloud' ? earlier(turns) : [],
+      history: conversationHistory(turns, chosen),
+      chunks: rag.retrieve(retrievalQuestion, last),
       byId,
       stop: stop.signal,
       onBlock: (text, ids) => live.block(text, ids.map((id) => sourceOf(byId.get(id)!))),
     });
+    let outcome = await generate();
+    let fallbackNotice: string | undefined;
+    if (outcome.kind === 'fallback' && (outcome.reason === 'credits' || outcome.reason === 'budget') && chosen === 'cloud' && chat === chatNo && !stop.signal.aborted) {
+      const reason = outcome.reason;
+      fallbackNotice = reason === 'credits' ? COPY.notice.credits : COPY.notice.localFallback;
+      await cancellable(probeReady, stop.signal);
+      if (stop.signal.aborted || chat !== chatNo) {
+        if (stopper === stop) stopper = undefined;
+        view.busy(false);
+        if (chat !== chatNo) return;
+        return live.finish(quoted({ note: COPY.stopped }));
+      }
+      if (!stop.signal.aborted && chat === chatNo && (offer.builtin || offer.webgpu) && !disabled.device) {
+        setMode('device', false);
+        live.restart('device', fallbackNotice);
+        view.status(fallbackNotice);
+        if (generalQuestion(modelQuestion, kb.chunks, turns.map(turn => ({ q: turn.q, a: '' })))) {
+          const localGenerator = await optional.local(stop.signal);
+          if (localGenerator && !stop.signal.aborted && chat === chatNo) {
+            generator = localGenerator; chosen = 'device';
+            outcome = await generate();
+            if (outcome.kind === 'answer') fallbackNotice = 'OpenAI usage limit reached. Answered with our local model.';
+            else if (outcome.reason !== 'stopped') fallbackNotice = `${NOTICE[outcome.reason]} ${COPY.notice.budget}`;
+          } else fallbackNotice = 'The AI usage limit was reached. Showing portfolio sources instead.';
+        } else fallbackNotice = 'The AI usage limit was reached. Answering from the public portfolio.';
+      } else {
+        setMode('quotes', false);
+        fallbackNotice = stop.signal.aborted ? undefined : COPY.notice.localUnavailable;
+      }
+      if (stop.signal.aborted) outcome = { kind: 'fallback', reason: 'stopped' };
+    }
     if (stopper === stop) stopper = undefined;
     view.busy(false);
     // "New chat" was pressed meanwhile: the transcript is empty and stays so.
@@ -359,26 +374,26 @@ async function start(dialog: HTMLDialogElement) {
 
     if (outcome.kind === 'fallback') {
       if (outcome.reason === 'stopped') return live.finish(quoted({ note: COPY.stopped }));
-      if (outcome.reason === 'budget') disabled.cloud = COPY.notice.budget;
       if (outcome.reason === 'device') deviceFailed();
       if (disabled[mode] !== undefined) setMode('quotes', false);
-      return live.finish(quoted({ notice: NOTICE[outcome.reason] }));
+      return live.finish(quoted({ notice: fallbackNotice ?? NOTICE[outcome.reason] }));
     }
     const cited = outcome.cites.map((id) => byId.get(id)!);
     const took = `${generator.id === 'cloud' ? 'AI' : 'on device'} ${((performance.now() - writing) / 1000).toFixed(1)} s`;
     const record: AnswerRecord = {
       mode: chosen,
+      notice: fallbackNotice,
       text: outcome.blocks,
       passages: [],
       chips: cited.map(sourceOf),
       note: outcome.stopped ? COPY.stopped : outcome.cutShort ? COPY.cutShort : undefined,
       email: outcome.abstained ? 'line' : undefined,
-      followUps: outcome.abstained ? [] : quotes.followUps,
+      followUps: outcome.abstained ? [] : cited.length ? quotes.followUps : ['Give a concrete example.', 'Explain it in more detail.'],
       meta: [...timings, took].join(' · '),
-      resources: selectResources(question, resources, cited.map(sourceOf), last?.q, last?.url),
+      resources: requestsResources(question) ? selectResources(question, resources, cited.map(sourceOf), last?.q, last?.url) : [],
     };
     const status = outcome.stopped ? COPY.status.stopped : outcome.abstained ? COPY.status.notCovered : COPY.status.ready(cited.length);
-    live.finish(finish(record, status, cited[0]?.title ?? first?.title, cited[0]?.url ?? first?.url));
+    live.finish(finish(record, status, cited[0]?.title, cited[0]?.url));
   }
 
   /* ------------------------------------------------------------------ start */
@@ -386,26 +401,23 @@ async function start(dialog: HTMLDialogElement) {
   // The switch first: it takes height from the transcript, which then scrolls to its last turn.
   draw();
   view.status(COPY.status.fresh);
-  if (!ENDPOINT) view.hint('AI conversation is currently offline. You can still explore the portfolio and get the CV, demos and papers.');
+  if (!ENDPOINT) view.hint('Portfolio answers run locally. Choose Local AI on a supported device for broader questions and conversation.');
   for (const turn of turns) {
     view.question(turn.q);
     view.answer(turn.answer);
   }
-  if (DEVICE_MODE !== 'off') {
-    // What the device can run is only known after asking it; the switch is redrawn then.
-    void import('./device.ts')
-      .then(({ probe }) => probe(capabilities()))
-      .then((caps) => {
-        offer = offerModes(caps);
-        setMode(usable(saved) ? saved : mode, false);
-      });
-  }
-  // Agreed to on an earlier visit: the model comes from the browser's cache.
-  if (read('local', 'chat:semantic') && canSearchSmarter()) void loadSemantic(() => {}, new AbortController().signal);
+  const initialRevision = modeRevision;
+  const probeReady = DEVICE_MODE !== 'off' ? import('./device.ts').then(({ probe }) => probe(capabilities())).then(caps => {
+    offer = offerModes(caps);
+    if (modeRevision === initialRevision) setMode(usable(saved) ? saved : mode, false);
+    else draw();
+  }).catch(() => {}) : Promise.resolve();
+  optional.restoreSearch();
 
   return {
     opened(by: HTMLElement) {
       trigger = by;
+      optional.opened();
       view.focus();
     },
   };

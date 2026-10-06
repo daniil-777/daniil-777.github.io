@@ -156,3 +156,5 @@
 @media (prefers-reduced-motion: reduce) {
   .ai-book__turn-sheet, .ai-book__turn-panel { transition: none; }
 }
+
+.ai-book__provenance { margin: 0 0 24px; color: var(--text-2); font-size: 13px; line-height: 1.6; }

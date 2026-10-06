@@ -232,7 +232,7 @@ describe('searchInContext', () => {
 
 describe('earlier questions sent with an AI answer', () => {
   it('are only those that were themselves sent', () => {
-    const turns = [{ q: 'What is his phone number?' }, { q: 'a', sent: true }, { q: 'typed in quotes mode' }, { q: 'b', sent: true }, { q: 'c', sent: true }, { q: 'd', sent: true }];
+    const turns = [{ q: 'What is his phone number?' }, { q: 'a', sent: true, answer: { mode: 'cloud' } }, { q: 'typed in quotes mode' }, { q: 'private local question', sent: true, answer: { mode: 'device' } }, { q: 'b', sent: true, answer: { mode: 'cloud' } }, { q: 'c', sent: true, answer: { mode: 'cloud' } }, { q: 'd', sent: true, answer: { mode: 'cloud' } }];
     assert.deepEqual(earlier(turns), ['b', 'c', 'd']);
     assert.deepEqual(earlier([{ q: 'What is his phone number?' }, { q: 'Where does he live?', sent: false }]), []);
     assert.deepEqual(earlier(turns, 1), ['d']);

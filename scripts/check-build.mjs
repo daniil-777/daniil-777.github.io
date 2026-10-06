@@ -111,7 +111,8 @@ if (hasLocalization) {
   for (const file of files.filter((file) => file.endsWith('.html'))) {
     const html = readFileSync(path.join(build, file), 'utf8');
     const pack = html.match(/<script[^>]*data-i18n-pack[^>]*>([\s\S]*?)<\/script>/)?.[1];
-    if (pack && gzipSync(pack, { level: 9 }).length > localizationBudget.pageCatalogMaxGzipBytes + (html.includes('data-ai-widgets') ? widgetsBudget.pageCatalogAllowanceGzipBytes : 0)) problems.push(`${file}: language catalog exceeds its explicit budget`);
+    const catalogLimit = localizationBudget.pageCatalogMaxGzipBytes + (html.includes('data-ai-widgets') ? widgetsBudget.pageCatalogAllowanceGzipBytes ?? 0 : 0);
+    if (pack && gzipSync(pack, { level: 9 }).length > catalogLimit) problems.push(`${file}: language catalog exceeds its explicit budget`);
   }
 }
 if (hasArchitecture) {
@@ -150,6 +151,10 @@ if (!existsSync(kbFile)) {
   }
   const pages = new Map();
   for (const chunk of kb.chunks) {
+    if (chunk.kind === 'document') {
+      if (!chunk.document || !existsSync(inBuild(chunk.url)) || !/\.pdf#page=\d+$/.test(chunk.url)) problems.push(`${chunk.id}: invalid public PDF/page citation`);
+      continue;
+    }
     const [pathname, anchor] = chunk.url.split('#');
     const file = path.join(inBuild(pathname), 'index.html');
     if (!pages.has(file)) pages.set(file, existsSync(file) ? readFileSync(file, 'utf8') : null);
@@ -188,7 +193,7 @@ for (const file of files.filter((name) => /\.(html|json|xml|txt|js|css|svg)$/.te
   // Minified third-party code is full of short path-like strings ("dist/", "me/"); there only the unmistakable names count.
   // This public dependency notice names the upstream JDAI-CV/DNNLibrary
   // repository. Preserve the required notice while avoiding the CV/ heuristic.
-  const privacyText = file === 'watch/language/runtime/1.23.0/ThirdPartyNotices.txt' ? content.replaceAll('JDAI-CV/DNNLibrary', 'JDAI-CV DNNLibrary') : content;
+  const privacyText = file.endsWith('/ThirdPartyNotices.txt') ? content.replaceAll('JDAI-CV/DNNLibrary', 'JDAI-CV DNNLibrary') : content;
   const found = new Set(prose === null ? [] : privacyProblems(privacyText).filter((problem) => /private folder/.test(problem)));
   if (/ethicon/i.test(content)) found.add('the word "ethicon"');
   if (/(?<![\w/])(?:MIPT|Amgen|VirtaMed)\/[\w.-]/.test(content)) found.add('a path into a private folder');

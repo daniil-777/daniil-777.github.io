@@ -56,8 +56,25 @@ const unavailable = 'Reviewed thoughts are available while the trained local lan
   <Panel id={`${id}-panel`} class:list={['chronos__panel', { 'chronos__dialog': compact }]} data-watch-panel aria-labelledby={`${id}-title`}>
     {compact && <button class="chronos__close" data-watch-close aria-label="Close smart watch"><span aria-hidden="true">×</span></button>}
     <div class="chronos__instrument">
+      <div class="chronos__watch-stage">
       <div class="chronos__watch">
-        <div class="chronos__crown" aria-hidden="true"></div>
+        <button type="button" class="chronos__case-button chronos__case-button--top-left" data-watch-cycle-mode aria-label="Change language mode" title="Change language mode">
+          <span class="chronos__case-cap" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="chronos__case-button chronos__case-button--top-right" data-watch-next aria-label="Next thought" title="Next thought">
+          <span class="chronos__case-cap" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="chronos__case-button chronos__case-button--bottom-left" data-watch-pause data-watch-case-pause aria-pressed="false" aria-label="Pause thoughts" title="Pause thoughts">
+          <span class="chronos__case-cap" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="chronos__case-button chronos__case-button--bottom-right" data-watch-cycle-layout aria-label="Change watch face" title="Change watch face">
+          <span class="chronos__case-cap" aria-hidden="true"></span>
+        </button>
+        <div class="chronos__case-modes" role="group" aria-label="Choose a watch language mode">
+          <button type="button" data-watch-mode="ai" data-watch-mode-label="ai" data-active={String(languageMode === 'ai')} aria-pressed={languageMode === 'ai'}>AI</button>
+          <button type="button" data-watch-mode="profile" data-watch-mode-label="profile" data-active={String(languageMode === 'profile')} aria-pressed={languageMode === 'profile'}>About me</button>
+          <button type="button" data-watch-mode="wellbeing" data-watch-mode-label="wellbeing" data-active={String(languageMode === 'wellbeing')} aria-pressed={languageMode === 'wellbeing'}>Wellbeing</button>
+        </div>
         <svg class="chronos__face" viewBox="0 0 440 440" data-watch-dial role="img" aria-label="Analogue clock showing device time">
           <defs>
             <path id={gradient('thought-arc')} data-watch-phrase-arc-guide d={PHRASE_ARC_PATH} />
@@ -123,20 +140,36 @@ const unavailable = 'Reviewed thoughts are available while the trained local lan
             <circle cx="220" cy="220" r="6.4" fill={`url(#${gradient('steel')})`} stroke="#081012" stroke-width=".8" />
             <circle cx="220" cy="220" r="2.6" fill="#d5e0dd" /><circle cx="220" cy="220" r="1" fill="#7a8b86" />
           </g>
+          <g class="chronos__scrolling-hands" aria-hidden="true">
+            <g data-watch-hand="hour" transform={`rotate(${clock.angles.hour} 220 220)`}>
+              <path d="M220 103L224 116L223 226Q220 231 217 226L216 116Z" fill={`url(#${gradient('hand')})`} stroke="#e0e9e9" stroke-width=".6" />
+              <path d="M220 111L221.25 119L220.85 211H219.15L218.75 119Z" fill="#eff1e3" />
+              <path d="M220 104V225" stroke="#ffffff" stroke-opacity=".48" stroke-width=".5" />
+            </g>
+            <g data-watch-hand="minute" transform={`rotate(${clock.angles.minute} 220 220)`}>
+              <path d="M220 65L222.8 79L222 228Q220 231 218 228L217.2 79Z" fill={`url(#${gradient('hand')})`} stroke="#e0e9e9" stroke-width=".5" />
+              <path d="M220 75L220.8 82L220.65 211H219.35L219.2 82Z" fill="#f4f5e9" />
+              <path d="M220 66V227" stroke="#ffffff" stroke-opacity=".5" stroke-width=".45" />
+            </g>
+            <g data-watch-hand="second" transform={`rotate(${clock.angles.second} 220 220)`}>
+              <path d="M220 43V245" fill="none" stroke="#e1eae7" stroke-width=".75" stroke-linecap="round" />
+              <circle cx="220" cy="242" r="3" fill="none" stroke="#d1deda" stroke-width=".8" />
+            </g>
+            <circle cx="220" cy="220" r="5" fill={`url(#${gradient('steel')})`} stroke="#081012" stroke-width=".7" />
+            <circle cx="220" cy="220" r="1.8" fill="#dce6e1" />
+          </g>
           </g>
           <g data-watch-plane class="chronos__plane" transform="translate(220 41.5) rotate(90)" aria-hidden="true">
             <path d="M0-4.5L1-1L3.3 1L3.3 2L.9 1.4L.6 3.4L1.5 4H-1.5L-.6 3.4L-.9 1.4L-3.3 2L-3.3 1L-1-1Z" fill="#f5faf5" stroke="#ffffff" stroke-width=".35" stroke-linejoin="round" transform="scale(2)" />
           </g>
         </svg>
-        <div class="chronos__card-controls" role="group" aria-label="Choose a language mode on the companion face">
+        <div class="chronos__card-controls">
           <p data-watch-card-status>Loading</p>
-          <button type="button" data-watch-mode="ai" aria-pressed={languageMode === 'ai'}>AI</button>
-          <button type="button" data-watch-mode="profile" aria-pressed={languageMode === 'profile'}>About me</button>
-          <button type="button" data-watch-mode="wellbeing" aria-pressed={languageMode === 'wellbeing'}>Wellbeing</button>
         </div>
         <p class="chronos__layered-label" aria-hidden="true">A moment to reflect</p>
         <p class="chronos__card-output" data-watch-card-output aria-hidden="true">{unavailable}</p>
         <p class="chronos__card-source" data-watch-card-source aria-hidden="true">Cited thoughts · on device</p>
+      </div>
       </div>
       <time class="chronos__time" data-watch-time datetime={new Date(clock.epochMs).toISOString()} aria-live="off">{clock.label}</time>
       <label class="chronos__layout-control">Thought layout<select data-watch-thought-layout><option value="dial" selected={thoughtStyle === 'dial'}>Inside dial</option><option value="arc" selected={thoughtStyle === 'arc'}>Around rim</option><option value="card" selected={thoughtStyle === 'card'}>Companion face</option><option value="layered" selected={thoughtStyle === 'layered'}>Layered face</option><option value="marquee" selected={thoughtStyle === 'marquee'}>Scrolling face</option></select></label>

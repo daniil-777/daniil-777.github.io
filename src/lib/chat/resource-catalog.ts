@@ -20,6 +20,7 @@ export async function getChatResources(): Promise<Resource[]> {
       resources.push({ id: `document:${doc.id}`, kind: 'document', title: doc.title, url: doc.pdf, description: `${doc.kind} · ${doc.pages.length} pages`, project: project.id, download: true });
     }
     for (const [index, link] of project.data.links.entries()) {
+      if (link.kind !== 'code' && link.kind !== 'live') continue;
       resources.push({ id: `link:${project.id}:${index}`, kind: link.kind === 'code' ? 'code' : 'demo', title: `${project.data.title} · ${link.label}`, url: link.href, project: project.id });
     }
   }

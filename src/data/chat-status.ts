@@ -1,2 +1,2 @@
-/** Public assistant pause; backend has an independent fail-closed gate. */
-export const CHAT_ENABLED = false;
+/** Ask AI is enabled; the provider Worker has an independent service gate. */
+export const CHAT_ENABLED = true;

@@ -29,7 +29,7 @@ export interface ChatRequest {
   locale?: Locale;
 }
 
-export type ErrorCode = 'invalid' | 'origin' | 'method' | 'too_large' | 'type' | 'rate' | 'budget' | 'kb' | 'upstream';
+export type ErrorCode = 'invalid' | 'origin' | 'method' | 'too_large' | 'type' | 'rate' | 'budget' | 'credits' | 'kb' | 'upstream';
 export const ERROR_STATUS: Record<ErrorCode, number> = {
   invalid: 400,
   origin: 403,
@@ -38,6 +38,7 @@ export const ERROR_STATUS: Record<ErrorCode, number> = {
   type: 415,
   rate: 429,
   budget: 503,
+  credits: 503,
   kb: 503,
   upstream: 503,
 };
@@ -57,7 +58,7 @@ export type ChatEvent =
   | { event: 'delta'; data: { t: string } }
   | { event: 'block'; data: { t: string; c: string[] } }
   | { event: 'done'; data: { stop: 'end_turn' | 'max_tokens' | 'refusal'; usage: Usage } }
-  | { event: 'error'; data: { code: 'upstream' | 'kb' | 'overloaded' } };
+  | { event: 'error'; data: { code: 'upstream' | 'kb' | 'overloaded' | 'credits' | 'budget' } };
 
 /** Control characters other than a line break never reach a model. */
 const clean = (text: string) => text.replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g, '').trim();

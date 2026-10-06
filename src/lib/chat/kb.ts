@@ -10,7 +10,7 @@ import { slug, toPlain, words } from './text.ts';
 
 export interface Chunk {
   id: string;
-  kind: 'site' | 'journey' | 'publication' | 'project' | 'section' | 'media' | 'fact' | 'rollup';
+  kind: 'site' | 'journey' | 'publication' | 'project' | 'section' | 'media' | 'fact' | 'rollup' | 'document';
   /** Root-relative, with an anchor where one exists. */
   url: string;
   /** The subject, e.g. "AI Proctor", "Journey", "Research". */
@@ -24,6 +24,8 @@ export interface Chunk {
   text: string;
   triggers?: string[];
   sensitive?: boolean;
+  /** Public PDF provenance. Page numbers are one-based. */
+  document?: { id: string; page: number; sha256: string; method?: 'text' | 'ocr'; confidence?: number };
 }
 
 export interface Kb {
@@ -81,6 +83,7 @@ export interface KbSource {
   interests: string[];
   projects: KbProject[];
   factFiles: KbFact[];
+  documentChunks?: Chunk[];
 }
 
 type Raw = Record<string, unknown>;
@@ -319,6 +322,7 @@ export function buildChunks(source: KbSource): Chunk[] {
   add('rollup', 'rollup:education', JOURNEY_URL, 'Journey', 'Education', journey.filter((e) => e.kind === 'education').map(journeyLine).join('\n'));
   add('rollup', 'rollup:experience', JOURNEY_URL, 'Journey', 'Experience', journey.filter((e) => e.kind === 'work').map(journeyLine).join('\n'), ['Internships', 'Employment']);
   add('rollup', JOURNEY_ROLLUP, JOURNEY_URL, 'Journey', 'Timeline', journey.map((e) => `${e.period}: ${e.title}, ${e.organisation}, ${e.place}`).join('\n'), ['Career', 'Chronology']);
+  chunks.push(...(source.documentChunks ?? []));
   return chunks;
 }
 
@@ -344,7 +348,7 @@ const ALLOWED_NUMBERS = /WO2023186262A1|\b(?:19|20)\d{2}\b/g;
 export function privacyProblems(value: string, email: string = siteData.email): string[] {
   const problems: string[] = [];
   if (PRIVATE_PATH.test(value)) problems.push('a path into a private folder');
-  if ((value.match(MEDIA_FILE) ?? []).some((file) => !/^(?:https:\/\/[\w.-]+)?\/papers\//.test(file.replace(/^[("']+/, '')))) problems.push('a media or PDF file outside /papers/');
+  if ((value.match(MEDIA_FILE) ?? []).some((file) => !/^(?:https:\/\/[\w.-]+)?\/(?:papers\/|docs\/daniil-emtsev-cv\.pdf)/.test(file.replace(/^[("']+/, '')))) problems.push('a media or PDF file outside the public document catalog');
   if (/ethicon/i.test(value)) problems.push('the word "ethicon"');
   if (PHONE.test(value.replace(ALLOWED_NUMBERS, 'x'))) problems.push('something that looks like a phone number');
   if ((value.match(EMAIL) ?? []).some((address) => address.toLowerCase() !== email.toLowerCase())) problems.push('an email address other than the site’s');

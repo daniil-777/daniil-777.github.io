@@ -34,7 +34,10 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
   const initialMotion: WatchMotion = options.motion ?? (root.dataset.watchMotionValue === 'sweep' ? 'sweep' : root.dataset.watchMotionValue === 'tick' ? 'tick' : 'system');
   const marquee = mountMarquee(cardOutput, fitCardOutput, initialMotion);
   const abort = new AbortController();
+  const caseAnimations = new Set<Animation>();
   const on = (target: EventTarget, name: string, fn: EventListener) => target.addEventListener(name, fn, { signal: abort.signal });
+  const caseMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  on(caseMotion, 'change', () => { if (caseMotion.matches) { caseAnimations.forEach(animation => animation.cancel()); caseAnimations.clear(); } });
   const language = new WatchLanguageClient();
   const configuration = { ...options };
   let pack: FactPack | undefined, initialized = false, disposed = false, active = !compact, visible = true, attempts = 0;
@@ -56,6 +59,25 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
   let currentFacts: WatchFact[] = [];
   let answerSize = 24;
   let lastValidated = '', lastDialSentence = '', modelNote = 'The trained local model is being evaluated; reviewed sentences are available now.';
+
+  function syncCaseControls() {
+    const modeNames = { ai: 'AI', profile: 'About me', wellbeing: 'Wellbeing' };
+    root.dataset.watchModeValue = mode;
+    root.querySelectorAll<HTMLElement>('[data-watch-mode]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.watchMode === mode)));
+    root.querySelectorAll<HTMLElement>('[data-watch-mode-label]').forEach(label => { label.dataset.active = String(label.dataset.watchModeLabel === mode); });
+    const nextMode = MODES[(MODES.indexOf(mode) + 1) % MODES.length];
+    const layoutSelect = node<HTMLSelectElement>('[data-watch-thought-layout]');
+    const nextStyle = WATCH_THOUGHT_STYLES[(WATCH_THOUGHT_STYLES.indexOf(thoughtStyle) + 1) % WATCH_THOUGHT_STYLES.length];
+    const nextLayout = Array.from(layoutSelect.options).find(option => option.value === nextStyle)?.text ?? 'next face';
+    for (const [selector, label] of [
+      ['[data-watch-cycle-mode]', `Language mode: ${modeNames[mode]}. Switch to ${modeNames[nextMode]}`],
+      ['[data-watch-cycle-layout]', `Change watch face to ${nextLayout}`],
+      ['[data-watch-case-pause]', paused ? 'Resume thoughts' : 'Pause thoughts'],
+    ]) root.querySelectorAll<HTMLElement>(selector).forEach(button => { button.setAttribute('aria-label', label); button.title = label; });
+    root.querySelectorAll<HTMLElement>('[data-watch-pause]').forEach(button => button.setAttribute('aria-pressed', String(paused)));
+    root.querySelectorAll<HTMLElement>('[data-watch-pause-label]').forEach(label => { label.textContent = paused ? 'Resume' : 'Pause'; });
+  }
+  syncCaseControls();
 
   function fitCardOutput() {
     if (thoughtStyle === 'marquee') {
@@ -210,7 +232,7 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
     if (!MODES.includes(value)) return;
     mode = value; offset = 0; language.cancel(); ++sequence; answer.textContent = '';
     node<HTMLElement>('[data-watch-knowledge]').hidden = mode !== 'ai';
-    root.querySelectorAll<HTMLElement>('[data-watch-mode]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.watchMode === mode)));
+    syncCaseControls();
     void next();
   }
   function setThoughtStyle(value: WatchThoughtStyle) {
@@ -222,6 +244,7 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
     thoughtStyle = value;
     root.dataset.watchThoughtStyle = value;
     node<HTMLSelectElement>('[data-watch-thought-layout]').value = value;
+    syncCaseControls();
     marquee.setText(lastDialSentence, value === 'marquee');
     marquee.pause(paused || !active || !visible || document.hidden);
     fitCardOutput();
@@ -233,8 +256,7 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
     if (mode === 'ai') void next();
   }
   function pause(value: boolean) {
-    paused = value; node('[data-watch-pause]').setAttribute('aria-pressed', String(value));
-    node('[data-watch-pause-label]').textContent = value ? 'Resume' : 'Pause';
+    paused = value; syncCaseControls();
     language.cancel(); ++sequence; plane?.pause(value); marquee.pause(value || !active || !visible || document.hidden); due = Date.now() + interval;
   }
   function open() {
@@ -242,13 +264,48 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
     if (compact && panel instanceof HTMLDialogElement && !panel.open) panel.showModal();
     active = true; syncActivity();
   }
+  function animateCaseButton(button: HTMLElement, event?: MouseEvent) {
+    const cap = button.querySelector<HTMLElement>('.chronos__case-cap');
+    if (!cap || !cap.animate) return;
+    cap.getAnimations().forEach(animation => animation.cancel());
+    if (caseMotion.matches) return;
+    const css = getComputedStyle(button);
+    const angle = css.getPropertyValue('--case-angle').trim();
+    const travel = parseFloat(css.getPropertyValue('--case-travel'));
+    const rest = `rotate(${angle}) translateX(0px)`;
+    const pressed = `rotate(${angle}) translateX(${travel}px)`;
+    const rebound = `rotate(${angle}) translateX(${-travel * .15}px)`;
+    const release: Keyframe[] = [
+      { transform: pressed, offset: 0 },
+      { transform: rebound, offset: .72 },
+      { transform: rest, offset: 1 },
+    ];
+    const releaseOnly = Boolean(event?.detail);
+    const modeButton = button.hasAttribute('data-watch-cycle-mode');
+    const keyframes: Keyframe[] = releaseOnly ? release : [
+      { transform: rest, offset: 0 },
+      { transform: pressed, offset: .25 },
+      { transform: rebound, offset: .8 },
+      { transform: rest, offset: 1 },
+    ];
+    const duration = releaseOnly ? (modeButton ? 340 : 240) : (modeButton ? 520 : 360);
+    const animation = cap.animate(keyframes, { duration, easing: 'cubic-bezier(.22, .61, .36, 1)' });
+    caseAnimations.add(animation);
+    animation.onfinish = animation.oncancel = () => { caseAnimations.delete(animation); };
+  }
   on(root, 'click', event => {
     if (thoughtStyle === 'marquee' && (event.target as Element).closest('[data-watch-card-output]')) pause(!paused);
     const target = (event.target as Element).closest<HTMLElement>('button');
     if (!target) return;
+    if (target.classList.contains('chronos__case-button')) animateCaseButton(target, event as MouseEvent);
     if (target.hasAttribute('data-watch-open')) open();
     if (target.hasAttribute('data-watch-close') && panel instanceof HTMLDialogElement) panel.close();
-    if (target.hasAttribute('data-watch-mode')) setMode(target.dataset.watchMode as LanguageMode);
+    if (target.hasAttribute('data-watch-mode')) {
+      setMode(target.dataset.watchMode as LanguageMode);
+      animateCaseButton(node<HTMLElement>('[data-watch-cycle-mode]'));
+    }
+    if (target.hasAttribute('data-watch-cycle-mode')) setMode(MODES[(MODES.indexOf(mode) + 1) % MODES.length]);
+    if (target.hasAttribute('data-watch-cycle-layout')) setThoughtStyle(WATCH_THOUGHT_STYLES[(WATCH_THOUGHT_STYLES.indexOf(thoughtStyle) + 1) % WATCH_THOUGHT_STYLES.length]);
     if (target.hasAttribute('data-watch-next')) void next();
     if (target.hasAttribute('data-watch-pause')) pause(!paused);
     if (target.hasAttribute('data-watch-reset-learn')) plane?.resetLearning();
@@ -309,6 +366,6 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
       if (settings.showClouds !== undefined) plane?.setClouds(settings.showClouds);
       if (settings.enableOnlineLearning !== undefined) plane?.learn(settings.enableOnlineLearning);
     },
-    unmount() { if (disposed) return; disposed = true; ++sequence; abort.abort(); clearInterval(timer); observer.disconnect(); sizeObserver.disconnect(); marquee.dispose(); dial.dispose(); plane?.dispose(); void language.dispose(); if (panel instanceof HTMLDialogElement && panel.open) panel.close(); },
+    unmount() { if (disposed) return; disposed = true; ++sequence; abort.abort(); caseAnimations.forEach(animation => animation.cancel()); caseAnimations.clear(); clearInterval(timer); observer.disconnect(); sizeObserver.disconnect(); marquee.dispose(); dial.dispose(); plane?.dispose(); void language.dispose(); if (panel instanceof HTMLDialogElement && panel.open) panel.close(); },
   };
 }

@@ -37,7 +37,7 @@ describe('validateRequest', () => {
   for (const [name, body] of rejected) it(`rejects ${name}`, () => assert.equal(validateRequest(body).ok, false));
 
   it('maps every error code to its HTTP status', () => {
-    assert.deepEqual(ERROR_STATUS, { invalid: 400, origin: 403, method: 405, too_large: 413, type: 415, rate: 429, budget: 503, kb: 503, upstream: 503 });
+    assert.deepEqual(ERROR_STATUS, { invalid: 400, origin: 403, method: 405, too_large: 413, type: 415, rate: 429, budget: 503, credits: 503, kb: 503, upstream: 503 });
   });
 
   it('accepts conversation turns but rejects role injection, overlong history and malformed answers', () => {

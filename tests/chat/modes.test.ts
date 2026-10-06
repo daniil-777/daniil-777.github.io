@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { DEVICE_MODE, LOCAL_LLM } from '../../src/data/chat.ts';
+import { CLOUD_ENABLED, DEVICE_MODE, LOCAL_LLM } from '../../src/data/chat.ts';
 import { isMobile, offerModes, type Capabilities } from '../../src/lib/chat/modes.ts';
 
 const GB = 1024 ** 3;
@@ -25,10 +25,10 @@ const desktop: Capabilities = {
 const offer = (patch: Partial<Capabilities> = {}) => offerModes({ ...desktop, ...patch });
 
 describe('offerModes', () => {
-  it('ships with on-device generation switched off', () => assert.equal(DEVICE_MODE, 'off'));
+  it('offers OpenAI by default alongside consent-based local generation', () => { assert.equal(DEVICE_MODE, 'all'); assert.equal(CLOUD_ENABLED, true); });
 
   it('offers everything to a capable desktop when the owner allows it', () => {
-    assert.deepEqual(offer(), { quotes: true, cloud: true, builtin: true, webgpu: 'q4f16', semantic: true });
+    assert.deepEqual(offer(), { quotes: true, cloud: true, builtin: true, webgpu: 'q4', semantic: true });
   });
 
   it('offers no on-device generation while the mode is off, whatever the device', () => {
@@ -53,16 +53,17 @@ describe('offerModes', () => {
     ['a touch-only device', { pointerFine: false }],
   ];
   for (const [name, patch] of phones) {
-    it(`never offers on-device generation on ${name}`, () => {
+    it(`uses capability checks on ${name}, with source answers always available`, () => {
       assert.equal(isMobile({ ...desktop, ...patch }), true);
-      assert.equal(offer(patch).webgpu, false);
-      assert.equal(offer(patch).builtin, false);
+      assert.equal(offer(patch).webgpu, 'q4');
+      assert.equal(offer({ ...patch, gpuAdapter: false, builtinAvailable: false }).webgpu, false);
+      assert.equal(offer({ ...patch, deviceMemory: 4 }).webgpu, false);
       assert.equal(offer(patch).quotes, true);
     });
   }
 
-  it('does not offer the downloadable model in Firefox', () => {
-    assert.equal(offer({ userAgent: 'Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0', platform: 'Linux x86_64', uaMobile: undefined }).webgpu, false);
+  it('uses real GPU availability rather than a browser-name exclusion', () => {
+    assert.equal(offer({ userAgent: 'Mozilla/5.0 Firefox/140.0', gpuAdapter: false }).webgpu, false);
   });
 
   it('respects Save-Data and slow connections', () => {
@@ -73,16 +74,16 @@ describe('offerModes', () => {
 
   it('needs 8 GB of memory, where the browser reports it', () => {
     assert.equal(offer({ deviceMemory: 4 }).webgpu, false);
-    assert.equal(offer({ deviceMemory: undefined }).webgpu, 'q4f16');
+    assert.equal(offer({ deviceMemory: undefined }).webgpu, 'q4');
   });
 
   it('needs free storage for twice the model, and a known quota', () => {
-    assert.equal(offer({ quotaFree: 2 * LOCAL_LLM.bytes.q4f16 }).webgpu, 'q4f16');
-    assert.equal(offer({ quotaFree: 2 * LOCAL_LLM.bytes.q4f16 - 1 }).webgpu, false);
+    assert.equal(offer({ quotaFree: 2 * LOCAL_LLM.bytes.q4 }).webgpu, 'q4');
+    assert.equal(offer({ quotaFree: 2 * LOCAL_LLM.bytes.q4 - 1 }).webgpu, false);
     assert.equal(offer({ quotaFree: undefined }).webgpu, false);
   });
 
-  it('falls back to the q4 weights without shader-f16, and needs a GPU adapter at all', () => {
+  it('uses the consented float32 profile without requiring shader-f16', () => {
     assert.equal(offer({ shaderF16: false }).webgpu, 'q4');
     assert.equal(offer({ shaderF16: false, quotaFree: 2 * LOCAL_LLM.bytes.q4 - 1 }).webgpu, false);
     assert.equal(offer({ gpuAdapter: false }).webgpu, false);

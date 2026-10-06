@@ -9,6 +9,7 @@ import { site } from '../../data/site.ts';
 import type { Resource } from '../../lib/chat/resources.ts';
 import type { Progress } from './semantic.ts';
 import { createVoice } from './voice.ts';
+import { createModelSelector } from './model-selector.ts';
 
 export type Mode = keyof typeof COPY.modes;
 
@@ -42,6 +43,8 @@ export interface AnswerRecord {
 
 export interface ModeOption {
   mode: Mode;
+  label?: string;
+  description?: string;
   /** Set when the mode cannot be used for the rest of this page view. */
   disabled?: string;
 }
@@ -59,6 +62,7 @@ export interface Handlers {
 export interface Live {
   block(text: string, chips: Source[]): void;
   finish(record: AnswerRecord): void;
+  restart(mode: Mode, notice: string): void;
 }
 
 type Child = Node | string | false | undefined;
@@ -105,7 +109,9 @@ export function createView(dialog: HTMLDialogElement, built: string, handlers: H
   const live = dialog.querySelector<HTMLElement>('[data-chat-status]')!;
   const fresh = dialog.querySelector<HTMLButtonElement>('[data-chat-new]')!;
 
-  const modes = h('fieldset', { class: 'chat__modes', hidden: true });
+  const selector = createModelSelector(handlers.mode);
+  let cloudLabel = COPY.modes.cloud.label as string;
+  const modelLabel = (mode: Mode) => mode === 'cloud' ? cloudLabel : COPY.modes[mode].label;
   const smart = h('button', { class: 'chat__smart', type: 'button', hidden: true }, COPY.semantic.offer);
   const hint = h('p', { class: 'chat__hint', hidden: true });
   const log = h('div', { class: 'chat__log', role: 'log', 'aria-live': 'off', 'aria-label': 'Conversation' });
@@ -121,14 +127,15 @@ export function createView(dialog: HTMLDialogElement, built: string, handlers: H
   const form = h('form', { class: 'chat__form', 'data-chat-form': true }, h('label', { class: 'sr-only', for: 'chat-q' }, 'Your question'), input, send, count);
 
   body.replaceChildren(
-    h('div', { class: 'chat__tools' }, modes, smart, hint),
+    h('div', { class: 'chat__tools' }, smart, hint),
     scroll,
     form,
-    h('p', { class: 'chat__foot' }, `Content updated ${built}. `, h('a', { href: '/ask/#how-it-works' }, COPY.howItWorks)),
+    h('div', { class: 'chat__bottom' }, selector.element, h('p', { class: 'chat__foot' }, `Content updated ${built}. `, h('a', { href: '/ask/#how-it-works' }, COPY.howItWorks))),
   );
 
   let running = false;
   let announce = 0;
+  let replaceConsent: (() => void) | undefined;
 
   function status(text: string) {
     window.clearTimeout(announce);
@@ -167,7 +174,7 @@ export function createView(dialog: HTMLDialogElement, built: string, handlers: H
   });
   fresh.addEventListener('click', () => handlers.reset());
   smart.addEventListener('click', () => handlers.semantic());
-  modes.addEventListener('change', (event) => handlers.mode((event.target as HTMLInputElement).value as Mode));
+  dialog.addEventListener('close', () => selector.close());
   body.addEventListener('click', (event) => {
     const target = event.target as HTMLElement;
     const asked = target.closest<HTMLElement>('[data-ask]')?.dataset.ask;
@@ -190,7 +197,7 @@ export function createView(dialog: HTMLDialogElement, built: string, handlers: H
     return assistantTurn(
       false,
       h('h3', { class: 'sr-only' }, 'Answer'),
-      h('p', { class: 'turn__mode' }, COPY.modes[record.mode].label),
+      h('p', { class: 'turn__mode' }, modelLabel(record.mode)),
       record.notice && h('p', { class: 'turn__notice' }, record.notice),
       record.text.length > 0 && h('div', { class: 'turn__text', 'data-no-translate': record.mode !== 'quotes' || undefined }, ...record.text.map((text) => h('p', {}, text))),
       lead && h('div', { class: 'turn__text' }, ...lead.split(/\n+/).map((line) => h('p', {}, line))),
@@ -227,6 +234,7 @@ export function createView(dialog: HTMLDialogElement, built: string, handlers: H
     busy(on: boolean) {
       running = on;
       voice.busy(on);
+      selector.busy(on);
       send.textContent = on ? COPY.stop : COPY.send;
       send.classList.toggle('btn--primary', !on);
       send.classList.toggle('btn--quiet', on);
@@ -250,11 +258,18 @@ export function createView(dialog: HTMLDialogElement, built: string, handlers: H
       const text = h('div', { class: 'turn__text' }, h('p', { class: 'turn__writing' }, COPY.writing));
       const list = h('ul', { class: 'turn__sources', 'aria-label': 'Sources' }, ...sources.map((source) => h('li', {}, chip(source))));
       const shown = new Set(sources.map((source) => source.url));
-      const turn = assistantTurn(true, h('h3', { class: 'sr-only' }, 'Answer'), h('p', { class: 'turn__mode' }, COPY.modes[mode].label), text, list);
+      const label = h('p', { class: 'turn__mode' }, modelLabel(mode));
+      const notice = h('p', { class: 'turn__notice', hidden: true });
+      const turn = assistantTurn(true, h('h3', { class: 'sr-only' }, 'Answer'), label, notice, text, list);
       let first = true;
       log.append(turn);
       reveal();
       return {
+        restart(next, message) {
+          first = true; shown.clear(); list.replaceChildren();
+          label.textContent = modelLabel(next); notice.hidden = false; notice.textContent = message;
+          text.replaceChildren(h('p', { class: 'turn__writing' }, COPY.writing));
+        },
         block(block, cited) {
           if (first) text.replaceChildren();
           // The quotes' sources were a promise; from the first block on, only what the answer cites stays.
@@ -281,20 +296,9 @@ export function createView(dialog: HTMLDialogElement, built: string, handlers: H
       fresh.hidden = true;
     },
 
-    /** The switch is drawn only when there is something to choose. */
     modes(options: ModeOption[], current: Mode) {
-      modes.hidden = options.length < 2;
-      modes.replaceChildren(
-        h('legend', { class: 'sr-only' }, COPY.modesLegend),
-        ...options.map(({ mode, disabled }) =>
-          h(
-            'label',
-            { class: 'chat__mode' },
-            h('input', { type: 'radio', name: 'chat-mode', value: mode, checked: mode === current, disabled: disabled !== undefined }),
-            h('span', {}, COPY.modes[mode].option, disabled !== undefined && h('small', {}, ` · ${disabled}`)),
-          ),
-        ),
-      );
+      cloudLabel = options.find(option => option.mode === 'cloud')?.label === 'Local server' ? 'Local server · grounded in the portfolio' : COPY.modes.cloud.label;
+      selector.update(options, current);
     },
 
     semanticOffer(show: boolean) {
@@ -309,16 +313,24 @@ export function createView(dialog: HTMLDialogElement, built: string, handlers: H
       hint.replaceChildren(text, ...(button ? [button] : []));
       hint.hidden = !text && !action;
     },
+    cancelConsent() { replaceConsent?.(); },
 
     /**
      * Asks before a download. On "yes" the row shows the progress of `run` and a
      * Cancel button that aborts it; it goes away when `run` settles.
      */
     consent(copy: { consent: string; accept: string; decline: string }, run: (progress: Progress, signal: AbortSignal) => Promise<void>, declined: () => void = () => {}) {
+      replaceConsent?.();
+      let current = true;
+      let control: AbortController | undefined;
       const close = () => {
+        if (!current) return;
+        current = false;
+        replaceConsent = undefined;
         consent.hidden = true;
         consent.replaceChildren();
       };
+      replaceConsent = () => { close(); control?.abort(); declined(); };
       const accept = h('button', { class: 'btn btn--primary btn--small', type: 'button' }, copy.accept);
       const decline = h('button', { class: 'btn btn--quiet btn--small', type: 'button' }, copy.decline);
       decline.addEventListener('click', () => {
@@ -327,23 +339,29 @@ export function createView(dialog: HTMLDialogElement, built: string, handlers: H
         input.focus();
       });
       accept.addEventListener('click', () => {
-        const control = new AbortController();
+        if (control) return;
+        control = new AbortController();
+        const closed = () => control?.abort();
+        dialog.addEventListener('close', closed, { once: true });
         const bar = h('progress', { max: '1', 'aria-label': 'Download' });
         const amount = h('span', { class: 'chat__amount' });
         const cancel = h('button', { class: 'btn btn--quiet btn--small', type: 'button' }, 'Cancel');
-        cancel.addEventListener('click', () => control.abort());
+        cancel.addEventListener('click', () => control?.abort());
         let step = 0;
         consent.replaceChildren(h('p', {}, bar, amount), h('p', { class: 'chat__choice' }, cancel));
         cancel.focus();
-        run((loaded, total) => {
+        Promise.resolve().then(() => run((loaded, total) => {
+          if (!current) return;
           bar.value = total ? loaded / total : 0;
           amount.textContent = `${(loaded / 1e6).toFixed(0)} of ${(total / 1e6).toFixed(0)} MB`;
           // Announced at quarters, not at every chunk.
           const quarter = Math.floor((bar.value * 100) / 25);
           if (quarter > step) this.status(`Downloaded ${(step = quarter) * 25}%`);
-        }, control.signal).finally(() => {
+        }, control!.signal)).catch(() => {}).finally(() => {
+          dialog.removeEventListener('close', closed);
+          if (!current) return;
           close();
-          input.focus();
+          if (dialog.open) input.focus();
         });
       });
       consent.replaceChildren(h('p', {}, copy.consent), h('p', { class: 'chat__choice' }, accept, decline));

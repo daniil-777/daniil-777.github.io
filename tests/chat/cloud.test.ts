@@ -92,6 +92,7 @@ describe('cloud generator', () => {
     assert.equal(await reasonOf(new Response('Too many requests', { status: 429 })), 'busy');
     assert.equal(await reasonOf(failure(503, 'rate')), 'busy');
     assert.equal(await reasonOf(failure(503, 'budget')), 'budget');
+    assert.equal(await reasonOf(failure(429, 'credits')), 'credits');
     assert.equal(await reasonOf(failure(503, 'upstream')), 'failed');
     assert.equal(await reasonOf(new Response('<html>Bad gateway</html>', { status: 502 })), 'failed');
     assert.equal(await reasonOf(new Response('{"ok":true}', { status: 200, headers: { 'Content-Type': 'application/json' } })), 'failed');
@@ -99,6 +100,8 @@ describe('cloud generator', () => {
   });
 
   it('reports an error sent inside the stream', async () => {
+    assert.equal(await reasonOf(streamed([recorded[0], { event: 'error', data: { code: 'credits' } }], 16)), 'credits');
+    assert.equal(await reasonOf(streamed([recorded[0], { event: 'error', data: { code: 'budget' } }], 16)), 'budget');
     assert.equal(await reasonOf(streamed([recorded[0], { event: 'error', data: { code: 'overloaded' } }], 16)), 'busy');
     assert.equal(await reasonOf(streamed([recorded[0], recorded[2], { event: 'error', data: { code: 'upstream' } }], 16)), 'failed');
   });

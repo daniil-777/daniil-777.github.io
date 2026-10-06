@@ -10,6 +10,7 @@ import { EMBED, VECTORS_HEADER, encodeVectors, quantise, type Embedder } from '.
 import { createBuildEmbedder } from './embed-node';
 import { assertPublic, buildKb, splitSections, toKbFact, toKbProject, type Kb } from './kb';
 import { displayTitle } from './text';
+import { loadDocumentChunks } from './documents-node';
 
 async function build(): Promise<Kb> {
   const projects = await getProjects();
@@ -33,6 +34,7 @@ async function build(): Promise<Kb> {
       awards,
       skills,
       interests,
+      documentChunks: loadDocumentChunks(),
       projects: projects.map((project) => toKbProject(project.id, project.data, project.body ?? '')),
       factFiles: factFiles.map((fact) => toKbFact(fact.id, fact.data, fact.body ?? '')),
     },

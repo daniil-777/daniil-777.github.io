@@ -52,18 +52,19 @@ export function isMobile(caps: Pick<Capabilities, 'uaMobile' | 'userAgent' | 'pl
 }
 
 export function offerModes(caps: Capabilities): Offer {
-  const mobile = isMobile(caps);
   const metered = caps.saveData === true;
   const slow = /^(?:slow-)?2g$|^3g$/.test(caps.effectiveType ?? '');
   let webgpu: Offer['webgpu'] = false;
-  if (caps.deviceMode === 'all' && caps.gpuAdapter && !mobile && !/Firefox/i.test(caps.userAgent) && !metered && (caps.deviceMemory === undefined || caps.deviceMemory >= 8)) {
-    const variant = caps.shaderF16 ? 'q4f16' : 'q4';
+  if (caps.deviceMode === 'all' && caps.gpuAdapter && !metered && !slow && (caps.deviceMemory === undefined || caps.deviceMemory >= 8)) {
+    // Float32 activations avoid depending on half-precision shader quality.
+    // Capability checks apply to phones and PCs alike; loading still runs a quality probe.
+    const variant = 'q4';
     if (caps.quotaFree !== undefined && caps.quotaFree >= 2 * caps.modelBytes[variant]) webgpu = variant;
   }
   return {
     quotes: true,
     cloud: caps.hasEndpoint,
-    builtin: caps.deviceMode !== 'off' && caps.builtinAvailable && !mobile,
+    builtin: caps.deviceMode !== 'off' && caps.builtinAvailable,
     webgpu,
     semantic: !metered && !slow,
   };

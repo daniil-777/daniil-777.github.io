@@ -6,13 +6,13 @@
   "compatibility_date": "2026-10-01",
   // Store the key as a server secret: `npx wrangler secret put OPENAI_API_KEY`.
   "vars": {
-    "CHAT_ENABLED": "false",
+    "CHAT_ENABLED": "true",
     "CHAT_PROVIDER": "openai",
     "CHAT_MODEL": "gpt-6-luna",
     "ALLOWED_ORIGINS": "https://demtsev.com,https://www.demtsev.com",
     "KB_URL": "https://demtsev.com/chat/kb.json",
     // Global requests per UTC day. Set to your acceptable usage; keep a provider billing budget too.
-    "DAILY_LIMIT": "0"
+    "DAILY_LIMIT": "100"
   },
   "ratelimits": [
     // Per visitor address.

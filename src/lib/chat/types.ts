@@ -14,5 +14,8 @@ export interface Generator {
   id: 'cloud' | 'builtin' | 'webgpu';
   /** Hosted conversational answers can explain general concepts as well as cite personal facts. */
   conversational?: boolean;
+  /** Emits actual source IDs instead of relying on word-overlap attribution. */
+  citesSources?: boolean;
+  timeoutMs?: number;
   generate(input: { question: string; prev: string[]; history?: HistoryTurn[]; chunks: Chunk[]; locale?: Locale }, signal: AbortSignal): AsyncIterable<GenEvent>;
 }

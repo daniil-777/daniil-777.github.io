@@ -137,6 +137,9 @@ async function startWorker(stubUrl, overrides = {}, port = 0) {
     ...overrides,
   };
   const server = http.createServer(async (incoming, outgoing) => {
+    // Canceling a capped Node request body closes its socket. Each fixture request
+    // uses its own connection so a later case cannot reuse that closed socket.
+    outgoing.setHeader('Connection', 'close');
     const hasBody = incoming.method !== 'GET' && incoming.method !== 'HEAD';
     const request = new Request(`http://${incoming.headers.host}${incoming.url}`, {
       method: incoming.method,

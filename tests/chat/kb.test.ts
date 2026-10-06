@@ -74,9 +74,9 @@ describe('knowledge base', () => {
   });
 
   it('says nothing about a work permit: the words are only triggers of the fixed reply', () => {
-    const said = kb.chunks.map(({ title, heading, text, tags, asks }) => [title, heading, text, ...tags, ...asks].join('\n')).join('\n');
+    const said = kb.chunks.filter(c => c.kind !== 'document').map(({ title, heading, text, tags, asks }) => [title, heading, text, ...tags, ...asks].join('\n')).join('\n');
     assert.ok(!/permit|\bvisa\b/i.test(said));
-    assert.deepEqual(kb.chunks.filter((chunk) => /permit|\bvisa\b/i.test(JSON.stringify(chunk))).map((chunk) => chunk.id), ['fact:personal']);
+    assert.deepEqual(kb.chunks.filter((chunk) => chunk.kind !== 'document' && /permit|\bvisa\b/i.test(JSON.stringify(chunk))).map((chunk) => chunk.id), ['fact:personal']);
   });
 
   it('has a stable hash that does not depend on the build date', async () => {

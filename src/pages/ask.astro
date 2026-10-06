@@ -25,12 +25,12 @@ const declined = facts.filter((fact) => fact.sensitive);
       <header class="section__head">
         <p class="eyebrow">Ask AI</p>
         <h1 class="h2">Let’s explore the work.</h1>
-        <p class="lead" data-no-translate>The interactive assistant is temporarily paused. Browse the answers below, or get in touch through the contact section.</p>
+        <p class="lead">Explore Daniil’s experience, compare a role, and find his CV and projects. Choose OpenAI or our local model below the chat.</p>
         <p class="ask__cta">
           <!-- On this page the fallback is the answers below, not the page itself. -->
-          <button class="btn btn--primary" type="button" disabled data-chat-paused data-no-translate>Assistant paused</button>
+          <a class="btn btn--primary" href="#answers" data-chat-open>Ask about Daniil</a>
         </p>
-        <p class="muted ask__cta" data-no-translate>The answers below remain available.</p>
+        <p class="muted ask__cta">You can also browse the answers below.</p>
       </header>
 
       <div id="answers">

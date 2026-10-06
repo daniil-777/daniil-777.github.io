@@ -18,13 +18,15 @@ export const SUGGESTED = [
  * evaluation in the README passes; `builtin` allows only the browser's own
  * model, `all` also the downloadable one.
  */
-export const DEVICE_MODE: 'off' | 'builtin' | 'all' = 'off';
+export const DEVICE_MODE: 'off' | 'builtin' | 'all' = 'all';
+/** OpenAI is the default; visitors can select local inference instead. */
+export const CLOUD_ENABLED = true;
 
 export const LOCAL_LLM = {
   id: 'LiquidAI/LFM2.5-1.2B-Instruct-ONNX',
   revision: '10f72e70abf67ac0fd7ebf15bc5854726891d864',
   dtype: { f16: 'q4f16', fallback: 'q4' },
-  bytes: { q4f16: 760_300_000, q4: 850_100_000 },
+  bytes: { q4f16: 768_000_000, q4: 854_000_000 },
 } as const;
 
 export const COPY = {
@@ -38,8 +40,8 @@ export const COPY = {
   modesLegend: 'Answer with',
   modes: {
     quotes: { option: 'Portfolio search', label: 'From the portfolio' },
-    cloud: { option: 'AI conversation', label: 'AI assistant · grounded in the portfolio' },
-    device: { option: 'On this device', label: 'Generated on your device' },
+    cloud: { option: 'OpenAI', label: 'OpenAI · grounded in the portfolio' },
+    device: { option: 'Our local model', label: 'Our local model · on your device' },
   },
   writing: 'Writing an answer…',
   cutShort: '(answer cut short)',
@@ -68,20 +70,24 @@ export const COPY = {
     cloudFailed: 'The AI service is temporarily unavailable. Here is what the portfolio supports; you can try again.',
     cloudBusy: 'The AI service is busy. Here is what the portfolio supports; please try again shortly.',
     budget: 'Daily limit reached',
+    credits: 'OpenAI credits or billing limit reached. Switching to our local model.',
+    localFallback: 'The AI usage limit was reached. Switching to our local model.',
+    localUnavailable: 'Our local model cannot run on this device. Showing the public portfolio instead.',
     unverified: 'The AI answer could not be verified against the site. Showing passages instead.',
     semanticFailed: 'Smarter search could not be loaded. Keyword search is still active.',
     deviceFailed: 'The on-device model could not run here.',
   },
   semantic: {
-    offer: 'Smarter search (downloads about 30 MB)',
+    offer: 'Smarter search (downloads about 50 MB)',
     consent:
-      'Smarter search downloads a 23 MB language model and its runtime (about 30 MB in total) from huggingface.co and cdn.jsdelivr.net. It then runs on your device and is cached by your browser.',
+      'Smarter search downloads a 23 MB language model from huggingface.co and its runtime from this website (about 50 MB in total). It runs on your device and is cached by your browser. Questions stay here.',
     accept: 'Download',
     decline: 'Not now',
   },
   device: {
+    unavailable: 'Requires a supported device with enough memory and storage',
     consent:
-      'Download a 760 MB model from huggingface.co (runtime from cdn.jsdelivr.net) to write answers on this device. Stored in this browser; you can remove it at any time.',
+      'Download the local language model (about 885 MB including the runtime) from huggingface.co. It runs on this device, so questions stay here. Personal answers use public sources; rejected generation falls back to portfolio passages. The first load can take a few minutes. The model is cached in this browser and can be removed.',
     accept: 'Download',
     decline: 'Cancel',
     remove: 'Remove downloaded model',

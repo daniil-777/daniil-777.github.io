@@ -34,6 +34,14 @@ test('configuration, hidden paths and encoded probes are blocked; public assets 
   for (const path of ['/.env', '/.git/config', '/%2eenv', '/%252eenv', '/worker/wrangler.jsonc', '/src/data/chat.ts', '/me/about.txt', '/node_modules/foo', '/package-lock.json', '/AGENTS.md', '/wp-login.php', '/xmlrpc.php', '/%xx']) assert.equal(privatePath(path), true, path);
   for (const path of ['/', '/smart-watch/', '/watch/facts.v1.json', '/docs/daniil-emtsev-cv.pdf', '/.well-known/security.txt', '/architecture/model/config.json']) assert.equal(privatePath(path), false, path);
 });
+test('chat CSP allows only the configured service; loopback access is confined to development', () => {
+  const production = secureHeaders({}).get('content-security-policy')!;
+  assert.ok(production.includes('https://demtsev-chat.demtsev-com.workers.dev'));
+  assert.ok(!production.includes('localhost') && !production.includes('127.0.0.1') && !production.includes('api.openai.com'));
+  const preview = secureHeaders({}, '/', { localChat: true }).get('content-security-policy')!;
+  assert.ok(preview.includes('http://127.0.0.1:8787') && preview.includes('http://localhost:8788'));
+  assert.ok(!preview.includes('http://127.0.0.1:*') && !preview.includes('https:;'));
+});
 
 test('gateway rejects probes, disallowed methods and excessive traffic before upstream work', async t => {
   let upstreamCalls = 0;
@@ -80,22 +88,14 @@ test('gateway keeps HEAD/range behavior, strips credentials and protects redirec
   assert.ok(!(await failed.text()).includes('private upstream failure'));
 });
 
-test('published home and answers page freeze every public Ask AI trigger', () => {
-  assert.match(readFileSync('src/data/chat-status.ts', 'utf8'), /CHAT_ENABLED = false/);
-  assert.match(readFileSync('worker/wrangler.jsonc', 'utf8'), /"CHAT_ENABLED": "false"/);
-  assert.match(readFileSync('worker/wrangler.jsonc', 'utf8'), /"DAILY_LIMIT": "0"/);
+test('Ask AI and its provider are enabled with a bounded daily allowance', () => {
+  assert.match(readFileSync('src/data/chat-status.ts', 'utf8'), /CHAT_ENABLED = true/);
+  assert.match(readFileSync('worker/wrangler.jsonc', 'utf8'), /"CHAT_ENABLED": "true"/);
+  assert.match(readFileSync('worker/wrangler.jsonc', 'utf8'), /"DAILY_LIMIT": "100"/);
   for (const path of ['build/index.html', 'build/ask/index.html']) {
     const html = readFileSync(path, 'utf8');
-    assert.ok(!html.includes('data-chat-open'), path);
-    assert.ok(!html.includes('id="chat-dialog"'), path);
-    assert.match(html, /<button[^>]*disabled[^>]*data-chat-paused/);
-    assert.ok(html.includes('temporarily paused') || html.includes('Assistant paused'));
+    assert.ok(html.includes('data-chat-open'), path);
+    assert.ok(html.includes('data-chat-dialog'), path);
+    assert.ok(!html.includes('data-chat-paused'), path);
   }
-});
-
-test('book model downloads have a narrow CDN allowlist without cloud chat or local services', () => {
-  const csp = secureHeaders(new Headers(), '/').get('Content-Security-Policy')!;
-  const connect = csp.split(';').find(rule => rule.trim().startsWith('connect-src'))!.trim();
-  assert.equal(connect, "connect-src 'self' https://huggingface.co https://us.aws.cdn.hf.co");
-  assert.ok(!csp.includes('demtsev-chat') && !csp.includes('127.0.0.1') && !csp.includes('localhost'));
 });

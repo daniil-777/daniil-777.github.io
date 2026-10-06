@@ -46,9 +46,13 @@ export function startWorker(): LocalWorker {
 
 /** Sends the load message and waits for the model. Rejects on an error, a stalled download, or `signal`. */
 export function loadModel(worker: LocalWorker, message: ToWorker, onProgress: Progress, signal: AbortSignal): Promise<void> {
+  if (signal.aborted) return Promise.reject(new DOMException('cancelled', 'AbortError'));
   return new Promise((resolve, reject) => {
     let stall = 0;
+    let settled = false;
     const finish = (error?: Error) => {
+      if (settled) return;
+      settled = true;
       window.clearTimeout(stall);
       unlisten();
       signal.removeEventListener('abort', cancel);
@@ -69,7 +73,7 @@ export function loadModel(worker: LocalWorker, message: ToWorker, onProgress: Pr
     });
     signal.addEventListener('abort', cancel);
     watch();
-    worker.send(message);
+    try { worker.send(message); } catch (error) { finish(error instanceof Error ? error : new Error(String(error))); }
   });
 }
 

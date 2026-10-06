@@ -47,6 +47,7 @@ const page = (url: string) => url.split('#')[0];
 
 /** A link that scrolls to the quoted sentence in browsers that support text fragments. */
 function quoteUrl(url: string, quote: string): string {
+  if (/\.pdf(?:#|$)/.test(url)) return url;
   const start = words(quote).slice(0, 6).join(' ').replace(/[.,;:!?]+$/, '');
   return `${url}${url.includes('#') ? '' : '#'}:~:text=${encodeURIComponent(start).replace(/-/g, '%2D')}`;
 }
@@ -160,6 +161,15 @@ export function composeExtractive(question: string, ranked: Ranked, confidence: 
 
   const triggered = matchTrigger(question, chunks);
   if (triggered) return done(triggered.sensitive ? 'declined' : 'faq', triggered.text, [triggered], [passage(triggered, [])], 'ok');
+  // A patent header's "WO" must not turn a weak German question into a match.
+  if (confidence !== 'ok' && looksForeign(question)) return done('none', COPY.lead.englishOnly, [], [], 'none');
+  if (/\bprojects\b/i.test(question) && /^(?:which|list|show|give me|what are)\b/i.test(question)) {
+    const generic = new Set(['project', 'run', 'use', 'work', 'build', 'built', 'feature']);
+    const constraints = ranked.terms.filter(term => !generic.has(term.term));
+    const topic = chunks.find(chunk => chunk.id.startsWith('rollup:topic:') && constraints.length && constraints.every(term => term.matches.some(match => tokenise(chunk.heading).includes(match))));
+    const rollup = topic ?? (constraints.length === 0 ? chunks.find(chunk => chunk.id === 'rollup:projects') : undefined);
+    if (rollup) return done('list', COPY.lead.list, [rollup], [passage(rollup, [])], 'ok');
+  }
 
   // A fixed reply for a private topic is an answer or nothing: never a passage next to another answer.
   const top = ranked.top.filter((i, rank) => !chunks[i].sensitive || (rank === 0 && direct(chunks[i], ranked.terms)));

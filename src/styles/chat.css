@@ -1,4 +1,5 @@
 @import './voice.css';
+@import './chat-models.css';
 
 /*
  * The "Ask AI" dialog. Imported by src/scripts/chat/main.ts, so it is only
@@ -90,61 +91,6 @@
 
 .chat__tools:not(:has(> :not([hidden]))) {
   display: none;
-}
-
-.chat__modes {
-  display: flex;
-  margin: 0;
-  padding: 3px;
-  border: 0;
-  border-radius: 980px;
-  background: var(--field);
-}
-
-.chat__mode {
-  position: relative;
-  cursor: pointer;
-}
-
-/* The radio itself stays in place for the keyboard and for screen readers; the label is what is seen. */
-.chat__mode input {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  opacity: 0;
-  cursor: inherit;
-}
-
-.chat__mode span {
-  display: flex;
-  align-items: center;
-  min-height: 30px;
-  padding: 0 14px;
-  border-radius: 980px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-2);
-}
-
-.chat__mode input:checked + span {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 0 0 1px var(--line);
-}
-
-.chat__mode input:focus-visible + span {
-  outline: 3px solid color-mix(in srgb, var(--accent) 70%, transparent);
-  outline-offset: 1px;
-}
-
-.chat__mode input:disabled + span {
-  opacity: 0.55;
-  cursor: default;
-}
-
-.chat__mode small {
-  font-size: inherit;
-  font-weight: 400;
 }
 
 .chat__smart {
@@ -244,6 +190,7 @@
 .turn__text {
   display: grid;
   gap: 8px;
+  white-space: pre-wrap;
 }
 
 .turn__mode,
@@ -395,7 +342,6 @@
 /* Fingers need a larger target than a pointer does. */
 @media (pointer: coarse) {
   .chat .chip,
-  .chat__mode span,
   .chat__smart {
     min-height: 44px;
   }

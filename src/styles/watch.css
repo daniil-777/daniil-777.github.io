@@ -26,21 +26,65 @@
   color: var(--text);
 }
 .chronos__instrument { display: flex; flex-direction: column; align-items: center; min-width: 0; container-type: inline-size; }
+.chronos__watch-stage {
+  width: min(100%, calc(var(--watch-diameter) + 104px));
+  padding-inline: clamp(64px, 19cqi, 76px) 20px; box-sizing: border-box;
+}
 .chronos__watch {
-  width: min(100%, var(--watch-diameter));
+  width: 100%; max-width: var(--watch-diameter); margin-inline: auto;
   aspect-ratio: 1;
   position: relative;
   isolation: isolate;
   margin-block: 16px 20px;
 }
-.chronos__face { width: 100%; height: 100%; position: relative; z-index: 1; overflow: visible; filter: drop-shadow(0 14px 17px #00000024); }
-.chronos__crown {
-  position: absolute; left: 97%; top: 46%; width: 5.2%; height: 8%;
-  border-radius: 2px 5px 5px 2px;
-  background: repeating-linear-gradient(0deg, #69767b 0 1px, #cbd3d5 1px 3px, #919b9e 3px 4px);
-  box-shadow: inset 0 0 3px #303d40;
-  z-index: 0;
+.chronos__face { width: 100%; height: 100%; position: relative; z-index: 1; overflow: visible; pointer-events: none; filter: drop-shadow(0 14px 17px #00000024); }
+.chronos__case-button {
+  --case-angle: 32deg;
+  --case-travel: 3.5px;
+  position: absolute; z-index: 0; display: grid; place-items: center;
+  width: 44px; height: 44px; padding: 0; border: 0; border-radius: 12px;
+  background: transparent; cursor: pointer; transform: translate(-50%, -50%);
+  -webkit-tap-highlight-color: transparent;
 }
+.chronos__case-button--top-left { --case-press-duration: .18s; left: 8%; top: 24%; }
+.chronos__case-button--top-right { --case-angle: -32deg; --case-travel: -3.5px; left: 92%; top: 24%; }
+.chronos__case-button--bottom-left { --case-angle: -32deg; left: 8%; top: 76%; }
+.chronos__case-button--bottom-right { --case-travel: -3.5px; left: 92%; top: 76%; }
+.chronos__case-cap {
+  width: clamp(19px, 6.3cqi, 27px); height: clamp(25px, 8cqi, 34px);
+  border: 1px solid #718084; border-radius: 5px;
+  background: linear-gradient(90deg, #7c898d, #dce3e4 24%, #a7b3b7 54%, #647176);
+  box-shadow: inset 0 1px 1px #ffffffb3, inset 0 -2px 2px #23323966, 0 2px 3px #00000026;
+  position: relative; transform: rotate(var(--case-angle)) translateX(0);
+  transition: transform var(--case-press-duration, .12s) cubic-bezier(.2, .8, .2, 1), filter .16s ease, box-shadow .16s ease;
+}
+.chronos__case-cap::after {
+  content: ''; position: absolute; inset: 3px 4px; border-radius: 2px;
+  background: repeating-linear-gradient(0deg, #43505545 0 1px, #eef3f140 1px 2px, transparent 2px 4px);
+}
+.chronos__case-button:hover .chronos__case-cap { filter: brightness(1.12); }
+.chronos__case-button:active .chronos__case-cap {
+  transform: rotate(var(--case-angle)) translateX(var(--case-travel));
+  filter: brightness(.9); box-shadow: inset 0 1px 3px #26383b80, 0 1px 1px #0000001a;
+}
+.chronos__case-button:focus-visible { outline: 2px solid var(--link, #456f90); outline-offset: 2px; }
+.chronos__case-button[aria-pressed='true'] .chronos__case-cap { filter: brightness(.82); }
+.chronos__case-modes {
+  display: flex; flex-direction: column; align-items: flex-start; width: max-content; position: absolute; z-index: 3;
+  right: calc(100% + 12px); top: 24%; transform: translateY(-50%); gap: 0;
+}
+.chronos__case-modes button {
+  display: flex; align-items: center; gap: 6px; width: 100%; min-width: 60px; min-height: 40px;
+  padding: 0 2px; border: 0; border-radius: 6px; background: transparent; cursor: pointer;
+  color: var(--text-2); font: 450 clamp(10px, 2.8cqi, 12px)/14px var(--watch-font);
+  text-align: left; white-space: nowrap; touch-action: manipulation;
+  transition: color .16s ease, background-color .16s ease;
+}
+.chronos__case-modes button::before { content: ''; width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: 0; }
+.chronos__case-modes button[data-active='true'] { color: var(--text); }
+.chronos__case-modes button[data-active='true']::before { opacity: 1; }
+.chronos__case-modes button:hover { color: var(--text); background-color: color-mix(in srgb, var(--text) 5%, transparent); }
+.chronos__case-modes button:focus-visible { outline: 2px solid var(--link, #456f90); outline-offset: 1px; }
 .chronos__numerals { font-size: var(--watch-numeral-size); font-weight: 450; font-variant-numeric: tabular-nums; letter-spacing: -.8px; }
 .chronos [data-watch-hand='hour'], .chronos [data-watch-hand='minute'] { opacity: .45; }
 .chronos [data-watch-hand='second'] { opacity: .65; }
@@ -200,12 +244,11 @@
 .chronos[data-watch-marquee-static='true'] .chronos__marquee-window { overflow-x: auto; mask-image: none; scrollbar-width: none; }
 .chronos[data-watch-marquee-static='true'] [data-watch-marquee-track]::after { display: none; }
 
-/* Polished, full-length hands belong to the classic scrolling face. */
-.chronos[data-watch-thought-style='marquee'] [data-watch-hand='hour'],
-.chronos[data-watch-thought-style='marquee'] [data-watch-hand='minute'] { opacity: .9; }
-.chronos[data-watch-thought-style='marquee'] [data-watch-hand='hour'] > g { transform: translate(220px, 220px) scale(1.65) translate(-220px, -220px); }
-.chronos[data-watch-thought-style='marquee'] [data-watch-hand='minute'] > g { transform: translate(220px, 220px) scale(1.85) translate(-220px, -220px); }
-.chronos[data-watch-thought-style='marquee'] [data-watch-hand='second'] { opacity: .8; }
-.chronos[data-watch-thought-style='marquee'] .chronos__hands > circle { opacity: 1; }
+/* Slender, faceted steel hands on the scrolling face. */
+.chronos__scrolling-hands { display: none; }
+.chronos[data-watch-thought-style='marquee'] .chronos__hands { display: none; }
+.chronos[data-watch-thought-style='marquee'] .chronos__scrolling-hands { display: block; filter: drop-shadow(0 1px 1px #0008); }
+.chronos[data-watch-thought-style='marquee'] .chronos__scrolling-hands [data-watch-hand='hour'],
+.chronos[data-watch-thought-style='marquee'] .chronos__scrolling-hands [data-watch-hand='minute'] { opacity: .95; }
+.chronos[data-watch-thought-style='marquee'] .chronos__scrolling-hands [data-watch-hand='second'] { opacity: .72; }
 .chronos[data-watch-thought-style='marquee'] .chronos__layered-label { display: none; }
-.chronos[data-watch-thought-style='marquee'] [data-watch-dial] [data-watch-hand='second'] > :is(path, circle) { transform: translate(220px, 220px) scale(1.28) translate(-220px, -220px); }

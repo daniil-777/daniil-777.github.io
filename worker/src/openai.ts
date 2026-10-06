@@ -2,6 +2,7 @@
 import type { Chunk } from '../../src/lib/chat/kb.ts';
 import { MAX_TOKENS, SYSTEM_PROMPT, buildQuestionBlock } from '../../src/lib/chat/prompt.ts';
 import type { ChatEvent, Usage } from '../../src/lib/chat/protocol.ts';
+import { openAIError, openAIHttpError } from './openai-errors.ts';
 
 export type OpenAIEvent = ChatEvent;
 
@@ -192,8 +193,7 @@ export async function* streamOpenAI(input: OpenAIInput, fetcher: typeof fetch = 
     });
     abort(input.signal);
     if (!response.ok || !response.body || !/^text\/event-stream/i.test(response.headers.get('Content-Type') ?? '')) {
-      await response.body?.cancel().catch(() => {});
-      yield { event: 'error', data: { code: response.status === 429 ? 'overloaded' : 'upstream' } };
+      yield { event: 'error', data: { code: await openAIHttpError(response) } };
       return;
     }
     for await (const event of readEvents(response.body, input.signal)) {
@@ -236,8 +236,8 @@ export async function* streamOpenAI(input: OpenAIInput, fetcher: typeof fetch = 
         yield { event: 'done', data: { stop: refused || reason === 'content_filter' ? 'refusal' : reason === 'max_output_tokens' ? 'max_tokens' : 'end_turn', usage: usageOf(result) } };
         return;
       } else if (event.type === 'error' || event.type === 'response.failed') {
-        const code = event.code ?? record(record(event.response)?.error)?.code;
-        yield { event: 'error', data: { code: code === 'rate_limit_exceeded' || code === 'rate_limit_error' ? 'overloaded' : 'upstream' } };
+        const error = record(event.error) ?? record(record(event.response)?.error) ?? event;
+        yield { event: 'error', data: { code: openAIError(error) } };
         return;
       }
     }

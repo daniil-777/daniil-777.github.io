@@ -9,7 +9,9 @@ import { guardBlock, guardConversationBlock, isAbstention, newGuardState } from 
 import { JOURNEY_ROLLUP, JOURNEY_URL, type Chunk } from '../../lib/chat/kb.ts';
 import { PREV_MAX, HISTORY_MAX, HISTORY_ANSWER_MAX, HISTORY_CHARS_MAX, type HistoryTurn } from '../../lib/chat/protocol.ts';
 import { confidence, topK } from '../../lib/chat/retrieve.ts';
-import type { Generator } from '../../lib/chat/types.ts';
+import type { Generator, GenEvent } from '../../lib/chat/types.ts';
+import type { Resource } from '../../lib/chat/resources.ts';
+import { refersToPrevious } from '../../lib/chat/context.ts';
 
 /** The first sign of life must arrive within this time. */
 export const FIRST_EVENT_MS = 15_000;
@@ -20,8 +22,6 @@ export const SHARED_TERMS_MIN = 3;
 
 /** Words that point back at the previous answer. "He" and "his" do not: they always mean Daniil. */
 const REFERS_BACK = /\b(?:it|its|they|them|their|there)\b/i;
-/** A question that opens like this continues the previous one: "and the result?", "what about the stack?". */
-const CONTINUES = /^\s*(?:and|or|but|so|also|what about|how about)\b/i;
 /** "And before that?": the earlier steps of the timeline. */
 const EARLIER = /\b(?:before|earlier|previous|previously|prior)\b/i;
 
@@ -36,7 +36,7 @@ export interface Last {
  * The keyword search for one question of a conversation. A question is first
  * taken as it stands. The subject of the previous answer is added only when
  * the new one points back ("What is its stack?"), continues it ("and the
- * result?") or matches nothing at all by itself ("And why?"), so a question
+ * result?") or explicitly requests elaboration, so a question
  * on another subject is never bent towards the last topic.
  */
 export function searchInContext(index: Index, question: string, last: Last | undefined, subjects: Set<string>, chunks: Chunk[] = []): { query: string; result: SearchResult } {
@@ -46,8 +46,8 @@ export function searchInContext(index: Index, question: string, last: Last | und
   // "And his hobbies?" is answered by a fact or a list of its own; "and the result?" is not.
   const answered = first !== undefined && (direct(first, alone.terms) || (first.kind === 'rollup' && confidence(alone) === 'ok'));
   const named = tokenise(question).some((term) => subjects.has(term));
-  const leans = !named && (REFERS_BACK.test(question) || (CONTINUES.test(question) && !answered));
-  if (!leans && confidence(alone) !== 'none') return { query: question, result: alone };
+  const leans = !named && (REFERS_BACK.test(question) || (refersToPrevious(question) && !answered));
+  if (!leans) return { query: question, result: alone };
 
   // After an answer from the timeline, "and before that?" is the timeline itself.
   const timeline = chunks.findIndex((chunk) => chunk.id === JOURNEY_ROLLUP);
@@ -62,19 +62,19 @@ export function searchInContext(index: Index, question: string, last: Last | und
 }
 
 /** The earlier questions "AI answer" sends along: only those that were themselves sent, never one typed in another mode. */
-export function earlier(turns: { q: string; sent?: boolean }[], max: number = PREV_MAX): string[] {
-  return turns.filter((turn) => turn.sent).map((turn) => turn.q).slice(-max);
+export function earlier(turns: { q: string; sent?: boolean; answer?: { mode: string } }[], max: number = PREV_MAX): string[] {
+  return turns.filter((turn) => turn.sent && turn.answer?.mode === 'cloud').map((turn) => turn.q).slice(-max);
 }
 
 /** Only successfully displayed cloud conversations are sent again; search and private replies stay local. */
-export function conversationHistory(turns: { q: string; sent?: boolean; answer: { mode: string; text: string[] } }[]): HistoryTurn[] {
-  const history = turns.filter((turn) => turn.sent && turn.answer.mode === 'cloud' && turn.answer.text.length)
-    .slice(-HISTORY_MAX).map((turn) => ({ q: turn.q, a: turn.answer.text.join('\n\n').slice(0, HISTORY_ANSWER_MAX) }));
+export function conversationHistory(turns: { q: string; sent?: boolean; answer: { mode: string; text: string[]; chips?: unknown[]; passages?: { text: string }[]; resources?: Resource[] } }[], mode: string = 'cloud'): HistoryTurn[] {
+  const history = turns.filter((turn) => (turn.sent && (turn.answer.mode === mode || (mode === 'device' && turn.answer.mode === 'cloud'))) || (mode === 'device' && turn.answer.mode === 'quotes' && (!!turn.answer.chips?.length || !!turn.answer.passages?.length || !!turn.answer.resources?.length)))
+    .slice(-HISTORY_MAX).map((turn) => ({ q: turn.q, a: [...turn.answer.text, ...(turn.answer.passages?.map(p => p.text) ?? []), ...(turn.answer.resources?.map(r => `Public ${r.kind}: ${r.title}`) ?? [])].join('\n\n').slice(0, HISTORY_ANSWER_MAX) })).filter(turn => turn.a);
   while (history.reduce((n, turn) => n + turn.q.length + turn.a.length, 0) > HISTORY_CHARS_MAX) history.shift();
   return history;
 }
 
-export type FallbackReason = 'failed' | 'busy' | 'budget' | 'unverified' | 'device';
+export type FallbackReason = 'failed' | 'busy' | 'budget' | 'credits' | 'unverified' | 'device';
 
 /** What a generator throws when it knows why it could not answer. */
 export class ChatError extends Error {
@@ -109,13 +109,17 @@ export interface GenerateOptions {
 
 const TIMED_OUT = Symbol('timed out');
 
-async function within<T>(promise: Promise<T>, ms: number): Promise<T | typeof TIMED_OUT> {
+async function within<T>(promise: Promise<T>, ms: number, signal: AbortSignal): Promise<T | typeof TIMED_OUT> {
+  if (signal.aborted) { void promise.catch(() => {}); return TIMED_OUT; }
   let timer: ReturnType<typeof setTimeout> | undefined;
   const limit = new Promise<typeof TIMED_OUT>((resolve) => (timer = setTimeout(() => resolve(TIMED_OUT), Math.max(0, ms))));
+  let abort = () => {};
+  const stopped = new Promise<typeof TIMED_OUT>(resolve => { abort = () => resolve(TIMED_OUT); signal.addEventListener('abort', abort, { once: true }); });
   try {
-    return await Promise.race([promise, limit]);
+    return await Promise.race([promise, limit, stopped]);
   } finally {
     clearTimeout(timer);
+    signal.removeEventListener('abort', abort);
   }
 }
 
@@ -126,9 +130,11 @@ function sharing(text: string, chunks: Chunk[]): string[] {
 }
 
 export async function generateAnswer(options: GenerateOptions): Promise<Outcome> {
-  const { generator, question, prev, history, chunks, byId, stop, onBlock, firstMs = FIRST_EVENT_MS, doneMs = DONE_MS } = options;
+  if (options.stop.aborted) return { kind: 'fallback', reason: 'stopped' };
+  const { generator, question, prev, history, chunks, byId, stop, onBlock, firstMs = FIRST_EVENT_MS, doneMs = generator.timeoutMs ?? DONE_MS } = options;
   // The cloud model cites per block. A model on the device is handed its passages; code decides which it used.
-  const citesItself = generator.id === 'cloud';
+  const citesItself = generator.id === 'cloud' || generator.citesSources === true;
+  const supplied = new Set(chunks.map(chunk => chunk.id));
   const request = new AbortController();
   const abort = () => request.abort();
   stop.addEventListener('abort', abort);
@@ -149,11 +155,12 @@ export async function generateAnswer(options: GenerateOptions): Promise<Outcome>
   });
   const stopped = (): Outcome => (blocks.length ? answer({ stopped: true }) : { kind: 'fallback', reason: 'stopped' });
 
-  const events = generator.generate({ question, prev, history, chunks, ...(options.locale ? { locale: options.locale } : {}) }, request.signal)[Symbol.asyncIterator]();
+  let events: AsyncIterator<GenEvent> | undefined;
   let alive = false;
   try {
+    events = generator.generate({ question, prev, history, chunks, ...(options.locale ? { locale: options.locale } : {}) }, request.signal)[Symbol.asyncIterator]();
     for (;;) {
-      const next = await within(events.next(), alive ? doneMs - (Date.now() - started) : Math.min(firstMs, doneMs));
+      const next = await within(events.next(), alive ? doneMs - (Date.now() - started) : Math.min(firstMs, doneMs), stop);
       if (stop.aborted) return stopped();
       if (next === TIMED_OUT || next.done) return fallback('failed');
       const event = next.value;
@@ -162,7 +169,7 @@ export async function generateAnswer(options: GenerateOptions): Promise<Outcome>
       // against their citations, so unfinished model text never reaches the view.
       if (event.type === 'block') {
         const cited = event.cites.map((id) => byId.get(id));
-        if (cited.some((chunk) => !chunk)) return fallback('unverified');
+        if (cited.some((chunk) => !chunk) || (generator.id !== 'cloud' && event.cites.some(id => !supplied.has(id)))) return fallback('unverified');
         const guard = generator.conversational ? guardConversationBlock : guardBlock;
         if (!guard(event.text, cited as Chunk[], question, state).ok) return fallback('unverified');
         const fresh = citesItself ? event.cites.filter((id) => !cites.includes(id)) : [];
@@ -184,6 +191,6 @@ export async function generateAnswer(options: GenerateOptions): Promise<Outcome>
     stop.removeEventListener('abort', abort);
     request.abort();
     // Not awaited: a generator stuck in a request settles only once the abort reaches it.
-    void events.return?.(undefined)?.catch(() => {});
+    void events?.return?.(undefined)?.catch(() => {});
   }
 }

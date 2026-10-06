@@ -33,6 +33,6 @@
     }
   ],
   "vars": {
-    "FALLBACK_RELEASE": "ai-proctor-audio-20261006-v1"
+    "FALLBACK_RELEASE": "ai-widgets-restored-20261006-v1"
   }
 }

@@ -1,0 +1,32 @@
+/* A quiet model button with an upward-opening menu beside the composer. */
+.chat__bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.chat__bottom .chat__foot { text-align: right; font-size: 11px; }
+.chat__model-picker { position: relative; flex: none; }
+.chat__model-trigger {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 8px 10px;
+  border: 1px solid transparent; border-radius: 12px; background: transparent; color: var(--text);
+  font-size: 13px; font-weight: 600; transition: background-color 150ms var(--ease), border-color 150ms var(--ease);
+}
+.chat__model-trigger:hover, .chat__model-trigger[aria-expanded='true'] { background: var(--field); border-color: var(--line); }
+.chat__model-trigger:disabled { opacity: .6; cursor: wait; }
+.chat__model-icon { width: 18px; height: 18px; flex: none; }
+.chat__model-caret { width: 14px; height: 14px; color: var(--text-3); transition: transform 150ms var(--ease); }
+.chat__model-trigger[aria-expanded='true'] .chat__model-caret { transform: rotate(180deg); }
+.chat__model-menu {
+  position: absolute; z-index: 5; left: 0; bottom: calc(100% + 8px); width: min(320px, 100vw - 40px);
+  display: grid; gap: 3px; padding: 6px; border: 1px solid var(--line); border-radius: 18px;
+  background: var(--surface); box-shadow: 0 4px 12px rgb(0 0 0 / .06), 0 14px 40px rgb(0 0 0 / .12);
+}
+.chat__model-option {
+  display: flex; align-items: center; gap: 11px; padding: 12px 10px; min-height: 54px;
+  border-radius: 12px; text-align: left; color: var(--text); transition: background-color 150ms var(--ease);
+}
+.chat__model-option:hover, .chat__model-option:focus-visible { background: var(--field); }
+.chat__model-option > span { display: grid; gap: 3px; flex: 1; min-width: 0; }
+.chat__model-option strong { font-size: 13px; font-weight: 600; }
+.chat__model-option small { font-size: 12px; line-height: 1.4; color: var(--text-2); text-wrap: pretty; }
+.chat__model-option:disabled { opacity: .5; cursor: default; }
+.chat__model-check { width: 16px; height: 16px; flex: none; color: var(--accent); visibility: hidden; }
+.chat__model-option[aria-checked='true'] .chat__model-check { visibility: visible; }
+@media (pointer: coarse) { .chat__model-trigger { min-height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .chat__model-trigger, .chat__model-caret, .chat__model-option { transition: none; } }

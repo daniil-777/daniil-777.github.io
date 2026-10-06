@@ -70,7 +70,7 @@ export function buildIndex(chunks: Chunk[]): Index {
   const words = new Map<string, string>();
   const len = new Float32Array(chunks.length);
   chunks.forEach((chunk, doc) => {
-    const context = chunk.kind === 'section' || chunk.kind === 'media';
+    const context = chunk.kind === 'section' || chunk.kind === 'media' || chunk.kind === 'document';
     // Roll-ups repeat other chunks and fixed replies say what the site does not cover:
     // both are found by what they are about, not by their wording. Addresses are not words.
     const body = chunk.kind === 'rollup' || chunk.sensitive ? '' : chunk.text.replace(/https:\/\/\S+/g, ' ');

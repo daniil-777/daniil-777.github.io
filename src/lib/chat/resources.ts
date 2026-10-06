@@ -1,5 +1,6 @@
 /** Public attachments and a small, explicit conversational fallback when no model is available. */
 import type { Chunk } from './kb.ts';
+import { matchProjects, projectAliases, projectText } from './project-names.ts';
 
 export interface Resource {
   id: string;
@@ -55,7 +56,7 @@ export function safeResource(value: unknown): value is Resource {
     (resource.download === undefined || typeof resource.download === 'boolean');
 }
 
-const normal = (value: string) => value.normalize('NFKD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const normal = projectText;
 const contains = (question: string, phrase: string) => phrase.length > 2 && ` ${question} `.includes(` ${phrase} `);
 const workSlug = (url: string) => {
   try { return new URL(url, 'https://demtsev.com').pathname.match(/^\/work\/([^/]+)(?:\/|$)/)?.[1]; }
@@ -67,7 +68,8 @@ export function requestsResources(question: string): boolean {
   const q = normal(question);
   if (/\b(?:explain|why|how (?:does|do|is|are)|describe|analyse|analyze|tell me about)\b/.test(q)) return false;
   return /\b(?:show|watch|send|share|download|open|link|links|where can i (?:find|get)|can i (?:get|try)|try (?:it|the|his|your))\b/.test(q) ||
-    /^(?:and |also |what about |how about )?(?:his |your |the |its )?(?:cv|resume|video|videos|showreel|demo|github|paper|pdf|linkedin)\??$/.test(q) ||
+    /\b(?:try|where is (?:the )?(?:source|code))\b/.test(q) ||
+    /^(?:and |also |what about |how about )?(?:his |your |the |its )?(?:cv|resume|video|videos|showreel|demo|github|paper|pdf|linkedin|source code|source|code|repository|repo)\??$/.test(q) ||
     /(?:скача|покаж|пришли|видео|резюме|lebenslauf|télécharger|descargar|视频)/i.test(question);
 }
 
@@ -82,55 +84,66 @@ export function selectResources(question: string, resources: Resource[], sources
   if (/стать[яи]|публикац/i.test(question)) kinds.add('document');
   if (/\b(?:cv|curriculum vitae|resume)\b/.test(q) && !/^resume (?:our|the|this|that|where)\b/.test(q)) kinds.add('cv');
   if (/\b(?:videos?|showreel|demo reel|clips?|footage)\b/.test(q)) kinds.add('video');
-  if (/\b(?:demo|demos|live app|try it|try them)\b/.test(q) && !/\bdemo reel\b/.test(q)) kinds.add('demo');
+  if (/\b(?:demo|demos|live app|try it|try them)\b/.test(q) && !/\bdemo reel\b/.test(q) || (/\bapp\b/.test(q) && requestsResources(question))) kinds.add('demo');
   const github = /\b(?:github|git hub)\b/.test(q);
-  if (github || /\b(?:source code|repositories|repository|repos?|code link)\b/.test(q)) kinds.add('code');
+  if (github || /\b(?:source code|repositories|repository|repos?|code link)\b/.test(q) || (requestsResources(question) && /\b(?:code|source)\b/.test(q) && !/\bsource (?:data|of inspiration)\b/.test(q))) kinds.add('code');
   if (/\b(?:papers?|publications?|patent|posters?|documents?)\b/.test(q) || (!kinds.has('cv') && /\bpdfs?\b/.test(q))) kinds.add('document');
   if (/\b(?:linkedin|linked in|scholar|profiles?|social links)\b/.test(q) || github) kinds.add('profile');
   if (/\b(?:project|portfolio)\b/.test(q) && /\b(?:link|links|open|visit|show|share|send)\b/.test(q)) kinds.add('project');
-  if (!kinds.size) return [];
-
   const groups = new Map<string, Set<string>>();
   const keyOf = (resource: Resource) => normal(resource.project ?? workSlug(resource.url) ?? '');
   for (const resource of available) {
     const key = keyOf(resource);
     if (!key) continue;
-    const aliases = groups.get(key) ?? new Set<string>();
+    const aliases = groups.get(key) ?? projectAliases(resource.project ?? workSlug(resource.url) ?? '');
     aliases.add(key);
     const slug = workSlug(resource.url);
     if (slug) aliases.add(normal(slug));
     if (resource.kind === 'project') aliases.add(normal(resource.title));
     groups.set(key, aliases);
   }
-  const named = (text: string) => [...groups].filter(([, aliases]) => [...aliases].some((alias) => contains(normal(text), alias))).map(([key]) => key);
+  const named = (text: string) => matchProjects(text, groups);
   let projects = named(question);
+  if (!kinds.size && projects.length && requestsResources(question)) kinds.add(/\btry\b/.test(q) ? 'demo' : 'project');
+  const continues = /^(?:and|also|what about|how about)\b|\b(?:it|its|that|the video|the demo|the github|the paper)\b/.test(q);
+  const codeRequested = /\b(?:source|code|repositories|repository|repos?)\b/.test(q);
+  const personalProfile = kinds.has('profile') && (/\b(?:his|your|daniil|emtsev|profiles?)\b/.test(q) || (!projects.length && !continues && !codeRequested));
   // A request for the whole portfolio or a showreel stands on its own.
-  const broad = /\b(?:all|showreel|demo reel|your work|his work|whole portfolio|entire portfolio)\b/.test(q);
+  const broad = (personalProfile && !projects.length) || /\b(?:all|showreel|demo reel|your work|his work|whole portfolio|entire portfolio|his research|his papers|research papers|publications)\b/.test(q);
+  const projectForUrl = (url: string) => {
+    try {
+      const address = new URL(url, 'https://demtsev.com');
+      return available.find(resource => {
+        const known = new URL(resource.url, 'https://demtsev.com');
+        return keyOf(resource) && known.origin === address.origin && known.pathname === address.pathname;
+      });
+    } catch { return undefined; }
+  };
   if (!projects.length && !broad) {
-    const continues = /^(?:and|also|what about|how about)\b|\b(?:it|its|that|the video|the demo|the github|the paper)\b/.test(q);
-    const previousSlug = lastUrl && workSlug(lastUrl);
-    if (continues && previousSlug) projects = [...groups].filter(([, aliases]) => aliases.has(normal(previousSlug))).map(([key]) => key);
+    const previous = lastUrl && projectForUrl(lastUrl);
+    if (continues && previous) projects = [keyOf(previous)];
     if (!projects.length) projects = [...groups].filter(([, aliases]) => sources.some((source) => {
-      const slug = workSlug(source.url);
-      return slug !== undefined && aliases.has(normal(slug));
+      const project = projectForUrl(source.url);
+      return project !== undefined && aliases.has(keyOf(project));
     })).map(([key]) => key);
     if (!projects.length && lastQuestion) projects = named(lastQuestion);
   }
+  if (!kinds.size && projects.length && /\b(?:open|visit|try)\b/.test(q)) kinds.add(/\btry\b/.test(q) ? 'demo' : 'project');
+  if (!kinds.size) return [];
   const wanted = new Set(projects);
   // A bare GitHub request means his profile. Named-project follow-ups mean that project's code.
-  if (github && !wanted.size && !/\b(?:source|code|repositories|repository|repos?)\b/.test(q)) kinds.delete('code');
+  if (github && (personalProfile || !wanted.size) && !codeRequested) kinds.delete('code');
   const profile = (resource: Resource) => {
     const label = normal(`${resource.title} ${resource.url}`);
-    if (github) return /\bgithub\b/.test(label);
-    if (/\b(?:linkedin|linked in)\b/.test(q)) return /\blinkedin\b/.test(label);
-    if (/\bscholar\b/.test(q)) return /\bscholar\b/.test(label);
-    return true;
+    const linkedin = /\b(?:linkedin|linked in)\b/.test(q), scholar = /\bscholar\b/.test(q);
+    return !(github || linkedin || scholar) || (github && /\bgithub\b/.test(label)) || (linkedin && /\blinkedin\b/.test(label)) || (scholar && /\bscholar\b/.test(label));
   };
   const priority: Resource['kind'][] = ['cv', 'video', 'demo', 'code', 'document', 'profile', 'project'];
   const matching = available.filter((resource) => {
     if (!kinds.has(resource.kind)) return false;
+    if (resource.kind === 'document' && /\bpatent\b/.test(q) && !/\b(?:papers?|publications?|documents?)\b/.test(q) && !/patent/i.test(`${resource.id} ${resource.url} ${resource.description}`)) return false;
     if (resource.kind === 'cv') return true;
-    if (resource.kind === 'profile') return !wanted.size && profile(resource);
+    if (resource.kind === 'profile') return (!wanted.size || personalProfile) && profile(resource);
     return !wanted.size || wanted.has(keyOf(resource));
   });
   const seen = new Set<string>();
@@ -147,6 +160,12 @@ export function selectResources(question: string, resources: Resource[], sources
 }
 
 export interface ConversationalReply { text: string[]; cites: string[]; followUps?: string[] }
+
+/** No live feeds are available to the local model. Never turn current-data requests into guesses. */
+export function offlineReply(question: string): ConversationalReply | undefined {
+  if (!/\b(?:weather (?:in|today|tomorrow)|(?:latest|today.s|current) (?:news|prices?|exchange rates?|stock|president)|(?:stock|share|bitcoin|crypto) price|current (?:ceo|version)|who is (?:the )?(?:current )?president)\b/i.test(question)) return undefined;
+  return { text: ['This local assistant has no live weather, news, prices or current-status feed. Please check a current source for that information. I can explain the underlying concepts or help explore the published portfolio.'], cites: [], followUps: ['What does Daniil do at VirtaMed?', 'Show me his CV'] };
+}
 
 const engineeringLeadership = (q: string) => /\b(?:head of (?:software )?engineering|cto|chief technology officer|engineering manager|technical lead|tech lead)\b/.test(q);
 const hiring = (q: string) => /\b(?:hir(?:e|ing)|recruit(?:ing)?|job (?:offer|opportunity)|career opportunity)\b/.test(q) ||

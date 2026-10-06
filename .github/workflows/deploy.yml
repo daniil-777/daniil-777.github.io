@@ -39,13 +39,13 @@ jobs:
       - run: npm run build
         env:
           # Address of the Worker in worker/. Unset: the assistant only quotes the site.
-          PUBLIC_CHAT_ENDPOINT: ${{ vars.PUBLIC_CHAT_ENDPOINT }}
+          PUBLIC_CHAT_ENDPOINT: ${{ vars.PUBLIC_CHAT_ENDPOINT || 'https://demtsev-chat.demtsev-com.workers.dev' }}
       # Integration tests read the generated public KB, so build before the full suite.
       - run: npm test
       # Also fails if the build could not embed the content: better no deploy than one without "Smarter search".
       - run: npm run check:build -- --vectors
         env:
-          PUBLIC_CHAT_ENDPOINT: ${{ vars.PUBLIC_CHAT_ENDPOINT }}
+          PUBLIC_CHAT_ENDPOINT: ${{ vars.PUBLIC_CHAT_ENDPOINT || 'https://demtsev-chat.demtsev-com.workers.dev' }}
       # Search quality with the embedding model the build just used, and no unanswerable question answered.
       - run: node scripts/security/csp-hashes.mjs
       - run: npm run check:i18n

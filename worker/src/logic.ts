@@ -12,14 +12,17 @@ export function allowedOrigin(origin: string | null, allowed: string): string | 
 }
 
 /** The request body as text, or nothing when it is longer than `max` bytes. Never reads past the cap. */
-export async function readCapped(request: Request, max: number): Promise<string | undefined> {
-  if (Number(request.headers.get('Content-Length') ?? 0) > max) return undefined;
+export async function readCapped(request: Pick<Request, 'headers' | 'body'>, max: number): Promise<string | undefined> {
+  if (Number(request.headers.get('Content-Length') ?? 0) > max) {
+    await request.body?.cancel().catch(() => {});
+    return undefined;
+  }
   if (!request.body) return '';
   const reader = request.body.getReader();
   const decoder = new TextDecoder();
   let size = 0;
   let text = '';
-  for (;;) {
+  try { for (;;) {
     const { done, value } = await reader.read();
     if (done) return text + decoder.decode();
     size += value.byteLength;
@@ -28,7 +31,7 @@ export async function readCapped(request: Request, max: number): Promise<string 
       return undefined;
     }
     text += decoder.decode(value, { stream: true });
-  }
+  } } finally { reader.releaseLock(); }
 }
 
 export const KB_CHUNKS_MAX = 400;

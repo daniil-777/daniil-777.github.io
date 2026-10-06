@@ -90,16 +90,16 @@ describe('question block', () => {
 describe('on-device prompt', () => {
   const top = ['site:intro', 'journey:virtamed', 'project:ai-proctor', 'project:pixel-morph', 'project:astro-pilot'].map((id) => kb.chunks.find((c) => c.id === id)!);
 
-  it('starts with the rules, ends with the question, most relevant chunk last', () => {
+  it('starts with the rules, ends with the question and gives real source IDs', () => {
     const prompt = buildLocalPrompt('Where does he work?', top.slice(0, 2));
     assert.ok(prompt.startsWith(LOCAL_RULES));
     assert.ok(prompt.endsWith('Question: Where does he work?'));
-    assert.ok(prompt.indexOf('[1] Journey · VirtaMed') < prompt.indexOf('[2] Daniil Emtsev'));
+    assert.ok(prompt.includes('[[journey:virtamed]]') && prompt.includes('[[site:intro]]'));
   });
 
   it('drops the least relevant chunks until it fits', () => {
-    const big = top.map((chunk) => ({ ...chunk, text: 'word '.repeat(300) }));
-    const prompt = buildLocalPrompt('q', big);
+    const big = top.map((chunk) => ({ ...chunk, text: 'word '.repeat(1200) }));
+    const prompt = buildLocalPrompt('What did he build?', big);
     assert.ok(prompt.length / 4 <= LOCAL_PROMPT_TOKENS_MAX);
     assert.ok(prompt.includes(big[0].title) && !prompt.includes(big[4].title));
   });

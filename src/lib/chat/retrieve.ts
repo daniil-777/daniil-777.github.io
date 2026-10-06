@@ -7,6 +7,7 @@ import { STOP, editDistance, stem, tokenise, type SearchResult } from './bm25.ts
 import { EMBED } from './embed.ts';
 import type { Chunk } from './kb.ts';
 import { normalise } from './text.ts';
+import { scopedPortfolioOwner } from './intent.ts';
 
 export const TOP_K = 5;
 /** Share of the semantic score in the fused ranking. */
@@ -137,7 +138,7 @@ function same(asked: string, wanted: string): boolean {
  */
 export function matchTrigger(question: string, chunks: Chunk[]): Chunk | undefined {
   const asked = plain(question);
-  const personal = asked.some((word) => PERSON.has(word));
+  const personal = asked.some((word) => PERSON.has(word)) || scopedPortfolioOwner(question);
   const fires = (trigger: string) => {
     const wanted = plain(trigger);
     if (wanted.length === 0) return false;

@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
 import { awards, bio, facts, hero, interests, journey, links, publications, site, skills, stats } from '../../src/data/site.ts';
 import { buildKb, toKbFact, toKbProject, type Kb, type KbSource } from '../../src/lib/chat/kb.ts';
+import { loadDocumentChunks } from '../../src/lib/chat/documents-node.ts';
 
 export const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -37,6 +38,7 @@ export function loadSource(): KbSource {
     awards,
     skills,
     interests,
+    documentChunks: loadDocumentChunks(root),
     projects: readCollection('projects').map(({ id, data, body }) => toKbProject(id, data, body)),
     factFiles: readCollection('facts').map(({ id, data, body }) => toKbFact(id, data, body)),
   };

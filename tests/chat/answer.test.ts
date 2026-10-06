@@ -38,6 +38,9 @@ describe('kinds of answer', () => {
     assert.ok(answer.passages[0].text.split('\n').length >= 3);
     assert.match(answer.passages[0].text, /Pixel Morph/);
   });
+  it('a project list cannot silently discard an unsupported filter', () => {
+    assert.notEqual(ask('Which projects run AI in the browser with FDA approval?').kind, 'list');
+  });
 
   it('quote: passages from the site, each with a link to the sentence', () => {
     const answer = ask('How does the AI proctor warn a trainee about a mistake?');
@@ -58,7 +61,7 @@ describe('kinds of answer', () => {
   });
 
   it('none: nothing matches', () => {
-    const answer = ask('What is the capital of France?');
+    const answer = ask('What is the capital of Uruguay?');
     assert.equal(answer.kind, 'none');
     assert.equal(answer.lead, COPY.lead.none);
     assert.deepEqual(answer.passages, []);

@@ -2,9 +2,11 @@ import hashes from './csp-hashes.json' with { type: 'json' };
 
 const PREVIEWS = new Set(['/architecture/', '/architecture/index.html', '/drawings/', '/drawings/index.html']);
 const TFJS = ['core', 'backend-webgpu', 'backend-webgl'].map(name => `https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-${name}@4.22.0/dist/tf-${name}.min.js`);
+const CHAT_SERVICE = 'https://demtsev-chat.demtsev-com.workers.dev';
+const LOCAL_CHAT = ['http://127.0.0.1:8787', 'http://localhost:8787', 'http://127.0.0.1:8788', 'http://localhost:8788'];
 
 /** Security policy for the static portfolio, including its same-origin previews. */
-export function secureHeaders(incoming, pathname = '/') {
+export function secureHeaders(incoming, pathname = '/', { localChat = false } = {}) {
   const headers = new Headers(incoming);
   const scripts = ["'self'", "'wasm-unsafe-eval'", ...hashes.map(hash => `'${hash}'`), ...(PREVIEWS.has(pathname) ? TFJS : [])];
   headers.delete('set-cookie');
@@ -16,7 +18,7 @@ export function secureHeaders(incoming, pathname = '/') {
   headers.set('Content-Security-Policy', [
     "default-src 'self'", `script-src ${scripts.join(' ')}`, "script-src-attr 'none'",
     "style-src 'self' 'unsafe-inline'", "img-src 'self' data: blob:", "font-src 'self'",
-    "connect-src 'self' https://huggingface.co https://us.aws.cdn.hf.co", "media-src 'self' blob:", "worker-src 'self'", "frame-src 'self'",
+    `connect-src 'self' ${CHAT_SERVICE} https://huggingface.co https://us.aws.cdn.hf.co${localChat ? ` ${LOCAL_CHAT.join(' ')}` : ''}`, "media-src 'self' blob:", "worker-src 'self'", "frame-src 'self'",
     "frame-ancestors 'self'", "base-uri 'none'", "object-src 'none'", "form-action 'none'",
   ].join('; '));
   return headers;

@@ -1,7 +1,7 @@
 {
-  "note": "AI widgets chapter and open book: parchment, feather, three shared watch modes, sources, local-only thought inference, mouse/touch page curls and generated vector contours. Language code and the 209 KB trained contour weights load only on book selection. Large language models download only after consent. Original page baseline remains unchanged.",
+  "note": "AI widgets chapter and open book: parchment, feather, three shared watch modes, sources, local-only thought inference, mouse/touch page curls and generated vector contours. Language code and the 209 KB trained contour weights load only on book selection. Large language models download only after consent. Original page baseline remains unchanged. The permanent seven-language author and browser-local attribution adds a 500-byte gzip HTML allowance.",
   "allowance": {
-    "html": 5500,
+    "html": 6000,
     "css": 4500,
     "js": 1200
   },

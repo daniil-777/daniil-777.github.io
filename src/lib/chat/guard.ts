@@ -8,6 +8,7 @@
 import { site } from '../../data/site.ts';
 import { EMAIL, PHONE, type Chunk } from './kb.ts';
 import { displayTitle, looksForeign, words } from './text.ts';
+import { hasPersonalIntent, scopedPortfolioOwner } from './intent.ts';
 
 export const ANSWER_WORDS_MAX = 160;
 export const ALLOWED_NAMES = [site.name, site.name.split(' ')[0]];
@@ -208,9 +209,11 @@ export function guardConversationBlock(text: string, chunks: Chunk[], question: 
 
   const sources = [...chunks, ...state.cited];
   const cited = sources.map((chunk) => `${displayTitle(chunk)}\n${chunk.text}`).join('\n');
+  const overstated = /\b(?:clinically validated|validated through real-world deployment|FDA approved|CE marked|improved patient outcomes)\b/gi;
+  for (const claim of text.match(overstated) ?? []) if (!plain(cited).includes(plain(claim))) return fail('validation or regulatory claim not supported by sources');
   const negative = /(?<!\p{L})(?:not (?:documented|listed|established|specified|confirmed)|(?:isn't|aren't|wasn't|weren't) (?:documented|listed|established|specified|confirmed)|does not (?:document|mention|establish|list|show|specify)|doesn't (?:document|mention|establish|list|show|specify)|no (?:evidence|information)|cannot confirm|can't confirm|cannot verify|don't know|do not know|nicht (?:dokumentiert|aufgef[uü]hrt|bekannt|belegt)|kann .{0,50}nicht best[aä]tigen|keine (?:Angaben|Informationen|Belege)|pas (?:document[eé]e?s?|indiqu[eé]e?s?|mentionn[eé]e?s?)|ne (?:peux|peut) pas (?:confirmer|v[eé]rifier)|aucune (?:information|preuve)|не (?:указан[аоы]?|документирован[аоы]?|известн[аоы]?|могу подтвердить)|нет (?:информации|данных|подтверждения))(?!\p{L})/iu;
   const clauses = text.split(/\n+|(?<=[.!?;])\s+|\s+(?:but|however|yet|although|whereas|while)\s+|\s+and\s+(?=(?:he|his|Daniil|is|was|has|holds)\b)|,\s*(?=(?:he|his|Daniil)\b)/i);
-  const assertionPattern = /(?<!\p{L})(?:works|worked|joined|studied|graduated|holds?|earned|received|published|employed|employment|served|managed|built|developed|led|supervised|certified|licensed|qualified|has|had|is|was|arbeitet|arbeitete|studierte|travaille|travaillait|emploie|dipl[oô]m[eé]|работает|работал)(?!\p{L})/iu;
+  const assertionPattern = /(?<!\p{L})(?:works|worked|joined|studied|attended|graduated|holds?|earned|received|published|employed|employment|served|managed|built|developed|led|supervised|certified|licensed|qualified|has|had|is|was|arbeitet|arbeitete|studierte|travaille|travaillait|emploie|dipl[oô]m[eé]|работает|работал)(?!\p{L})/iu;
   const nonfactual = (clause: string) => /^[\s-]*(?:hi|hello|dear)\s+(?:Daniil(?: Emtsev)?)[,!]?\s*$/i.test(clause) ||
     (/\?\s*$/.test(clause) && /^\s*(?:what|which|who|where|when|why|how|would|could|can|do|does|did|are|is|will)\b/i.test(clause)) ||
     (/^\s*I can help\s+(?:you\s+)?(?:assess|compare|explore|evaluate|explain|find|draft|write|summari[sz]e)\b/i.test(clause) && !facts(clause).numbers.size && !/\b(?:because|since|given that|as)\s+(?:he|Daniil)\b|\b(?:who|whose)\b/i.test(clause)) ||
@@ -221,7 +224,10 @@ export function guardConversationBlock(text: string, chunks: Chunk[], question: 
   const affirmative = affirmativeClauses.join('. ');
   const foreignPerson = /(?<!\p{L})(?:er|ihm|ihn|él|lui|il|son|sa|ses|он|его|ему)(?!\p{L})/iu;
   const subjectless = /^(?:(?:previously|formerly)\s+)?(?:employed|worked|graduated|certified|licensed)\b/i;
-  const personal = /(?<!\p{L})(?:Daniil|Emtsev|Даниил|Емцев|he|his|him)(?!\p{L})/iu.test(text) || subjectless.test(text) ||
+  // Foreign subjectless claims cannot rely on English verb/name patterns.
+  const owner = (scopedPortfolioOwner(text) && (/\bthis\b/i.test(text) || scopedPortfolioOwner(question))) ||
+    (scopedPortfolioOwner(question) && /\b(?:the|this) (?:owner|author|creator|developer|engineer|researcher|person)\b/i.test(text));
+  const personal = owner || (hasPersonalIntent(question) && looksForeign(question)) || /(?<!\p{L})(?:Daniil|Emtsev|Даниил|Емцев|he|his|him|candidate|applicant)(?!\p{L})/iu.test(text) || subjectless.test(text) ||
     (foreignPerson.test(text) && (foreignPerson.test(question) || /Daniil|Emtsev|Даниил|\b(?:he|his|him|you|u)\b/i.test(question)));
   if (personal && affirmative.trim() && !chunks.length && !isAbstention(text)) return fail('personal facts without a source');
   if (personal) {
