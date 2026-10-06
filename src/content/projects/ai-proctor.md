@@ -32,7 +32,7 @@ videos:
     source: VirtaMed/ai-proctor/demo_ai_proctor_davos_25_3E890C50-A960-4DFA-A355-F9BCAEC27251.mp4
     posterAt: 44
     previewAt: 40
-    audio: false
+    audio: true
     # Cuts the browser's address bar and the tablet's status bar out of the recording.
     crop: { top: 120 }
 ---

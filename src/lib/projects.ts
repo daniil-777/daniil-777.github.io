@@ -16,6 +16,7 @@ interface MediaEntry {
   height: number;
   duration: number;
   audio: boolean;
+  sig?: { full?: string; small?: string };
 }
 
 export interface ResolvedVideo extends MediaEntry {
@@ -61,7 +62,13 @@ export function resolveVideos(project: Project): ResolvedVideo[] {
       console.warn(`[media] "${video.id}" (${project.id}) has no transcoded files. Run: npm run media`);
       continue;
     }
-    videos.push({ ...entry, id: video.id, title: video.title, caption: video.caption, poster: image, playbackId: mux[video.id], startAt: video.startAt });
+    videos.push({
+      ...entry,
+      src: entry.sig?.full ? `${entry.src}?v=${entry.sig.full}` : entry.src,
+      small: entry.small && entry.sig?.small ? `${entry.small}?v=${entry.sig.small}` : entry.small,
+      id: video.id, title: video.title, caption: video.caption, poster: image,
+      playbackId: mux[video.id], startAt: video.startAt,
+    });
   }
   return videos;
 }

@@ -51,10 +51,10 @@
     "width": 1920,
     "height": 1222,
     "duration": 190.6,
-    "audio": false,
+    "audio": true,
     "sig": {
-      "full": "0c786b6addb0",
-      "small": "d897458c579d",
+      "full": "fbd20cec8748",
+      "small": "d75fbdf321c1",
       "preview": "44680af29ea0",
       "poster": "0e726542fdcc"
     }
