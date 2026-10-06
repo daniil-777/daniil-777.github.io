@@ -103,15 +103,10 @@ if (form && grid) {
   const viewButtons = [...form.querySelectorAll<HTMLButtonElement>('[data-view-btn]')];
 
   const images = [...grid.querySelectorAll<HTMLImageElement>('.card__media img')];
-  const gridSizes = new Map(images.map((image) => [image, image.sizes]));
-  // Matches the breakpoint in ProjectCard.astro below which the list shows small thumbnails.
-  const phone = window.matchMedia('(max-width: 760px)');
-  /** Tells the browser how wide the card images really are, so a list thumbnail is not fetched at grid size. */
-  const syncSizes = (view = grid.dataset.view) => {
-    const small = view === 'list' && phone.matches;
-    for (const image of images) image.sizes = small ? '112px' : gridSizes.get(image)!;
+  /** Keep responsive thumbnail requests aligned with the chosen layout. */
+  const syncSizes = (view: View) => {
+    for (const image of images) image.sizes = (view === 'list' ? image.dataset.listSizes : image.dataset.gridSizes) ?? image.sizes;
   };
-  phone.addEventListener('change', () => syncSizes());
 
   function setView(view: View, animate: boolean) {
     syncSizes(view);
@@ -133,14 +128,14 @@ if (form && grid) {
     });
   }
 
-  // A saved choice wins. Without one, a phone starts on the compact list: the grid is a very long scroll there.
+  // An explicit preference wins; every new visit starts with the publication-style list.
   let saved: string | null = null;
   try {
     saved = localStorage.getItem(VIEW_KEY);
   } catch {
     /* storage unavailable: fall through to the default */
   }
-  if (saved === 'list' || (saved === null && window.matchMedia('(max-width: 600px)').matches)) setView('list', false);
+  setView(saved === 'grid' ? 'grid' : 'list', false);
 
   let typing: number | undefined;
   form.addEventListener('input', (event) => {

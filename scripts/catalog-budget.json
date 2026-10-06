@@ -1,0 +1,8 @@
+{
+  "note": "The default project list adds small responsive thumbnail candidates and explicit list/grid image sizes. Its measured HTML cost is 265 gzip bytes; CSS and JavaScript are smaller. The original baseline is preserved.",
+  "allowance": {
+    "html": 300,
+    "css": 0,
+    "js": 0
+  }
+}

@@ -29,6 +29,7 @@ const localizationBudget = JSON.parse(readFileSync(path.join(root, 'scripts/i18n
 const watchBudget = JSON.parse(readFileSync(path.join(root, 'scripts/watch-budget.json'), 'utf8'));
 const widgetsBudget = JSON.parse(readFileSync(path.join(root, 'scripts/ai-widgets-budget.json'), 'utf8'));
 const actionsBudget = JSON.parse(readFileSync(path.join(root, 'scripts/portfolio-actions-budget.json'), 'utf8'));
+const catalogBudget = JSON.parse(readFileSync(path.join(root, 'scripts/catalog-budget.json'), 'utf8'));
 const BINARY_MAX = 1024 * 1024;
 
 const problems = [];
@@ -61,6 +62,7 @@ const hasLocalization = home.includes('data-i18n-pack');
 const hasWatch = home.includes('data-watch');
 const hasWidgets = home.includes('data-ai-widgets');
 const hasActions = home.includes('data-email-copy') || home.includes('data-doc="eth-masters-diploma"');
+const hasCatalog = home.includes('data-grid data-view="list"');
 const styles = [...home.matchAll(/<link[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map((match) => match[1]);
 const scripts = eagerScripts(home);
 const sizes = {
@@ -83,8 +85,9 @@ if (process.argv.includes('--record')) {
     const watch = hasWatch ? watchBudget.allowance[kind] : 0;
     const widgets = hasWidgets ? widgetsBudget.allowance[kind] : 0;
     const actions = hasActions ? actionsBudget.allowance[kind] : 0;
-    const allowance = ALLOWANCE[kind] + feature + localization + watch + widgets + actions;
-    console.log(`${kind.padEnd(4)} ${String(sizes[kind]).padStart(6)} bytes gzip (baseline ${baseline[kind]}, ${growth >= 0 ? '+' : ''}${growth}, chat +${ALLOWANCE[kind]}, architecture +${feature}, localization +${localization}, watch +${watch}, widgets +${widgets}, actions +${actions})`);
+    const catalog = hasCatalog ? catalogBudget.allowance[kind] : 0;
+    const allowance = ALLOWANCE[kind] + feature + localization + watch + widgets + actions + catalog;
+    console.log(`${kind.padEnd(4)} ${String(sizes[kind]).padStart(6)} bytes gzip (baseline ${baseline[kind]}, ${growth >= 0 ? '+' : ''}${growth}, chat +${ALLOWANCE[kind]}, architecture +${feature}, localization +${localization}, watch +${watch}, widgets +${widgets}, actions +${actions}, catalog +${catalog})`);
     if (growth > allowance) problems.push(`eager ${kind} grew by ${growth} bytes gzip; the combined budget is ${allowance}`);
   }
 }

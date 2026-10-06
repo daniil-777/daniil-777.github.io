@@ -57,10 +57,10 @@ const topics = TOPICS.map((topic) => ({ topic, total: count((p) => p.data.topics
           </label>
 
           <div class="view" role="group" aria-label="Layout">
-            <button type="button" data-view-btn="grid" aria-pressed="true" aria-label="Show projects as a grid" title="Grid">
+            <button type="button" data-view-btn="grid" aria-pressed="false" aria-label="Show projects as a grid" title="Grid">
               <Icon name="grid" />
             </button>
-            <button type="button" data-view-btn="list" aria-pressed="false" aria-label="Show projects as a list" title="List">
+            <button type="button" data-view-btn="list" aria-pressed="true" aria-label="Show projects as a list" title="List">
               <Icon name="list" />
             </button>
           </div>
@@ -92,7 +92,7 @@ const topics = TOPICS.map((topic) => ({ topic, total: count((p) => p.data.topics
       </div>
     </form>
 
-    <div class="grid" data-grid data-view="grid">
+    <div class="grid" data-grid data-view="list">
       {projects.map((project) => <ProjectCard project={project} />)}
     </div>
 
@@ -370,7 +370,8 @@ const topics = TOPICS.map((topic) => ({ topic, total: count((p) => p.data.topics
   /* The list layout of each card lives in ProjectCard.astro. */
   .grid[data-view='list'] {
     grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+    gap: 0;
+    border-top: 1px solid var(--line);
   }
 
   .empty {
