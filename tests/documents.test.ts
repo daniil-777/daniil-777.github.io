@@ -53,20 +53,23 @@ const APPROVED: Record<string, string> = {
   'camera-pose-patent': 'd2de984650bf25a9fbc9b3597bf9bd063af7071a742a7fb9626ada7fb6f943a5',
   'dynamic-plane-onet-paper': '7f9859f6705a327b0177e5811dec55ee9013906c485a9c3f84c304d1ba051532',
   'loss-landscape-barcodes-paper': '788494ee49ea2ca6aec351d903244bf75e39273ee4e6aa50b131ea31ebb9271b',
+  // Explicitly authorized upright ETH certificate; cover letter and transcript are excluded.
+  'eth-masters-diploma': 'e23233fe8d36a19a2bfb8bcdd08d2d0fa8c2207bda2e2571bdcddc9d83b426fa',
 };
 
 const sha256 = (file: string) => createHash('sha256').update(readFileSync(file)).digest('hex');
 const images = (entry: Entry) => [entry.thumb, entry.thumbSmall, ...entry.pages];
 
 const dir = at('src/content/projects');
-const declared: Declared[] = readdirSync(dir)
+const education = JSON.parse(readFileSync(at('src/data/education-documents.json'), 'utf8')) as Omit<Declared, 'project'>[];
+const declared: Declared[] = [...readdirSync(dir)
   .filter((file) => file.endsWith('.md'))
   .flatMap((file) => {
     const frontmatter = readFileSync(path.join(dir, file), 'utf8').match(/^---\n([\s\S]*?)\n---/);
     assert.ok(frontmatter, `${file}: missing frontmatter`);
     const documents = (parse(frontmatter[1]) as { documents?: Omit<Declared, 'project'>[] }).documents ?? [];
     return documents.map((document) => ({ ...document, project: file.replace(/\.md$/, '') }));
-  });
+  }), ...education.map((document) => ({ ...document, project: 'education' }))];
 const manifest = JSON.parse(readFileSync(at('src/data/documents.json'), 'utf8')) as Record<string, Entry>;
 const ids = declared.map((document) => document.id);
 
@@ -131,6 +134,12 @@ describe('documents', () => {
     for (const id of Object.keys(manifest)) assert.ok(ids.includes(id), `documents.json has an entry for unknown document "${id}"`);
   });
 
+  it('the ETH preview contains only the upright diploma certificate', () => {
+    const entry = manifest['eth-masters-diploma'];
+    assert.equal(entry.pages.length, 1);
+    assert.ok(entry.pages[0].width > entry.pages[0].height, 'the certificate must be upright in landscape orientation');
+  });
+
   it('publications cite documents that exist, each once', () => {
     const cited = publications.map((publication) => publication.document);
     for (const id of cited) assert.ok(ids.includes(id), `a publication cites unknown document "${id}"`);
@@ -156,10 +165,10 @@ describe('publication guard', () => {
   });
 
   it('nothing in public/ is named like a private document', () => {
-    // Only the explicitly authorized CV generated from public portfolio data may be published.
-    // Raw CVs, diplomas, transcripts, theses and unpublished manuscripts stay private.
+    // Exact approved certificate outputs are authorized; other private documents remain excluded.
+    const authorized = new Set(education.flatMap(({ id }) => [manifest[id].pdf, ...images(manifest[id]).map((image) => image.src)]));
     const privateName = /(^|[^a-z])cv([^a-z]|$)|diplom|transcript|thesis|cvpr|de[-_ ]?novo|resume/i;
-    for (const file of files.filter((name) => name !== 'docs/daniil-emtsev-cv.pdf')) assert.doesNotMatch(file, privateName, `public/${file} looks like a private document`);
+    for (const file of files.filter((name) => name !== 'docs/daniil-emtsev-cv.pdf' && !authorized.has(`/${name}`))) assert.doesNotMatch(file, privateName, `public/${file} looks like a private document`);
   });
 
   it('the site holds no conflict copies', () => {
@@ -174,7 +183,10 @@ describe('publication guard', () => {
     for (const document of declared) {
       // Kept in step with PRIVATE_SOURCE in scripts/documents.mjs.
       const privateSource = /(^|\/)CV\/|(^|[^a-z])cv\.pdf$|diplom|transcript|thesis|gen-chemistry|cvpr|de[-_ ]?novo|report|review|resume/i;
-      assert.doesNotMatch(document.source, privateSource, `${document.id}: ${document.source} is private`);
+      if (document.project === 'education') {
+        assert.ok(APPROVED[document.id], `${document.id}: certificate is not approved`);
+        assert.equal(manifest[document.id].sha256.source, APPROVED[document.id]);
+      } else assert.doesNotMatch(document.source, privateSource, `${document.id}: ${document.source} is private`);
     }
   });
 });

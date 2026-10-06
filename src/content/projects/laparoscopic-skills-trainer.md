@@ -19,6 +19,14 @@ highlights:
   - value: Real time
     label: on a live camera feed
 videos:
+  - id: lap-stratafix
+    title: Stratafix guidance · incision closure
+    caption: A continuous closure followed from first pass to final cut.
+    source: VirtaMed/ethicon/stratafix.mov
+    posterAt: 111
+    previewAt: 111
+    startAt: 111
+    audio: false
   - id: lap-peg-transfer
     title: Peg transfer
     caption: Objects are counted as they cross mid-air from one side to the other and back.
@@ -46,14 +54,6 @@ videos:
     source: VirtaMed/ethicon/extracorporeal_knot.mov
     posterAt: 31
     previewAt: 16
-    audio: false
-  - id: lap-stratafix
-    title: Stratafix guidance · incision closure
-    caption: A continuous closure followed from first pass to final cut.
-    source: VirtaMed/ethicon/stratafix.mov
-    posterAt: 111
-    previewAt: 111
-    startAt: 111
     audio: false
 ---
 

@@ -81,8 +81,8 @@ async function createPlayer(video: VideoPayload): Promise<HTMLElement> {
     autoplay: '',
   };
   if (video.playbackId) attrs['playback-id'] = video.playbackId;
-  if (video.startAt) attrs['start-time'] = String(video.startAt);
   else Object.assign(attrs, { src: (phone.matches || saveData) && video.small ? video.small : video.src, 'disable-tracking': '' });
+  if (video.startAt) attrs['start-time'] = String(video.startAt);
   for (const [name, value] of Object.entries(attrs)) player.setAttribute(name, value);
   queueMicrotask(() => localizeMedia?.());
   return player;

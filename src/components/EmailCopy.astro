@@ -1,0 +1,140 @@
+---
+import Icon from './Icon.astro';
+
+interface Props { email: string; }
+const { email } = Astro.props;
+---
+
+<button class="email-copy__trigger" type="button" data-email-copy data-email={email} aria-expanded="false" aria-controls="about-email-feedback">
+  <Icon name="mail" />
+  Email
+</button>
+<div class="email-copy__feedback" id="about-email-feedback" data-email-feedback data-open="false" aria-hidden="true">
+  <div class="email-copy__clip">
+    <div class="email-copy__bar">
+      <span class="email-copy__address" data-no-translate>{email}</span>
+      <span class="email-copy__result" role="status" aria-live="polite" data-email-result>
+        <span class="email-copy__check" data-email-check hidden><Icon name="check" /></span>
+        <span data-email-message></span>
+      </span>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { t } from '../i18n/client';
+
+  const trigger = document.querySelector<HTMLButtonElement>('[data-email-copy]');
+  const feedback = document.querySelector<HTMLElement>('[data-email-feedback]');
+  if (trigger && feedback) {
+    const message = feedback.querySelector<HTMLElement>('[data-email-message]')!;
+    const check = feedback.querySelector<HTMLElement>('[data-email-check]')!;
+    let timer: number | undefined;
+    let request = 0;
+    const close = () => {
+      window.clearTimeout(timer);
+      feedback.dataset.open = 'false';
+      feedback.setAttribute('aria-hidden', 'true');
+      trigger.setAttribute('aria-expanded', 'false');
+    };
+    const scheduleClose = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(close, 5500);
+    };
+    trigger.addEventListener('click', async () => {
+      const current = ++request;
+      window.clearTimeout(timer);
+      feedback.dataset.open = 'true';
+      feedback.setAttribute('aria-hidden', 'false');
+      trigger.setAttribute('aria-expanded', 'true');
+      check.hidden = true;
+      message.textContent = t('Copying…');
+      let copied = false;
+      try { await navigator.clipboard.writeText(trigger.dataset.email!); copied = true; }
+      catch { copied = false; }
+      if (current !== request) return;
+      check.hidden = !copied;
+      message.textContent = t(copied ? 'Copied' : 'Select the address to copy');
+      if (copied) scheduleClose();
+    });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close(); });
+  }
+</script>
+
+<style>
+  .email-copy__trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 44px;
+    padding: 9px 13px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--tile);
+    color: var(--text-2);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
+  .email-copy__trigger:hover,
+  .email-copy__trigger[aria-expanded='true'] {
+    background: var(--field-hover);
+    border-color: var(--link);
+    color: var(--link);
+  }
+  .email-copy__trigger:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+  .email-copy__trigger :global(svg) { width: 16px; height: 16px; }
+  .email-copy__feedback {
+    flex-basis: 100%;
+    grid-column: 1 / -1;
+    order: 1;
+    min-width: 0;
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: translateY(-7px);
+    pointer-events: none;
+    transition: grid-template-rows 650ms cubic-bezier(0.22, 1, 0.36, 1), opacity 550ms ease, transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .email-copy__feedback[data-open='true'] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .email-copy__clip { min-height: 0; overflow: hidden; }
+  .email-copy__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    padding: 14px 17px;
+    border: 1px solid color-mix(in srgb, var(--link) 18%, var(--line));
+    border-radius: 17px;
+    background: color-mix(in srgb, var(--link) 4%, var(--tile));
+    box-shadow: 0 5px 20px rgb(0 0 0 / 4%);
+  }
+  .email-copy__address { min-width: 0; overflow-wrap: anywhere; font-size: 13px; font-weight: 500; color: var(--text); user-select: all; }
+  .email-copy__result { display: inline-flex; align-items: center; gap: 7px; color: var(--text-3); font-size: 12px; white-space: nowrap; }
+  .email-copy__check {
+    display: inline-grid;
+    place-items: center;
+    width: 23px;
+    height: 23px;
+    border-radius: 50%;
+    color: light-dark(#167153, #79d2ae);
+    background: light-dark(#e3f3ec, #17392d);
+    animation: email-check 450ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .email-copy__check[hidden] { display: none; }
+  .email-copy__check :global(svg) { width: 15px; height: 15px; }
+  @keyframes email-check { from { opacity: 0; transform: scale(0.65); } to { opacity: 1; transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) {
+    .email-copy__trigger, .email-copy__feedback { transition: none; transform: none; }
+    .email-copy__check { animation: none; }
+  }
+</style>

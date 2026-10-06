@@ -1,5 +1,6 @@
 import type { IconName } from '../components/Icon.astro';
 import manifestJson from '../data/documents.json';
+import educationJson from '../data/education-documents.json';
 import type { DocumentKind } from '../data/taxonomy';
 import { getProjects, type Project } from './projects';
 
@@ -33,6 +34,7 @@ export const DOCUMENT_KIND: Record<DocumentKind, { label: string; action: string
   paper: { label: 'Paper', action: 'Read the paper', icon: 'doc' },
   patent: { label: 'Patent', action: 'Read the patent', icon: 'award' },
   poster: { label: 'Poster', action: 'View the poster', icon: 'doc' },
+  diploma: { label: 'Diploma', action: 'View diploma', icon: 'award' },
 };
 
 /**
@@ -56,7 +58,11 @@ export function resolveDocuments(project: Project): ResolvedDocument[] {
 
 /** Every document on the site. */
 export async function getDocuments(): Promise<ResolvedDocument[]> {
-  return (await getProjects()).flatMap(resolveDocuments);
+  const education = educationJson.flatMap(({ id, kind, title }) => {
+    const entry = manifest[id];
+    return entry ? [{ ...entry, id, kind: kind as DocumentKind, title, project: 'education' }] : [];
+  });
+  return [...(await getProjects()).flatMap(resolveDocuments), ...education];
 }
 
 /** `srcset` of a document's thumbnail: both sizes, so a phone fetches the small one. */

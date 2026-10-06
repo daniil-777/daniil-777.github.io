@@ -68,6 +68,8 @@ export interface JourneyEntry {
   points: string[];
   /** Project ids (file names in src/content/projects) to link from this entry. */
   projects: string[];
+  /** Approved education-document ids, displayed with preview and download actions. */
+  documents?: string[];
 }
 
 export const journey: JourneyEntry[] = [
@@ -98,6 +100,7 @@ export const journey: JourneyEntry[] = [
       'Supported by the ETH Zurich Master’s Scholarship, covering full tuition and living expenses.',
     ],
     projects: ['camera-pose-2d3d', 'dynamic-plane-onet', 'de-novo-drug-design'],
+    documents: ['eth-masters-diploma'],
   },
   {
     period: 'Summer 2019',

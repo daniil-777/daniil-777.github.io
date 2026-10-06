@@ -1,0 +1,5 @@
+{
+  "note": "Bounded allowance for diploma actions and Email copy feedback. PDF and document images load only when requested.",
+  "allowance": { "html": 1200, "css": 1400, "js": 1200 },
+  "pageCatalogAllowanceGzipBytes": 600
+}

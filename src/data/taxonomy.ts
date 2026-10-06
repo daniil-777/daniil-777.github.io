@@ -48,5 +48,5 @@ export const LINK_KINDS = ['live', 'code', 'site'] as const;
 export type LinkKind = (typeof LINK_KINDS)[number];
 
 /** Documents are previewed on the site itself; see `documents` in src/content.config.ts. */
-export const DOCUMENT_KINDS = ['paper', 'patent', 'poster'] as const;
+export const DOCUMENT_KINDS = ['paper', 'patent', 'poster', 'diploma'] as const;
 export type DocumentKind = (typeof DOCUMENT_KINDS)[number];

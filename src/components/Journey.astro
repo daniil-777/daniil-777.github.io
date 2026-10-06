@@ -1,12 +1,15 @@
 ---
 import { journey } from '../data/site';
+import { getDocuments } from '../lib/documents';
 import { projectHref, type Project } from '../lib/projects';
+import Icon from './Icon.astro';
 
 interface Props {
   projects: Project[];
 }
 
 const titles = new Map(Astro.props.projects.map((project) => [project.id, project.data.title]));
+const documents = new Map((await getDocuments()).map((document) => [document.id, document]));
 ---
 
 <section class="section journey" id="journey" aria-labelledby="journey-title">
@@ -35,6 +38,22 @@ const titles = new Map(Astro.props.projects.map((project) => [project.id, projec
                   <li>{point}</li>
                 ))}
               </ul>
+              {entry.documents?.map((id) => {
+                const diploma = documents.get(id);
+                return diploma && (
+                  <div class="entry__documents">
+                    <a class="entry__document entry__document--primary" href={diploma.pdf} data-doc={id} target="_blank" rel="noopener">
+                      <Icon name="award" />
+                      View diploma
+                      <span class="entry__document-format">PDF</span>
+                    </a>
+                    <a class="entry__document" href={diploma.pdf} download>
+                      <Icon name="download" />
+                      Download PDF
+                    </a>
+                  </div>
+                );
+              })}
               {entry.projects.length > 0 && (
                 <ul class="entry__projects" aria-label="Related projects">
                   {entry.projects
@@ -119,6 +138,52 @@ const titles = new Map(Astro.props.projects.map((project) => [project.id, projec
     height: 5px;
     border-radius: 50%;
     background: var(--text-3);
+  }
+
+  .entry__documents {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .entry__document {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 44px;
+    padding: 10px 17px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--tile);
+    color: var(--text-2);
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  }
+
+  .entry__document--primary {
+    color: var(--link);
+    background: color-mix(in srgb, var(--link) 7%, var(--tile));
+    border-color: color-mix(in srgb, var(--link) 25%, var(--line));
+  }
+
+  .entry__document:hover {
+    background: var(--field-hover);
+    border-color: var(--link);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  .entry__document:active { transform: translateY(0); }
+  .entry__document:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+  .entry__document :global(svg) { width: 17px; height: 17px; }
+  .entry__document-format { font-size: 10px; letter-spacing: 0.07em; opacity: 0.7; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .entry__document { transition: none; }
+    .entry__document:hover { transform: none; }
   }
 
   .entry__projects {

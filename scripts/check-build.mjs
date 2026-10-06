@@ -28,6 +28,7 @@ const architectureBudget = JSON.parse(readFileSync(path.join(root, 'scripts/arch
 const localizationBudget = JSON.parse(readFileSync(path.join(root, 'scripts/i18n-budget.json'), 'utf8'));
 const watchBudget = JSON.parse(readFileSync(path.join(root, 'scripts/watch-budget.json'), 'utf8'));
 const widgetsBudget = JSON.parse(readFileSync(path.join(root, 'scripts/ai-widgets-budget.json'), 'utf8'));
+const actionsBudget = JSON.parse(readFileSync(path.join(root, 'scripts/portfolio-actions-budget.json'), 'utf8'));
 const BINARY_MAX = 1024 * 1024;
 
 const problems = [];
@@ -59,6 +60,7 @@ const hasArchitecture = home.includes('data-architecture');
 const hasLocalization = home.includes('data-i18n-pack');
 const hasWatch = home.includes('data-watch');
 const hasWidgets = home.includes('data-ai-widgets');
+const hasActions = home.includes('data-email-copy') || home.includes('data-doc="eth-masters-diploma"');
 const styles = [...home.matchAll(/<link[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map((match) => match[1]);
 const scripts = eagerScripts(home);
 const sizes = {
@@ -80,8 +82,9 @@ if (process.argv.includes('--record')) {
     const localization = hasLocalization ? localizationBudget.allowance[kind] : 0;
     const watch = hasWatch ? watchBudget.allowance[kind] : 0;
     const widgets = hasWidgets ? widgetsBudget.allowance[kind] : 0;
-    const allowance = ALLOWANCE[kind] + feature + localization + watch + widgets;
-    console.log(`${kind.padEnd(4)} ${String(sizes[kind]).padStart(6)} bytes gzip (baseline ${baseline[kind]}, ${growth >= 0 ? '+' : ''}${growth}, chat +${ALLOWANCE[kind]}, architecture +${feature}, localization +${localization}, watch +${watch}, widgets +${widgets})`);
+    const actions = hasActions ? actionsBudget.allowance[kind] : 0;
+    const allowance = ALLOWANCE[kind] + feature + localization + watch + widgets + actions;
+    console.log(`${kind.padEnd(4)} ${String(sizes[kind]).padStart(6)} bytes gzip (baseline ${baseline[kind]}, ${growth >= 0 ? '+' : ''}${growth}, chat +${ALLOWANCE[kind]}, architecture +${feature}, localization +${localization}, watch +${watch}, widgets +${widgets}, actions +${actions})`);
     if (growth > allowance) problems.push(`eager ${kind} grew by ${growth} bytes gzip; the combined budget is ${allowance}`);
   }
 }
@@ -111,7 +114,7 @@ if (hasLocalization) {
   for (const file of files.filter((file) => file.endsWith('.html'))) {
     const html = readFileSync(path.join(build, file), 'utf8');
     const pack = html.match(/<script[^>]*data-i18n-pack[^>]*>([\s\S]*?)<\/script>/)?.[1];
-    const catalogLimit = localizationBudget.pageCatalogMaxGzipBytes + (html.includes('data-ai-widgets') ? widgetsBudget.pageCatalogAllowanceGzipBytes ?? 0 : 0);
+    const catalogLimit = localizationBudget.pageCatalogMaxGzipBytes + (html.includes('data-ai-widgets') ? widgetsBudget.pageCatalogAllowanceGzipBytes ?? 0 : 0) + (html.includes('data-email-copy') ? actionsBudget.pageCatalogAllowanceGzipBytes : 0);
     if (pack && gzipSync(pack, { level: 9 }).length > catalogLimit) problems.push(`${file}: language catalog exceeds its explicit budget`);
   }
 }

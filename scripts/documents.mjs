@@ -69,7 +69,8 @@ async function readDocuments() {
     const data = parseYaml(match[1]);
     for (const d of data.documents ?? []) documents.push({ ...d, project: file.replace(/\.md$/, '') });
   }
-  return documents;
+  const education = JSON.parse(await readFile(at('src/data/education-documents.json'), 'utf8'));
+  return [...documents, ...education.map((doc) => ({ ...doc, project: 'education' }))];
 }
 
 /** Refuses a declaration that would write outside its folders or publish a private file. Runs before anything is written. */
@@ -81,7 +82,9 @@ function validate(doc) {
   const source = String(doc.source ?? '');
   if (!/\.pdf$/i.test(source)) throw new Error(`${where}: source must be a PDF`);
   if (path.relative(root, at(source)).startsWith('..') || path.isAbsolute(source)) throw new Error(`${where}: source is outside the repository`);
-  if (PRIVATE_SOURCE.test(source)) throw new Error(`${where}: ${source} looks like a private document and is not published`);
+  // The owner explicitly authorized these exact certificates; other private sources remain blocked.
+  const approvedEducation = doc.project === 'education' && /^[a-f0-9]{64}$/.test(doc.sourceSha256 ?? '');
+  if (PRIVATE_SOURCE.test(source) && !approvedEducation) throw new Error(`${where}: ${source} looks like a private document and is not published`);
 }
 
 const SET_TITLE = `
@@ -114,6 +117,7 @@ async function rasterise(src, dir, first, last) {
 async function render(doc, previous) {
   const src = at(doc.source);
   if (!existsSync(src)) throw new Error(`${doc.id}: source not found: ${doc.source}`);
+  if (doc.sourceSha256 && await sha256(src) !== doc.sourceSha256) throw new Error(`${doc.id}: source differs from the approved education document`);
   const file = doc.file ?? `${doc.id}.pdf`;
   const dir = at('public/docs', doc.id);
   const out = { pdf: at('public/papers', file), thumb: path.join(dir, 'thumb.webp'), thumbSmall: path.join(dir, 'thumb-s.webp') };

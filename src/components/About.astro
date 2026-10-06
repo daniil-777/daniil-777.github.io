@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import portrait from '../assets/me/portrait.jpg';
 import { bio, facts, interests, links, site } from '../data/site';
 import Icon, { type IconName } from './Icon.astro';
+import EmailCopy from './EmailCopy.astro';
 
 const bioHighlights = new Map([
   ['AI applications for art', 'light-dark(#a72f6f, #ff80b5)'],
@@ -38,14 +39,7 @@ const interestIcons: Record<string, IconName> = {
             fetchpriority="high"
           />
         </figure>
-        <nav class="about__links reveal" aria-label="Social profiles and email">
-          {links.map((link) => (
-            <a href={link.href} rel={link.id === 'mail' ? undefined : 'me noopener'}>
-              <Icon name={link.id} />
-              <span>{link.label}</span>
-            </a>
-          ))}
-        </nav>
+
       </div>
 
       <div class="about__text">
@@ -64,6 +58,16 @@ const interestIcons: Record<string, IconName> = {
             </p>
           ))}
         </div>
+        <nav class="about__links reveal" aria-label="Social profiles and email">
+          {links.map((link) => link.id === 'mail' ? (
+            <EmailCopy email={site.email} />
+          ) : (
+            <a href={link.href} rel="me noopener">
+              <Icon name={link.id} />
+              <span>{link.label}</span>
+            </a>
+          ))}
+        </nav>
         <dl class="about__facts reveal">
           {
             facts.map((fact) => (
@@ -92,7 +96,7 @@ const interestIcons: Record<string, IconName> = {
     </div>
 
     <p class="about__contact reveal">
-      <span data-no-translate>Feel free to <a href="#contact">get in touch</a>. The interactive assistant is temporarily paused.</span>
+      <span data-no-translate>Feel free to <a href="#contact">get in touch</a> or <a href="/ask/" data-chat-open>ask the interactive assistant</a>.</span>
     </p>
   </div>
 </section>
@@ -183,10 +187,10 @@ const interestIcons: Record<string, IconName> = {
   }
 
   .about__links {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
-    margin-top: 16px;
+    margin-top: 22px;
   }
 
   .about__links a {
@@ -204,6 +208,11 @@ const interestIcons: Record<string, IconName> = {
     font-weight: 600;
     white-space: nowrap;
     transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .about__links a:focus-visible {
+    outline: 2px solid var(--link);
+    outline-offset: 3px;
   }
 
   .about__links a:hover {

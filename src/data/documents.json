@@ -426,5 +426,37 @@
       "pdf": "09ea5199056e8cf3ea25edb5c20f0b6d55da48725c44b8c6db0ff604efbb4a07",
       "images": "1f6333fa80412e387d6d01469b8e88ff410254a20d4cd837d7a0fcccadde064c"
     }
+  },
+  "eth-masters-diploma": {
+    "title": "ETH Zurich · Master of Science diploma",
+    "pdf": "/papers/eth-masters-diploma.pdf",
+    "thumb": {
+      "src": "/docs/eth-masters-diploma/thumb.webp",
+      "width": 480,
+      "height": 342
+    },
+    "thumbSmall": {
+      "src": "/docs/eth-masters-diploma/thumb-s.webp",
+      "width": 240,
+      "height": 171
+    },
+    "pages": [
+      {
+        "src": "/docs/eth-masters-diploma/1.webp",
+        "width": 1964,
+        "height": 1400
+      }
+    ],
+    "sig": {
+      "pdf": "162344b1a0c2",
+      "pages": "f5a238162e82",
+      "thumb": "c4f01aea254f",
+      "thumbSmall": "5b0e90c4070c"
+    },
+    "sha256": {
+      "source": "e23233fe8d36a19a2bfb8bcdd08d2d0fa8c2207bda2e2571bdcddc9d83b426fa",
+      "pdf": "df609e33f2bd84ecd7329544a1fbfdd04b3fdd16a0a7a3f2c1cb79a9e681d22c",
+      "images": "c7c789dff962998d6acece66fe175bea1f80eddf59375a237e4ca7fc211cfae7"
+    }
   }
 }

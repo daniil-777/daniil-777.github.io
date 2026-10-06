@@ -115,6 +115,13 @@ describe('projects', () => {
       assert.ok((data.videos?.length ?? 0) > 0, `${id} is featured but has no video`);
     }
   });
+
+  it('Laparoscopic Skills Trainer features Stratafix guidance at its instruction segment', () => {
+    const project = projects.find(({ id }) => id === 'laparoscopic-skills-trainer')!;
+    assert.equal(project.data.videos?.[0].id, 'lap-stratafix');
+    assert.equal(project.data.videos?.[0].startAt, 111);
+    assert.equal(project.data.videos?.length, 5);
+  });
 });
 
 describe('site data', () => {
