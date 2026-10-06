@@ -1,6 +1,7 @@
 {
-  "release": "smart-watch-classic-serif-ticker-20261006-v3",
+  "release": "ai-book-contour-v2-20261006-v1",
   "watch": "Smart watch",
   "aircraftEnvironment": "chronos-plane-4",
-  "aircraftPublicEnabled": false
+  "aircraftPublicEnabled": false,
+  "bookContourSha256": "ea1150ccac1836b3dc2a054c93685eab45823b0baf23db83abba448182fdad8e"
 }

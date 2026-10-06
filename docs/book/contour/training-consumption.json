@@ -1,0 +1,8 @@
+{
+  "scheduledExamplePresentations": 512000,
+  "uniqueTrainingExamplesSeen": 63979,
+  "totalTrainingExamples": 64000,
+  "coverageFraction": 0.999671875,
+  "finalRngMatchesTrainingCheckpoint": true,
+  "method": "Exactreplay of deterministicCPUtrainingRNG: identicalseed,Decoderinitialization,torch.randintindices,torch.randnrecovery-noise perstep. Trainingattention,optimizerandevaluationconsumenoRNG."
+}

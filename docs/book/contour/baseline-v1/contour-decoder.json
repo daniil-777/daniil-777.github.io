@@ -1,0 +1,181 @@
+{
+  "version": 1,
+  "architecture": {
+    "width": 32,
+    "layers": 2,
+    "heads": 4,
+    "ffn": 64,
+    "points": 48,
+    "input": 10,
+    "epsilon": 1e-06
+  },
+  "shapes": [
+    "leaf",
+    "wave",
+    "mountain",
+    "flower"
+  ],
+  "dtype": "float32-le",
+  "parameterCount": 22594,
+  "byteLength": 90376,
+  "sha256": "ad0b6cff73a867c816c12f2d8dff565a26fe8d7dec8ab211c6319bda8a249219",
+  "weights": {
+    "input.weight": {
+      "offset": 0,
+      "shape": [
+        32,
+        10
+      ],
+      "length": 320
+    },
+    "input.bias": {
+      "offset": 320,
+      "shape": [
+        32
+      ],
+      "length": 32
+    },
+    "position.weight": {
+      "offset": 352,
+      "shape": [
+        48,
+        32
+      ],
+      "length": 1536
+    },
+    "blocks.0.attention_norm.weight": {
+      "offset": 1888,
+      "shape": [
+        32
+      ],
+      "length": 32
+    },
+    "blocks.0.qkv.weight": {
+      "offset": 1920,
+      "shape": [
+        96,
+        32
+      ],
+      "length": 3072
+    },
+    "blocks.0.attention_out.weight": {
+      "offset": 4992,
+      "shape": [
+        32,
+        32
+      ],
+      "length": 1024
+    },
+    "blocks.0.feedforward_norm.weight": {
+      "offset": 6016,
+      "shape": [
+        32
+      ],
+      "length": 32
+    },
+    "blocks.0.gate.weight": {
+      "offset": 6048,
+      "shape": [
+        64,
+        32
+      ],
+      "length": 2048
+    },
+    "blocks.0.up.weight": {
+      "offset": 8096,
+      "shape": [
+        64,
+        32
+      ],
+      "length": 2048
+    },
+    "blocks.0.down.weight": {
+      "offset": 10144,
+      "shape": [
+        32,
+        64
+      ],
+      "length": 2048
+    },
+    "blocks.1.attention_norm.weight": {
+      "offset": 12192,
+      "shape": [
+        32
+      ],
+      "length": 32
+    },
+    "blocks.1.qkv.weight": {
+      "offset": 12224,
+      "shape": [
+        96,
+        32
+      ],
+      "length": 3072
+    },
+    "blocks.1.attention_out.weight": {
+      "offset": 15296,
+      "shape": [
+        32,
+        32
+      ],
+      "length": 1024
+    },
+    "blocks.1.feedforward_norm.weight": {
+      "offset": 16320,
+      "shape": [
+        32
+      ],
+      "length": 32
+    },
+    "blocks.1.gate.weight": {
+      "offset": 16352,
+      "shape": [
+        64,
+        32
+      ],
+      "length": 2048
+    },
+    "blocks.1.up.weight": {
+      "offset": 18400,
+      "shape": [
+        64,
+        32
+      ],
+      "length": 2048
+    },
+    "blocks.1.down.weight": {
+      "offset": 20448,
+      "shape": [
+        32,
+        64
+      ],
+      "length": 2048
+    },
+    "norm.weight": {
+      "offset": 22496,
+      "shape": [
+        32
+      ],
+      "length": 32
+    },
+    "output.weight": {
+      "offset": 22528,
+      "shape": [
+        2,
+        32
+      ],
+      "length": 64
+    },
+    "output.bias": {
+      "offset": 22592,
+      "shape": [
+        2
+      ],
+      "length": 2
+    }
+  },
+  "seed": 20261006,
+  "trained": true,
+  "representation": "48 autoregressive xy vector tokens, each within [-1,1]",
+  "conditioning": "One-hot shape plus four independently seeded style values in [-1,1]."
+}

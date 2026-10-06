@@ -1,0 +1,189 @@
+{
+  "checkpointVersion": 2,
+  "familyCount": 16,
+  "tokenCount": 96,
+  "weightBytes": 208520,
+  "maximumAbsoluteCoordinateDifference": 2.723909952595527e-7,
+  "pythonParityFixtures": 32,
+  "parityMilliseconds": 435.759667,
+  "independentRollouts": 128,
+  "unyieldedDrawingMilliseconds": {
+    "p50": 11.960834000000204,
+    "p95": 16.87412500000005,
+    "maximum": 18.323291000000154
+  },
+  "minimumSeedRms": 0.00896880180037503,
+  "minimumFamilyRms": 0.04438239307117181,
+  "nearestFamilies": [
+    "leaf",
+    "feather"
+  ],
+  "cancellationMilliseconds": 2.475582999999915,
+  "deterministicSeeds": true,
+  "geometryBounded": true,
+  "noncollapsePassed": true,
+  "cacheProofPassed": true,
+  "scope": "Geometry, topology, seed diversity and family separation are checked automatically. Semantic recognizability still requires viewing the labeled held-out gallery.",
+  "families": [
+    {
+      "kind": "leaf",
+      "samples": 8,
+      "closed": true,
+      "minimumSeedRms": 0.023473190940232234,
+      "minimumWidth": 0.7150522395630153,
+      "minimumHeight": 1.4240796540459266,
+      "maximumStep": 0.05548143463954336,
+      "maximumClosureSeam": 0.011478995432310849
+    },
+    {
+      "kind": "wave",
+      "samples": 8,
+      "closed": false,
+      "minimumSeedRms": 0.01962274845361339,
+      "minimumWidth": 1.7357251679117036,
+      "minimumHeight": 0.3175973645026412,
+      "maximumStep": 0.029326739169916405,
+      "maximumClosureSeam": 1.7561464388791261
+    },
+    {
+      "kind": "mountain",
+      "samples": 8,
+      "closed": false,
+      "minimumSeedRms": 0.019077799664351247,
+      "minimumWidth": 1.6888064394214757,
+      "minimumHeight": 0.5732712203865573,
+      "maximumStep": 0.0394116645075328,
+      "maximumClosureSeam": 1.7074563265368004
+    },
+    {
+      "kind": "flower",
+      "samples": 8,
+      "closed": true,
+      "minimumSeedRms": 0.012448034549715303,
+      "minimumWidth": 1.0744138549123687,
+      "minimumHeight": 1.1859677546367244,
+      "maximumStep": 0.059778999775933636,
+      "maximumClosureSeam": 0.009065486551933186
+    },
+    {
+      "kind": "lotus",
+      "samples": 8,
+      "closed": true,
+      "minimumSeedRms": 0.011134730796973738,
+      "minimumWidth": 1.4866662990434807,
+      "minimumHeight": 1.2874552820717935,
+      "maximumStep": 0.07585994004163749,
+      "maximumClosureSeam": 0.0061222582917990495
+    },
+    {
+      "kind": "shell",
+      "samples": 8,
+      "closed": false,
+      "minimumSeedRms": 0.00896880180037503,
+      "minimumWidth": 0.9150878810998369,
+      "minimumHeight": 1.1621559107412567,
+      "maximumStep": 0.14769983088218458,
+      "maximumClosureSeam": 0.8123113277317334
+    },
+    {
+      "kind": "butterfly",
+      "samples": 8,
+      "closed": true,
+      "minimumSeedRms": 0.012009497787027465,
+      "minimumWidth": 1.5342269423080013,
+      "minimumHeight": 1.374078960838692,
+      "maximumStep": 0.07767805378622675,
+      "maximumClosureSeam": 0.006076985950415857
+    },
+    {
+      "kind": "moon",
+      "samples": 8,
+      "closed": true,
+      "minimumSeedRms": 0.022222898436282307,
+      "minimumWidth": 0.50872689299241,
+      "minimumHeight": 1.3125383197746223,
+      "maximumStep": 0.05279590011780016,
+      "maximumClosureSeam": 0.01396180915477954
+    },
+    {
+      "kind": "cloud",
+      "samples": 8,
+      "closed": true,
+      "minimumSeedRms": 0.010594790572131765,
+      "minimumWidth": 1.6055068012309968,
+      "minimumHeight": 0.9169395459645496,
+      "maximumStep": 0.05161289025815767,
+      "maximumClosureSeam": 0.008041741700894686
+    },
+    {
+      "kind": "koi",
+      "samples": 8,
+      "closed": true,
+      "minimumSeedRms": 0.010132505306974685,
+      "minimumWidth": 1.6041202916814608,
+      "minimumHeight": 0.9004463668251055,
+      "maximumStep": 0.054336764691054695,
+      "maximumClosureSeam": 0.007851006558087507
+    },
+    {
+      "kind": "swan",
+      "samples": 8,
+      "closed": true,
+      "minimumSeedRms": 0.011130359986799957,
+      "minimumWidth": 1.4769121332011328,
+      "minimumHeight": 1.2578061344697335,
+      "maximumStep": 0.06340481515510979,
+      "maximumClosureSeam": 0.006641727082920846
+    },
+    {
+      "kind": "fern",
+      "samples": 8,
+      "closed": true,
+      "minimumSeedRms": 0.010982465413076677,
+      "minimumWidth": 0.625942588224383,
+      "minimumHeight": 1.4729231915206111,
+      "maximumStep": 0.08069823363136479,
+      "maximumClosureSeam": 0.008335028640182528
+    },
+    {
+      "kind": "ginkgo",
+      "samples": 8,
+      "closed": true,
+      "minimumSeedRms": 0.01154526222140901,
+      "minimumWidth": 1.3685214487374244,
+      "minimumHeight": 1.230508094576103,
+      "maximumStep": 0.05479784218557998,
+      "maximumClosureSeam": 0.006061107815384542
+    },
+    {
+      "kind": "feather",
+      "samples": 8,
+      "closed": true,
+      "minimumSeedRms": 0.014150249548748255,
+      "minimumWidth": 0.6059203725752891,
+      "minimumHeight": 1.5102648944467452,
+      "maximumStep": 0.05631284584776124,
+      "maximumClosureSeam": 0.006704272287024605
+    },
+    {
+      "kind": "acorn",
+      "samples": 8,
+      "closed": true,
+      "minimumSeedRms": 0.01290429396350005,
+      "minimumWidth": 1.0989184841550632,
+      "minimumHeight": 1.5205181910967305,
+      "maximumStep": 0.05302792617624978,
+      "maximumClosureSeam": 0.009051559169188643
+    },
+    {
+      "kind": "pebble",
+      "samples": 8,
+      "closed": true,
+      "minimumSeedRms": 0.010818934177831722,
+      "minimumWidth": 1.3009430241229152,
+      "minimumHeight": 0.9248000952328319,
+      "maximumStep": 0.05166747544787782,
+      "maximumClosureSeam": 0.007221656456159971
+    }
+  ]
+}

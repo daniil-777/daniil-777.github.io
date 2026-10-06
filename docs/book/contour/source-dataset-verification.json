@@ -1,0 +1,22 @@
+{
+  "splits": {
+    "train": {
+      "drawings": 64000,
+      "bitExactMatches": 64000,
+      "maximumAbsoluteCoordinateDifference": 0.0
+    },
+    "validation": {
+      "drawings": 3200,
+      "bitExactMatches": 3200,
+      "maximumAbsoluteCoordinateDifference": 0.0
+    },
+    "test": {
+      "drawings": 3200,
+      "bitExactMatches": 3200,
+      "maximumAbsoluteCoordinateDifference": 0.0
+    }
+  },
+  "allExact": true,
+  "shapesSourceSha256": "904259bf0b51a370f11fd262ef5a60fcbd9dff16a58b123299a57dc8b82b03a7",
+  "elapsedSeconds": 14.07
+}

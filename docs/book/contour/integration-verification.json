@@ -1,0 +1,52 @@
+{
+  "release": "ai-book-contour-v2-20261006-v1",
+  "baseCommit": "301286fdd0d29324527c62040dc05b19031484e5",
+  "modelSha256": "ea1150ccac1836b3dc2a054c93685eab45823b0baf23db83abba448182fdad8e",
+  "trainExamples": 64000,
+  "testExamples": 3200,
+  "families": 16,
+  "weightBytes": 208520,
+  "testRolloutMse": 1.00983e-05,
+  "pythonRuntimeMaximumError": 2.723909952595527e-07,
+  "buildTreeSha256": "11d3aa0bb8c1e48f15e5e1c92631d8758d78e67238ef1f0578c387d1c33e4da9",
+  "buildFiles": 501,
+  "gates": {
+    "astroTypes": true,
+    "build": true,
+    "tests": {
+      "passed": 633,
+      "failed": 0
+    },
+    "budgetAndVectors": true,
+    "localization": true,
+    "searchEvaluation": true,
+    "cspHashes": true,
+    "productionAudit": true,
+    "workerAudit": true,
+    "workerTypes": true,
+    "mockWorkerSmoke": true,
+    "gatewayDryRun": true
+  },
+  "browser": {
+    "localPreview": "http://127.0.0.1:4322",
+    "realContourWeights": true,
+    "mockedLanguageStreams": true,
+    "distinctSpreads": 48,
+    "familiesVisited": 16,
+    "mouseAndTouch": true,
+    "inkAndFeather": true,
+    "mobileWidths": [
+      390,
+      320
+    ],
+    "darkAppearance": true,
+    "consentWithoutDownload": true,
+    "cloudCalls": 0
+  },
+  "rollback": {
+    "previousCommit": "301286fdd0d29324527c62040dc05b19031484e5",
+    "gatewayVersion": "67aa1d48-fb12-4a96-b943-2d9a9d632357",
+    "procedure": "Revert the scoped feature commit and successfully deploy Pages; restore the prior gateway version. Gateway-only rollback does not undo an origin update."
+  },
+  "authority": "User explicitly requested train, deploy, test and publish."
+}

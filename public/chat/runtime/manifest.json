@@ -1,0 +1,16 @@
+{
+  "v": 1,
+  "version": "1.31.0-dev.20260914-8d85527a0",
+  "files": [
+    {
+      "file": "ort-wasm-simd-threaded.asyncify.mjs",
+      "sha256": "0966b6105cd936744498aa60df7a22cbd47af3374dbc64a9ab561c08a71e3611",
+      "bytes": 53057
+    },
+    {
+      "file": "ort-wasm-simd-threaded.asyncify.wasm",
+      "sha256": "49871f5a4409519797e127440868a6d1923339d9185907f301a5b2a1d90af082",
+      "bytes": 26861777
+    }
+  ]
+}

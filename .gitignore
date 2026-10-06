@@ -54,3 +54,15 @@ __pycache__/
 !/docs/chronos-watch-review.json
 !/docs/site-security.md
 !/docs/site-security-review.json
+
+# Trained book model provenance (corpus is regenerated locally).
+!/docs/book/
+!/docs/book/contour/
+/docs/book/contour/*
+!/docs/book/contour/*.json
+!/docs/book/contour/*.md
+!/docs/book/contour/*.svg
+!/docs/book/contour/*.png
+!/docs/book/contour/baseline-v1/
+!/docs/book/contour/baseline-v1/*.json
+!/docs/book/contour/baseline-v1/*.bin

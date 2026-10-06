@@ -1,0 +1,158 @@
+@font-face {
+  font-family: 'Book Italianno';
+  src: url('/fonts/italianno-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+.ai-book { --book-ink: #423324; --book-muted: #7b6347; --book-paper: #f5e9cd; color: var(--text); }
+.ai-book__heading { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 0 5px 24px; }
+.ai-book__heading h3 { font-size: 22px; font-weight: 550; letter-spacing: -.025em; }
+.ai-book__heading > div > p { margin-top: 5px; color: var(--text-2); font-size: 14px; }
+.ai-book__origin { display: flex; align-items: center; gap: 8px; color: var(--text-2); font-size: 11px; }
+.ai-book__origin::before { content: ''; width: 5px; height: 5px; background: #a08352; border-radius: 50%; }
+.ai-book__stage { display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; position: relative; padding: clamp(40px, 6vw, 76px) clamp(16px, 5vw, 72px) clamp(45px, 6vw, 75px); border-radius: 28px; overflow: hidden; background: radial-gradient(ellipse at 50% 45%, #f8f4eb 0%, #ede7db 72%, #e2dbce 100%); isolation: isolate; }
+.ai-book__stage::after { content: ''; position: absolute; left: 13%; right: 13%; bottom: 8%; height: 12%; z-index: -1; background: #52412a36; filter: blur(24px); border-radius: 50%; }
+.ai-book__volume { position: relative; width: min(100%, 860px); min-width: 0; max-width: 100%; aspect-ratio: 1.83; perspective: 1400px; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
+.ai-book__volume[data-book-dragging='true'] { cursor: grabbing; }
+.ai-book__cover { position: absolute; inset: 5px -7px -12px; border: 1px solid #382920; border-radius: 9px 12px 18px 14px; background: linear-gradient(90deg, #513e31, #715745 45%, #35291f 50%, #684f3e 56%, #4a372b); box-shadow: 0 2px 1px #927455, 0 3px 0 #39291e, 0 18px 26px #4b36292e; transform: rotate(-.6deg); }
+.ai-book__cover::after { content: ''; position: absolute; inset: 9px; border: 1px solid #b18a5466; border-radius: 5px 8px 12px; }
+.ai-book__leaves { position: absolute; inset: 6px -2px -7px; border-radius: 6px 10px 13px 10px; background: repeating-linear-gradient(0deg, #cbb78e 0 1px, #f6e8ca 1px 3px); box-shadow: inset 0 -2px 3px #a48a57; }
+.ai-book__spread { position: relative; display: grid; grid-template-columns: 1fr 1fr; height: 100%; border-radius: 6px 10px 10px 6px; box-shadow: 0 1px 3px #8970476b; color: var(--book-ink); }
+.ai-book__page { position: relative; min-width: 0; padding: 10% 12% 10%; overflow: hidden; background-color: var(--book-paper); background-image: radial-gradient(ellipse at 35% 15%, #fffbee7a, transparent 60%), repeating-linear-gradient(12deg, #88672e03 0 1px, transparent 1px 3px); }
+.ai-book__page::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 26px #a8833b1c; }
+.ai-book__page--left { border-radius: 6px 1px 1px 6px; background-image: linear-gradient(90deg, #e8d8b1 0%, #f6eacf 7%, #f7edd5 74%, #dccca7 94%, #bba277 100%); }
+.ai-book__page--right { border-radius: 1px 10px 10px 1px; background-image: linear-gradient(90deg, #bda780 0%, #ebddbd 7%, #f8eed6 22%, #f3e6c7 95%, #e1d0a7 100%); }
+.ai-book__frontispiece { display: flex; align-items: center; justify-content: center; flex-direction: column; height: 100%; text-align: center; }
+.ai-book__flourish { width: 65%; max-width: 160px; height: 32px; fill: none; stroke: #927446; stroke-width: .75; margin-bottom: 8%; }
+.ai-book__folio { font: 10px Georgia, 'Times New Roman', serif; color: var(--book-muted); margin-bottom: 7%; }
+.ai-book__title { font: 400 clamp(24px, 3vw, 38px)/1.1 'Book Italianno', 'Snell Roundhand', cursive; letter-spacing: .01em; }
+.ai-book__artwork { width: min(100%, 240px); height: auto; flex: 1; min-height: 0; max-height: 68%; overflow: visible; margin: 6% 0 3%; }
+.ai-book__contour, .ai-book__contour-accent { fill: none; stroke: #705d41; stroke-width: 1.05; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; vector-effect: non-scaling-stroke; }
+.ai-book__contour-accent { stroke: #ab916a; stroke-width: .65; opacity: .55; transform: translate(18px, 13px) scale(.77); transform-origin: center; }
+.ai-book__art-caption { color: var(--book-muted); font: italic 10px/1.4 Georgia, 'Times New Roman', serif; letter-spacing: .06em; }
+.ai-book__page-navigation { display: none; position: absolute; bottom: 10px; left: 0; right: 0; align-items: center; justify-content: center; gap: 12px; color: #776750; }
+.js .ai-book__page-navigation { display: flex; }
+.ai-book__page-navigation button { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; }
+.ai-book__page-navigation button:hover { background: #8b744b0d; }
+.ai-book__page-navigation button:disabled { opacity: .3; cursor: default; }
+.ai-book__page-navigation svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.1; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.ai-book__page-navigation span { min-width: 66px; text-align: center; font: 10px/1 Georgia, 'Times New Roman', serif; letter-spacing: .08em; }
+.ai-book__stage:focus-visible { outline: 2px solid var(--link); outline-offset: 5px; }
+.ai-book__rule { width: 33px; border-top: 1px solid #ad8b554f; margin: 9% auto 7%; }
+.ai-book__subtitle { max-width: 170px; font: italic 12px/1.65 Georgia, 'Times New Roman', serif; color: #70583e; text-wrap: balance; }
+.ai-book__botanical { width: 42px; height: 42px; fill: none; stroke: #8a794e; stroke-width: .8; margin-top: 8%; }
+.ai-book__running-head { position: absolute; top: 8%; left: 15%; right: 12%; font: 7px/1.4 Georgia, 'Times New Roman', serif; letter-spacing: .18em; text-align: center; color: #87714f; }
+.ai-book__writing-area { position: absolute; inset: 21% 13% 17% 15%; display: flex; align-items: center; }
+.ai-book__inscription { width: 100%; font: 400 clamp(26px, 3.5vw, 41px)/1.15 'Book Italianno', 'Snell Roundhand', cursive; letter-spacing: .005em; text-wrap: pretty; overflow-wrap: break-word; white-space: pre-wrap; text-shadow: .2px .3px .3px #4e352540; }
+.ai-book__cursor { display: inline; width: 0; }
+.ai-book__inscription::first-letter { font-size: 1.15em; }
+.ai-book__endmark { position: absolute; left: 41%; bottom: 13%; width: 21%; height: 14px; fill: none; stroke: #aa8b56; stroke-width: .6; }
+.ai-book__page-number { position: absolute; bottom: 5%; left: 47%; font: 9px Georgia, 'Times New Roman', serif; color: var(--book-muted); }
+.ai-book__gutter { position: absolute; top: 0; bottom: 0; left: 49.65%; width: .7%; background: linear-gradient(90deg, #a1875766, #715732b8, #d9c89f66); box-shadow: 0 0 9px #74592a24; pointer-events: none; }
+.ai-book__ribbon { position: absolute; top: -1px; left: 49.7%; width: 10px; height: 111%; background: linear-gradient(90deg, #4e5956, #75827a 40%, #43504b 85%); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 98%, 0 100%); opacity: .9; transform: rotate(-1deg); transform-origin: top; box-shadow: 2px 3px 3px #0003; pointer-events: none; }
+.ai-book__quill { position: absolute; z-index: 3; left: var(--book-quill-x, 83%); top: var(--book-quill-y, 66%); width: clamp(30px, 4.4vw, 48px); height: auto; pointer-events: none; transform: translate(-8%, -97%) rotate(12deg); transform-origin: 8% 97%; filter: drop-shadow(3px 5px 2px #6f542366); transition: opacity .3s; }
+.ai-book__quill svg { display: block; width: 100%; height: auto; }
+.ai-book[data-book-writing='true'] .ai-book__quill svg { animation: book-quill-stroke .38s ease-in-out infinite alternate; transform-origin: 8% 97%; }
+@keyframes book-quill-stroke { from { transform: rotate(-3deg); } to { transform: rotate(3deg) translateY(-1px); } }
+.ai-book__controls { display: none; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; padding: 26px 5px 0; }
+.js .ai-book__controls { display: flex; }
+.ai-book__preferences { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
+.ai-book__local-model { color: var(--text-2); font-size: 11px; }
+.ai-book__interaction-hint { display: none; padding: 13px 5px 0; text-align: center; color: var(--text-2); font-size: 11px; }
+.js .ai-book__interaction-hint { display: block; }
+.ai-book__motion { display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: 11px; color: var(--text-2); cursor: pointer; }
+.ai-book__motion input { width: 16px; height: 16px; accent-color: var(--text); }
+.ai-book__model-note { margin: 18px 5px 0; max-width: 640px; color: var(--text-2); font-size: 12px; line-height: 1.6; }
+.ai-book__model-note[hidden] { display: none; }
+.ai-book__sources { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 20px 5px 0; color: var(--text-2); font-size: 11px; }
+.ai-book__sources a { text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; }
+.ai-book__sources a:hover { color: var(--text); }
+.ai-book__sources:empty { display: none; }
+.ai-book__theme { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-2); }
+.ai-book__theme select { width: auto; min-width: 110px; min-height: 44px; border: 1px solid var(--line); border-radius: 12px; padding: 9px 30px 9px 12px; background: var(--surface); color: var(--text); font: inherit; }
+.ai-book__actions { display: flex; align-items: center; gap: 8px; }
+.ai-book__actions button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 14px; border-radius: 100px; font-size: 12px; font-weight: 500; transition: background .2s; }
+.ai-book__actions svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+.ai-book__replay, .ai-book__pause { color: var(--text-2); }
+.ai-book__replay:hover, .ai-book__pause:hover { background: var(--field); color: var(--text); }
+.ai-book__actions .ai-book__generate { padding-inline: 22px; background: var(--text); color: var(--bg); }
+.ai-book__actions .ai-book__generate:hover { opacity: .85; }
+.ai-book button:disabled { opacity: .45; cursor: wait; }
+.ai-book__footnote { display: flex; justify-content: space-between; gap: 20px; color: var(--text-2); font-size: 11px; line-height: 1.6; padding: 18px 5px 0; }
+.ai-book__footnote > :first-child { max-width: 65%; }
+.ai-book__consent { max-width: 720px; margin-top: 24px; padding: 24px; border-top: 1px solid var(--line); color: var(--text-2); font-size: 13px; line-height: 1.6; }
+.ai-book__consent[hidden] { display: none; }
+.ai-book__consent-title { color: var(--text); font-weight: 600; margin-bottom: 8px; }
+.ai-book__consent > div { display: flex; gap: 12px; margin-top: 16px; }
+.ai-book__consent button { min-height: 44px; padding: 10px 18px; border-radius: 100px; color: var(--text); background: var(--field); font-size: 12px; }
+.ai-book__consent button:first-child { color: var(--bg); background: var(--text); }
+.ai-book__noscript { font-size: 13px; color: var(--text-2); margin-top: 20px; }
+.ai-book :is(button, select, input):focus-visible { outline: 2px solid var(--link); outline-offset: 4px; }
+@media (max-width: 700px) {
+  .ai-book__heading { align-items: start; padding-bottom: 18px; }
+  .ai-book__heading h3 { font-size: 19px; }
+  .ai-book__origin { max-width: 100px; text-align: right; font-size: 10px; }
+  .ai-book__stage { border-radius: 20px; padding: 36px 18px 48px; }
+  .ai-book__volume { aspect-ratio: 1.4; }
+  .ai-book__page { padding-inline: 10%; }
+  .ai-book__title { font-size: clamp(23px, 5.2vw, 31px); }
+  .ai-book__art-caption { font-size: 8px; }
+  .ai-book__subtitle { font-size: 10px; }
+  .ai-book__inscription { font-size: clamp(23px, 5.2vw, 34px); line-height: 1.12; }
+  .ai-book__running-head { font-size: 5px; letter-spacing: .1em; }
+  .ai-book__writing-area { inset: 20% 10% 15% 13%; }
+  .ai-book__flourish { width: 83%; margin-bottom: 6%; }
+  .ai-book__botanical { width: 32px; height: 32px; }
+  .ai-book__controls { flex-direction: column; align-items: stretch; gap: 16px; padding-top: 20px; }
+  .ai-book__theme { justify-content: space-between; }
+  .ai-book__preferences { flex-direction: column; align-items: stretch; gap: 10px; }
+  .ai-book__actions { flex-wrap: wrap; justify-content: space-between; gap: 4px; }
+  .ai-book__actions button { padding-inline: 10px; font-size: 11px; }
+  .ai-book__actions .ai-book__generate { padding-inline: 16px; }
+  .ai-book__footnote { flex-direction: column; gap: 4px; }
+  .ai-book__footnote > :first-child { max-width: 100%; }
+}
+@media (max-width: 399px) {
+  .ai-book__stage { padding-inline: 12px; }
+  .ai-book__volume { aspect-ratio: 1.16; }
+  .ai-book__inscription { font-size: 23px; }
+  .ai-book__flourish { margin-bottom: 5%; }
+  .ai-book__subtitle { font-size: 9px; }
+  .ai-book__ribbon { width: 7px; }
+  .ai-book__pause span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-book__quill { transition: none; }
+  .ai-book:not([data-book-motion='animate']) .ai-book__quill svg { animation: none; }
+  /* The visitor can explicitly enable this widget's writing motion. */
+  .ai-book[data-book-motion='animate'][data-book-writing='true'] .ai-book__quill svg { animation: book-quill-stroke .38s ease-in-out infinite alternate !important; }
+  .ai-book__actions button { transition: none; }
+}
+
+/* Connected paper strips follow the hand with a soft, shaded curl. */
+@property --book-page-shade { syntax: '<number>'; inherits: true; initial-value: 0; }
+.ai-book__volume { perspective: 2800px; perspective-origin: 50% 50%; }
+.ai-book__spread { transform-style: preserve-3d; }
+.ai-book__turn-underlay { position: absolute !important; left: 50%; right: 0; top: 0; bottom: 0; z-index: 4; }
+.ai-book__turn-sheet { position: absolute; left: 50%; top: 0; width: 50%; height: 100%; z-index: 7; transform-style: preserve-3d; transform-origin: left center; pointer-events: none; }
+.ai-book__turn-panel { position: absolute; top: 0; height: 100%; transform-style: preserve-3d; transform-origin: left center; }
+.ai-book__turn-sheet > .ai-book__turn-panel { left: 0; width: 8.3333333333%; }
+.ai-book__turn-panel > .ai-book__turn-panel { left: 100%; width: 100%; }
+.ai-book__turn-face { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: var(--book-paper); }
+.ai-book__turn-face--back { transform: rotateY(180deg); }
+.ai-book__turn-copy { position: absolute !important; top: 0; bottom: 0; height: 100%; max-width: none; margin: 0; box-sizing: border-box; }
+.ai-book__turn-face > .ai-book__turn-copy { width: 1200%; }
+.ai-book__turn-face::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: calc(var(--book-page-shade) * var(--book-strip-shade, .1)); }
+.ai-book__turn-face::after { background: #4b3428; }
+.ai-book__turn-underlay--backward { left: 0; right: 50%; }
+.ai-book__turn-sheet--backward { left: 0; transform-origin: right center; }
+.ai-book__turn-sheet--backward .ai-book__turn-panel { transform-origin: right center; }
+.ai-book__turn-sheet--backward > .ai-book__turn-panel { left: auto; right: 0; }
+.ai-book__turn-sheet--backward .ai-book__turn-panel > .ai-book__turn-panel { left: auto; right: 100%; }
+.ai-book__turn-shadow { position: absolute; left: 50%; top: 1%; bottom: -1%; width: 50%; z-index: 5; opacity: 0; pointer-events: none; transform-origin: center; background: linear-gradient(90deg, transparent, #50371933 20%, #2e1f183d 75%, transparent); }
+.ai-book__turn-shadow--backward { left: 0; background: linear-gradient(270deg, transparent, #50371933 20%, #2e1f183d 75%, transparent); }
+.ai-book__spread[data-book-turning='true'] .ai-book__quill { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .ai-book__turn-sheet, .ai-book__turn-panel { transition: none; }
+}

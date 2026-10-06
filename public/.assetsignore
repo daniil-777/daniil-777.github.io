@@ -2,3 +2,6 @@
 # The gateway streams them from the existing GitHub origin.
 /media/video/ai-proctor-davos.mp4
 /media/video/astro-pilot.mp4
+
+# The consent-loaded ORT runtime is also streamed from the GitHub origin.
+/chat/runtime/ort-wasm-simd-threaded.asyncify.wasm

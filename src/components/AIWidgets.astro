@@ -1,0 +1,56 @@
+---
+import SmartWatch from './SmartWatch.astro';
+import AIBook from './AIBook.astro';
+---
+
+<section id="ai-widgets" class="section ai-widgets" aria-labelledby="ai-widgets-title" data-ai-widgets>
+  <div class="wrap">
+    <header class="section__head ai-widgets__head">
+      <div>
+        <p class="eyebrow">Small experiments. A little wonder.</p>
+        <h2 class="h2" id="ai-widgets-title">AI widgets</h2>
+      </div>
+      <div class="ai-widgets__tabs" role="tablist" aria-label="Choose an AI widget" data-widget-tabs>
+        <button id="ai-watch-tab" type="button" role="tab" aria-selected="true" aria-controls="smart-watch" tabindex="0" data-widget-tab="watch">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 1-3h4l1 3M9 19l1 3h4l1-3"/><circle cx="12" cy="12" r="7"/><path d="M12 8v4l2.5 1.5"/></svg>
+          <span>AI watch</span>
+        </button>
+        <button id="ai-book-tab" type="button" role="tab" aria-selected="false" aria-controls="ai-book" tabindex="-1" data-widget-tab="book">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.5C8.8 3.5 5.5 3.5 2 4.5v15c3.5-1 6.8-1 10 1 3.2-2 6.5-2 10-1v-15c-3.5-1-6.8-1-10 1Zm0 0v15"/></svg>
+          <span>AI book widget</span>
+        </button>
+      </div>
+    </header>
+    <div id="smart-watch" role="tabpanel" aria-labelledby="ai-watch-tab" data-widget-panel="watch" data-widget-active tabindex="0">
+      <SmartWatch />
+      <p class="ai-widgets__watch-link"><a href="/smart-watch/">Explore the watch <span aria-hidden="true">↗</span></a></p>
+    </div>
+    <div id="ai-book" role="tabpanel" aria-labelledby="ai-book-tab" data-widget-panel="book" tabindex="0">
+      <AIBook />
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../scripts/ai-widgets';
+</script>
+
+<style>
+  .ai-widgets__head { max-width: none; display: flex; align-items: end; justify-content: space-between; gap: 28px; }
+  .ai-widgets__tabs { display: none; flex-shrink: 0; padding: 5px; gap: 3px; border: 1px solid var(--line); border-radius: 100px; background: var(--bg-alt); }
+  :global(.js) .ai-widgets__tabs { display: inline-flex; }
+  .ai-widgets__tabs button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 10px 20px; border-radius: 100px; color: var(--text-2); font-size: 13px; font-weight: 550; transition: color .2s, background .2s, box-shadow .2s; }
+  .ai-widgets__tabs button[aria-selected='true'] { background: var(--surface); color: var(--text); box-shadow: var(--shadow-soft); }
+  .ai-widgets__tabs button:hover { color: var(--text); }
+  .ai-widgets__tabs svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  :global(.js) [data-widget-panel='book']:not([data-widget-active]), [data-widget-panel][hidden] { display: none; }
+  [data-widget-panel]:focus-visible { outline: 2px solid var(--link); outline-offset: 8px; border-radius: 32px; }
+  .ai-widgets__watch-link { margin-top: 24px; text-align: center; font-size: 14px; }
+  .ai-widgets__watch-link a { color: var(--link); }
+  @media (max-width: 760px) {
+    .ai-widgets__head { flex-direction: column; align-items: start; gap: 26px; }
+    .ai-widgets__tabs { max-width: 100%; }
+    .ai-widgets__tabs button { padding-inline: 15px; font-size: 12px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .ai-widgets__tabs button { transition: none; } }
+</style>

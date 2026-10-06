@@ -1,0 +1,77 @@
+---
+import '../styles/book.css';
+const sample = 'Attention compares a query with keys, weighting values to build a context-dependent representation.';
+---
+
+<article class="ai-book" data-book data-book-reviewed="true" aria-labelledby="ai-book-title">
+  <div class="ai-book__heading">
+    <div>
+      <h3 id="ai-book-title">AI book widget</h3>
+      <p>A thought, in ink.</p>
+    </div>
+    <p class="ai-book__origin" data-book-origin>Reviewed thought</p>
+  </div>
+  <div class="ai-book__stage" tabindex="0" aria-label="Book pages" aria-describedby="ai-book-interaction-hint">
+    <div class="ai-book__volume">
+      <div class="ai-book__cover" aria-hidden="true"></div>
+      <div class="ai-book__leaves" aria-hidden="true"></div>
+      <div class="ai-book__spread">
+        <div class="ai-book__page ai-book__page--left">
+          <div class="ai-book__frontispiece">
+            <svg class="ai-book__flourish" viewBox="0 0 180 44" aria-hidden="true"><path d="M90 32C73 8 49 9 50 23c1 12 23 8 27-1M90 32c17-24 41-23 40-9-1 12-23 8-27-1M56 26c-16-20-38-9-23 3M124 26c16-20 38-9 23 3M90 32V10m-5 5 5-7 5 7M18 31c18 8 42 7 62 2m20 0c20 5 44 6 62-2"/></svg>
+            <p class="ai-book__title">A little quiet</p>
+            <svg class="ai-book__artwork" data-book-artwork viewBox="0 0 200 200" aria-hidden="true"><path class="ai-book__contour-accent" data-book-contour-accent pathLength="1"/><path class="ai-book__contour" data-book-contour pathLength="1"/></svg>
+            <p class="ai-book__art-caption" data-book-art-caption>Lines of calm</p>
+          </div>
+          <span class="ai-book__page-number" aria-hidden="true">01</span>
+        </div>
+        <div class="ai-book__page ai-book__page--right">
+          <span class="ai-book__running-head" aria-hidden="true" data-no-translate>DEMTSEV · SMALL THOUGHTS</span>
+          <div class="ai-book__writing-area" lang="en" data-no-translate>
+            <p class="ai-book__inscription" data-book-output aria-hidden="true">{sample}</p>
+            <span class="ai-book__cursor" data-book-cursor aria-hidden="true"></span>
+          </div>
+          <svg class="ai-book__endmark" viewBox="0 0 80 20" aria-hidden="true"><path d="M5 10h23m24 0h23M32 10l8-5 8 5-8 5Z"/></svg>
+          <span class="ai-book__page-number" aria-hidden="true">02</span>
+        </div>
+        <div class="ai-book__gutter" aria-hidden="true"></div>
+        <div class="ai-book__ribbon" aria-hidden="true"></div>
+        <div class="ai-book__quill" data-book-quill aria-hidden="true">
+          <svg viewBox="0 0 64 140">
+            <defs><linearGradient id="book-feather" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffdf5"/><stop offset=".55" stop-color="#e9e0cb"/><stop offset="1" stop-color="#bdae8e"/></linearGradient></defs>
+            <path d="M7 127C13 102 21 82 31 59 39 40 44 23 51 5c6 21 4 41-4 61-9 22-24 34-34 41Z" fill="url(#book-feather)" stroke="#aa9b7b" stroke-width=".65"/>
+            <path d="M14 105C9 84 10 68 18 51 28 30 40 15 51 5c-7 20-12 36-21 57-7 16-12 29-16 43Z" fill="#f5efdf" stroke="#baac8b" stroke-width=".6"/>
+            <g fill="none" stroke="#b7a98a" stroke-width=".65" opacity=".75"><path d="m18 93 16-8M22 81l17-9M26 70l17-9M31 58l15-8M36 46l14-8M40 35l13-8M44 24l10-8M18 91l-6-10M23 79l-8-12M28 66l-9-12M33 54l-8-12M38 42l-7-11M43 29l-5-9"/></g>
+            <path d="M51 5C44 28 35 53 25 77c-7 18-14 37-18 53" fill="none" stroke="#897758" stroke-width="1.15"/>
+            <path d="m7 126-2 11 5-9" fill="#594b38"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <p class="ai-book__accessible sr-only" data-book-accessible aria-live="polite" lang="en" data-no-translate>{sample}</p>
+    <div class="ai-book__page-navigation"><button type="button" data-book-previous aria-label="Previous page" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 5-5 5 5 5"/></svg></button><span data-book-page-count aria-live="polite" data-no-translate>01 — 02</span><button type="button" data-book-next aria-label="Next page"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></button></div>
+  </div>
+  <p class="ai-book__interaction-hint" id="ai-book-interaction-hint">Drag a page or tap its edge to turn.</p>
+  <div class="ai-book__controls">
+    <div class="ai-book__preferences"><label class="ai-book__theme">Thoughts
+      <select data-book-topic><option value="ai">AI</option><option value="profile">About me</option><option value="wellbeing">Wellbeing</option></select>
+    </label><span class="ai-book__local-model">Our local model</span><label class="ai-book__motion"><input type="checkbox" data-book-animate checked />Animate writing</label></div>
+    <div class="ai-book__actions">
+      <button class="ai-book__replay" type="button" data-book-replay><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7a6.5 6.5 0 1 1-.4 5M4 2.5V7h4.5"/></svg><span>Replay writing</span></button>
+      <button class="ai-book__pause" type="button" data-book-pause aria-pressed="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10m6-10v10"/></svg><span data-book-pause-label>Pause writing</span></button>
+      <button class="ai-book__generate" type="button" data-book-generate><span data-book-generate-label>New thought</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5"/></svg></button>
+    </div>
+  </div>
+  <p class="ai-book__model-note" data-book-model-note role="status" hidden></p>
+  <div class="ai-book__sources" data-book-sources data-no-translate><a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener noreferrer">Attention Is All You Need</a></div>
+  <div class="ai-book__footnote">
+    <p data-book-status role="status">Ready to write</p>
+    <p data-book-privacy>Local AI stays on this device.</p>
+  </div>
+  <div class="ai-book__consent" data-book-consent hidden>
+    <p class="ai-book__consent-title">Local model download</p>
+    <p>The local language model downloads about 885 MB from huggingface.co, runs on this device and is cached by the browser. The first load can take a few minutes.</p>
+    <div><button type="button" data-book-download>Download &amp; write</button><button type="button" data-book-cancel>Cancel</button></div>
+  </div>
+  <noscript><p class="ai-book__noscript">Enable JavaScript to animate the inscription and write new thoughts.</p></noscript>
+</article>

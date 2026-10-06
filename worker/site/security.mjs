@@ -16,7 +16,7 @@ export function secureHeaders(incoming, pathname = '/') {
   headers.set('Content-Security-Policy', [
     "default-src 'self'", `script-src ${scripts.join(' ')}`, "script-src-attr 'none'",
     "style-src 'self' 'unsafe-inline'", "img-src 'self' data: blob:", "font-src 'self'",
-    "connect-src 'self'", "media-src 'self' blob:", "worker-src 'self'", "frame-src 'self'",
+    "connect-src 'self' https://huggingface.co https://us.aws.cdn.hf.co", "media-src 'self' blob:", "worker-src 'self'", "frame-src 'self'",
     "frame-ancestors 'self'", "base-uri 'none'", "object-src 'none'", "form-action 'none'",
   ].join('; '));
   return headers;

@@ -1,0 +1,40 @@
+{
+  "originalFourFamilies": {
+    "leaf": {
+      "drawings": 200,
+      "v1Interpolated96Mse": 1.6279207281851952e-05,
+      "v2Native96Mse": 1.3174177183827851e-05,
+      "ratio": 0.8092640480420944,
+      "svg85PixelRmseV1": 0.3429537470437965,
+      "svg85PixelRmseV2": 0.3085181196512714
+    },
+    "wave": {
+      "drawings": 200,
+      "v1Interpolated96Mse": 1.9982818435309158e-05,
+      "v2Native96Mse": 2.5415674826945178e-05,
+      "ratio": 1.2718763826646342,
+      "svg85PixelRmseV1": 0.3799682397189384,
+      "svg85PixelRmseV2": 0.42851867010047406
+    },
+    "mountain": {
+      "drawings": 200,
+      "v1Interpolated96Mse": 1.6810881096894677e-05,
+      "v2Native96Mse": 1.932396844495088e-05,
+      "ratio": 1.149491709183549,
+      "svg85PixelRmseV1": 0.3485091332017915,
+      "svg85PixelRmseV2": 0.3736518058497377
+    },
+    "flower": {
+      "drawings": 200,
+      "v1Interpolated96Mse": 1.8178371119951882e-05,
+      "v2Native96Mse": 1.0928327355941292e-05,
+      "ratio": 0.6011719798121394,
+      "svg85PixelRmseV1": 0.3624068588501773,
+      "svg85PixelRmseV2": 0.2809931763347214
+    }
+  },
+  "v1Points": 48,
+  "v2Points": 96,
+  "comparison": "Same untouchedv2test styles; v1traces linearlyinterpolated from48to96coordinates. Extra16-familytraining affectscapacity; report observedaccuracy rather than assumingnonregression.",
+  "v2Step": 7750
+}

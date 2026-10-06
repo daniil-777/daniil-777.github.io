@@ -92,3 +92,10 @@ test('published home and answers page freeze every public Ask AI trigger', () =>
     assert.ok(html.includes('temporarily paused') || html.includes('Assistant paused'));
   }
 });
+
+test('book model downloads have a narrow CDN allowlist without cloud chat or local services', () => {
+  const csp = secureHeaders(new Headers(), '/').get('Content-Security-Policy')!;
+  const connect = csp.split(';').find(rule => rule.trim().startsWith('connect-src'))!.trim();
+  assert.equal(connect, "connect-src 'self' https://huggingface.co https://us.aws.cdn.hf.co");
+  assert.ok(!csp.includes('demtsev-chat') && !csp.includes('127.0.0.1') && !csp.includes('localhost'));
+});

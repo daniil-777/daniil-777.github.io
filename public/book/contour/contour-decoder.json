@@ -1,0 +1,212 @@
+{
+  "version": 2,
+  "architecture": {
+    "width": 48,
+    "layers": 2,
+    "heads": 4,
+    "ffn": 96,
+    "points": 96,
+    "input": 22,
+    "epsilon": 1e-06
+  },
+  "shapes": [
+    "leaf",
+    "wave",
+    "mountain",
+    "flower",
+    "lotus",
+    "shell",
+    "butterfly",
+    "moon",
+    "cloud",
+    "koi",
+    "swan",
+    "fern",
+    "ginkgo",
+    "feather",
+    "acorn",
+    "pebble"
+  ],
+  "closed": [
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "dtype": "float32-le",
+  "parameterCount": 52130,
+  "byteLength": 208520,
+  "sha256": "ea1150ccac1836b3dc2a054c93685eab45823b0baf23db83abba448182fdad8e",
+  "weights": {
+    "input.weight": {
+      "offset": 0,
+      "shape": [
+        48,
+        22
+      ],
+      "length": 1056
+    },
+    "input.bias": {
+      "offset": 1056,
+      "shape": [
+        48
+      ],
+      "length": 48
+    },
+    "position.weight": {
+      "offset": 1104,
+      "shape": [
+        96,
+        48
+      ],
+      "length": 4608
+    },
+    "blocks.0.attention_norm.weight": {
+      "offset": 5712,
+      "shape": [
+        48
+      ],
+      "length": 48
+    },
+    "blocks.0.qkv.weight": {
+      "offset": 5760,
+      "shape": [
+        144,
+        48
+      ],
+      "length": 6912
+    },
+    "blocks.0.attention_out.weight": {
+      "offset": 12672,
+      "shape": [
+        48,
+        48
+      ],
+      "length": 2304
+    },
+    "blocks.0.feedforward_norm.weight": {
+      "offset": 14976,
+      "shape": [
+        48
+      ],
+      "length": 48
+    },
+    "blocks.0.gate.weight": {
+      "offset": 15024,
+      "shape": [
+        96,
+        48
+      ],
+      "length": 4608
+    },
+    "blocks.0.up.weight": {
+      "offset": 19632,
+      "shape": [
+        96,
+        48
+      ],
+      "length": 4608
+    },
+    "blocks.0.down.weight": {
+      "offset": 24240,
+      "shape": [
+        48,
+        96
+      ],
+      "length": 4608
+    },
+    "blocks.1.attention_norm.weight": {
+      "offset": 28848,
+      "shape": [
+        48
+      ],
+      "length": 48
+    },
+    "blocks.1.qkv.weight": {
+      "offset": 28896,
+      "shape": [
+        144,
+        48
+      ],
+      "length": 6912
+    },
+    "blocks.1.attention_out.weight": {
+      "offset": 35808,
+      "shape": [
+        48,
+        48
+      ],
+      "length": 2304
+    },
+    "blocks.1.feedforward_norm.weight": {
+      "offset": 38112,
+      "shape": [
+        48
+      ],
+      "length": 48
+    },
+    "blocks.1.gate.weight": {
+      "offset": 38160,
+      "shape": [
+        96,
+        48
+      ],
+      "length": 4608
+    },
+    "blocks.1.up.weight": {
+      "offset": 42768,
+      "shape": [
+        96,
+        48
+      ],
+      "length": 4608
+    },
+    "blocks.1.down.weight": {
+      "offset": 47376,
+      "shape": [
+        48,
+        96
+      ],
+      "length": 4608
+    },
+    "norm.weight": {
+      "offset": 51984,
+      "shape": [
+        48
+      ],
+      "length": 48
+    },
+    "output.weight": {
+      "offset": 52032,
+      "shape": [
+        2,
+        48
+      ],
+      "length": 96
+    },
+    "output.bias": {
+      "offset": 52128,
+      "shape": [
+        2
+      ],
+      "length": 2
+    }
+  },
+  "seed": 20261016,
+  "trained": true,
+  "selectedStep": 7750,
+  "representation": "96 autoregressive xy vector tokens, each within [-1,1]",
+  "conditioning": "One-hot contour family plus four independently seeded style values in [-1,1]."
+}

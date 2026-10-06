@@ -15,6 +15,7 @@ import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from '
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
+import { createHash } from 'node:crypto';
 import { decodeVectors, vectorsMismatch } from '../src/lib/chat/embed.ts';
 import { assertPublic, privacyProblems } from '../src/lib/chat/kb.ts';
 
@@ -26,6 +27,7 @@ const ALLOWANCE = { html: 900, css: 400, js: 600 };
 const architectureBudget = JSON.parse(readFileSync(path.join(root, 'scripts/architecture-budget.json'), 'utf8'));
 const localizationBudget = JSON.parse(readFileSync(path.join(root, 'scripts/i18n-budget.json'), 'utf8'));
 const watchBudget = JSON.parse(readFileSync(path.join(root, 'scripts/watch-budget.json'), 'utf8'));
+const widgetsBudget = JSON.parse(readFileSync(path.join(root, 'scripts/ai-widgets-budget.json'), 'utf8'));
 const BINARY_MAX = 1024 * 1024;
 
 const problems = [];
@@ -56,6 +58,7 @@ const home = readFileSync(path.join(build, 'index.html'), 'utf8');
 const hasArchitecture = home.includes('data-architecture');
 const hasLocalization = home.includes('data-i18n-pack');
 const hasWatch = home.includes('data-watch');
+const hasWidgets = home.includes('data-ai-widgets');
 const styles = [...home.matchAll(/<link[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map((match) => match[1]);
 const scripts = eagerScripts(home);
 const sizes = {
@@ -76,8 +79,9 @@ if (process.argv.includes('--record')) {
     const feature = hasArchitecture ? architectureBudget.allowance[kind] : 0;
     const localization = hasLocalization ? localizationBudget.allowance[kind] : 0;
     const watch = hasWatch ? watchBudget.allowance[kind] : 0;
-    const allowance = ALLOWANCE[kind] + feature + localization + watch;
-    console.log(`${kind.padEnd(4)} ${String(sizes[kind]).padStart(6)} bytes gzip (baseline ${baseline[kind]}, ${growth >= 0 ? '+' : ''}${growth}, chat +${ALLOWANCE[kind]}, architecture +${feature}, localization +${localization}, watch +${watch})`);
+    const widgets = hasWidgets ? widgetsBudget.allowance[kind] : 0;
+    const allowance = ALLOWANCE[kind] + feature + localization + watch + widgets;
+    console.log(`${kind.padEnd(4)} ${String(sizes[kind]).padStart(6)} bytes gzip (baseline ${baseline[kind]}, ${growth >= 0 ? '+' : ''}${growth}, chat +${ALLOWANCE[kind]}, architecture +${feature}, localization +${localization}, watch +${watch}, widgets +${widgets})`);
     if (growth > allowance) problems.push(`eager ${kind} grew by ${growth} bytes gzip; the combined budget is ${allowance}`);
   }
 }
@@ -92,11 +96,22 @@ for (const url of scripts) {
 }
 
 const files = readdirSync(build, { recursive: true }).map(String).filter((file) => statSync(path.join(build, file)).isFile());
+if (hasWidgets) {
+  const font = path.join(build, 'fonts/italianno-latin.woff2');
+  if (!existsSync(font) || statSync(font).size > widgetsBudget.deferredFontMaxBytes) problems.push('book handwriting font is missing or exceeds its explicit budget');
+  const contourFile = path.join(build, 'book/contour/contour-decoder.bin');
+  const contourMetadata = path.join(build, 'book/contour/contour-decoder.json');
+  if (!existsSync(contourFile) || !existsSync(contourMetadata)) problems.push('trained book contour assets are missing');
+  else {
+    const bytes = readFileSync(contourFile), metadata = JSON.parse(readFileSync(contourMetadata, 'utf8'));
+    if (bytes.length > widgetsBudget.deferredContourMaxBytes || metadata.trained !== true || bytes.length !== metadata.byteLength || createHash('sha256').update(bytes).digest('hex') !== metadata.sha256) problems.push('book contour weights exceed their budget or do not match the trained checkpoint');
+  }
+}
 if (hasLocalization) {
   for (const file of files.filter((file) => file.endsWith('.html'))) {
     const html = readFileSync(path.join(build, file), 'utf8');
     const pack = html.match(/<script[^>]*data-i18n-pack[^>]*>([\s\S]*?)<\/script>/)?.[1];
-    if (pack && gzipSync(pack, { level: 9 }).length > localizationBudget.pageCatalogMaxGzipBytes) problems.push(`${file}: language catalog exceeds its explicit budget`);
+    if (pack && gzipSync(pack, { level: 9 }).length > localizationBudget.pageCatalogMaxGzipBytes + (html.includes('data-ai-widgets') ? widgetsBudget.pageCatalogAllowanceGzipBytes : 0)) problems.push(`${file}: language catalog exceeds its explicit budget`);
   }
 }
 if (hasArchitecture) {
@@ -113,7 +128,7 @@ if (home.includes('data-live-preview="2d"')) {
 }
 for (const file of files) {
   if (!/\.(wasm|onnx)$/.test(file)) continue;
-  const limit = file.startsWith('watch/language/') ? (file.endsWith('.onnx') ? watchBudget.deferredModelMaxBytes : watchBudget.deferredRuntimeMaxBytes) : BINARY_MAX;
+  const limit = file.startsWith('watch/language/') ? (file.endsWith('.onnx') ? watchBudget.deferredModelMaxBytes : watchBudget.deferredRuntimeMaxBytes) : file.startsWith('chat/runtime/') ? 32 * 1024 ** 2 : BINARY_MAX;
   if (statSync(path.join(build, file)).size > limit) problems.push(`${file} exceeds its scoped binary budget of ${limit} bytes`);
 }
 if (hasWatch) {
