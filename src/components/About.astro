@@ -4,6 +4,14 @@ import portrait from '../assets/me/portrait.jpg';
 import { bio, facts, interests, links, site } from '../data/site';
 import Icon, { type IconName } from './Icon.astro';
 
+const bioHighlights = new Map([
+  ['AI applications for art', 'light-dark(#a72f6f, #ff80b5)'],
+  ['real-time 2D and 3D generation', 'light-dark(#0066cc, #70b8ff)'],
+  ['autonomous navigation', 'light-dark(#087769, #57d6be)'],
+  ['financial analysis', 'light-dark(#936000, #efbf68)'],
+]);
+const bioHighlightPattern = new RegExp(`(${[...bioHighlights.keys()].join('|')})`, 'g');
+
 const interestIcons: Record<string, IconName> = {
   Biking: 'bike',
   Hiking: 'mountain',
@@ -46,7 +54,15 @@ const interestIcons: Record<string, IconName> = {
           <h1 class="h2" id="about-title">Research curiosity, with an engineer’s habit of shipping.</h1>
         </header>
         <div class="about__bio reveal">
-          {bio.map((paragraph) => <p>{paragraph}</p>)}
+          {bio.map((paragraph) => (
+            <p>
+              {paragraph.split(bioHighlightPattern).map((text) => (
+                bioHighlights.has(text)
+                  ? <strong class="about__focus" style={`color: ${bioHighlights.get(text)}; font-weight: 600`}>{text}</strong>
+                  : text
+              ))}
+            </p>
+          ))}
         </div>
         <dl class="about__facts reveal">
           {
