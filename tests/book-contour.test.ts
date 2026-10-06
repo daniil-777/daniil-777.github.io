@@ -156,3 +156,13 @@ test('loading rejects a mismatched metadata and weight pair before decoding', as
   try { await assert.rejects(() => loadContourModel(), /do not match their checkpoint/); }
   finally { globalThis.fetch = original; }
 });
+
+test('published training and runtime receipts bind to the actual artifact bytes', () => {
+  const manifest: Record<string, { bytes: number; sha256: string }> = JSON.parse(readFileSync(resolve('docs/book/contour/artifact-manifest.json'), 'utf8'));
+  for (const [name, entry] of Object.entries(manifest)) {
+    if (name === 'localCorpus') continue;
+    const artifact = readFileSync(resolve(name));
+    assert.equal(artifact.byteLength, entry.bytes, name);
+    assert.equal(createHash('sha256').update(artifact).digest('hex'), entry.sha256, name);
+  }
+});

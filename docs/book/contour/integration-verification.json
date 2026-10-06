@@ -14,7 +14,7 @@
     "astroTypes": true,
     "build": true,
     "tests": {
-      "passed": 633,
+      "passed": 634,
       "failed": 0
     },
     "budgetAndVectors": true,
@@ -48,5 +48,6 @@
     "gatewayVersion": "67aa1d48-fb12-4a96-b943-2d9a9d632357",
     "procedure": "Revert the scoped feature commit and successfully deploy Pages; restore the prior gateway version. Gateway-only rollback does not undo an origin update."
   },
-  "authority": "User explicitly requested train, deploy, test and publish."
+  "authority": "User explicitly requested train, deploy, test and publish.",
+  "provenanceIntegrityRegression": true
 }
