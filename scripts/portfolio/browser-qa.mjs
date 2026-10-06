@@ -7,7 +7,7 @@ import { startBrowser } from '../watch-language/browser-helper.mjs';
 const url = process.env.PORTFOLIO_QA_URL ?? 'http://127.0.0.1:4391/';
 const output = process.env.PORTFOLIO_QA_OUTPUT ?? '/tmp/portfolio-actions-qa';
 await mkdir(output, { recursive: true });
-const browser = await startBrowser(url, { width: 1440, height: 1000 });
+const browser = await startBrowser('about:blank', { width: 1440, height: 1000 });
 const page = (fn, argument) => browser.evaluate('(' + fn.toString() + ')(' + JSON.stringify(argument) + ')');
 const screenshot = async () => Buffer.from((await browser.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false })).data, 'base64');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -40,14 +40,31 @@ async function click(selector, touch = false) {
 try {
   await browser.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
   await browser.send('Browser.grantPermissions', { origin: new URL(url).origin, permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'] });
+  await browser.send('Page.navigate', { url });
   await waitFor(() => window.__siteReady && document.querySelector('[data-email-copy]'), 'site ready');
+  await page(() => document.fonts.ready.then(() => true));
   const featured = await page(() => {
     const tile = document.querySelector('#featured a[href^="/work/laparoscopic-skills-trainer/"]').closest('article');
     return { preview: tile.querySelector('[data-preview]').dataset.preview, poster: tile.querySelector('img').src, payload: JSON.parse(tile.querySelector('[data-video]').dataset.video) };
   });
   check('Selected Work uses the Stratafix preview and poster', featured.preview === '/media/preview/lap-stratafix.mp4' && featured.poster.includes('lap-stratafix'));
   check('Watch opens Stratafix at its guidance segment', featured.payload.id === 'lap-stratafix' && featured.payload.startAt === 111);
-  await click('#featured article:has(a[href^="/work/laparoscopic-skills-trainer/"]) [data-video-open]');
+  const watchSelector = '#featured article:has(a[href^="/work/laparoscopic-skills-trainer/"]) [data-video-open]';
+  await page(selector => document.querySelector(selector).scrollIntoView({ block: 'center', behavior: 'instant' }), watchSelector);
+  await sleep(750);
+  const beforeHover = await page(selector => {
+    const box = document.querySelector(selector).getBoundingClientRect();
+    return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  }, watchSelector);
+  await browser.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...beforeHover });
+  await waitFor(() => document.querySelector('#featured .preview-video')?.readyState >= 2, 'hover preview');
+  check('Hover preview overlays the poster without shifting the Watch button', await page(before => {
+    const tile = document.querySelector('#featured a[href^="/work/laparoscopic-skills-trainer/"]').closest('article');
+    const preview = tile.querySelector('.preview-video');
+    const button = tile.querySelector('[data-video-open]').getBoundingClientRect();
+    return getComputedStyle(preview).position === 'absolute' && getComputedStyle(preview).pointerEvents === 'none' && Math.abs(button.y + button.height / 2 - before.y) < 1;
+  }, beforeHover));
+  await click(watchSelector);
   await waitFor(() => document.querySelector('[data-video-dialog]').open && document.querySelector('[data-video-stage] mux-player, [data-video-stage] video')?.currentTime >= 110.5, 'Stratafix playback');
   await waitFor(() => {
     const video = document.querySelector('[data-video-stage] mux-player, [data-video-stage] video');

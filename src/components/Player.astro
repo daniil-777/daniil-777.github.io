@@ -148,20 +148,4 @@ const payload = await videoPayload(video);
     }
   }
 
-  /* Silent hover previews inserted by player.ts into any [data-preview] box. */
-  .preview-video {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: inherit;
-    opacity: 0;
-    transition: opacity 0.45s var(--ease);
-    pointer-events: none;
-  }
-
-  .is-previewing > .preview-video {
-    opacity: 1;
-  }
 </style>
