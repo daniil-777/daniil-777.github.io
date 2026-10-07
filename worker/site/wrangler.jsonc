@@ -33,6 +33,6 @@
     }
   ],
   "vars": {
-    "FALLBACK_RELEASE": "selected-universal-proctor-20261007-v1"
+    "FALLBACK_RELEASE": "cuevertis-product-20261007-v1"
   }
 }

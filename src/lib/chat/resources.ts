@@ -16,7 +16,7 @@ export interface Resource {
 
 const KINDS = new Set<Resource['kind']>(['cv', 'video', 'project', 'demo', 'code', 'document', 'profile']);
 const HOSTS = new Set([
-  'demtsev.com', 'www.demtsev.com', 'github.com', 'daniil-777.github.io',
+  'demtsev.com', 'www.demtsev.com', 'cueveris.demtsev.com', 'github.com', 'daniil-777.github.io',
   'linkedin.com', 'www.linkedin.com', 'scholar.google.com', 'arxiv.org',
   'patents.google.com', 'cadd.ethz.ch', 'fx-regime-radar.fly.dev',
   'doi.org', 'openaccess.thecvf.com',

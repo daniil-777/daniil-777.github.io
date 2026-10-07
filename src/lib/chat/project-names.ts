@@ -1,6 +1,7 @@
 /** Reviewed aliases identify published projects; longest exact spans win. */
 export const projectText = (value: string) => value.normalize('NFKD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const SHORT_NAMES: Record<string, string[]> = {
+  'universal-ai-proctor': ['cueveris'],
   'astro-pilot': ['spaceship', 'spacecraft'],
   'laparoscopic-skills-trainer': ['laparoscopic trainer', 'lap trainer'],
   'dynamic-plane-onet': ['dynamic plane', 'dynamic planes', 'occupancy networks'],

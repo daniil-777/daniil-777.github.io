@@ -11,7 +11,7 @@
   <g font-family="Inter, Arial, sans-serif">
     <rect x="80" y="70" width="46" height="46" rx="14" fill="#59D8C4"/>
     <path d="M92 96L101 80L113 103M96 96H110" stroke="#09252B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="144" y="101" fill="#F1F7FB" font-size="25" font-weight="700" letter-spacing="-.5">Universal AI Proctor</text>
+    <text x="144" y="101" fill="#F1F7FB" font-size="25" font-weight="700" letter-spacing="-.5">Cuevertis</text>
     <text x="1354" y="99" text-anchor="end" fill="#8AB6BF" font-size="15" letter-spacing="2.8">OBSERVE · GUIDE · REVIEW</text>
     <g filter="url(#shadow)">
       <rect x="80" y="156" width="1280" height="600" rx="26" fill="#101B2A" stroke="#30485B"/>

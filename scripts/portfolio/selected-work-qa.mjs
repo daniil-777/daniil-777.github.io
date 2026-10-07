@@ -41,7 +41,7 @@ async function measure() {
       rows: [...wrap.querySelectorAll('article')].map(tile => {
         const link = tile.querySelector('h3 a'), image = tile.querySelector('.tile__media img');
         const box = tile.getBoundingClientRect(), media = image?.getBoundingClientRect();
-        return { id: link.getAttribute('href').split('/')[2], width: box.width, height: box.height,
+        return { id: link.getAttribute('href').split('/')[2], title: link.textContent.trim(), width: box.width, height: box.height,
           image: !!image && image.complete && image.naturalWidth > 0,
           imageWidth: media?.width, imageHeight: media?.height,
           preview: !!tile.querySelector('[data-preview]'), watch: !!tile.querySelector('[data-video-open]') };
@@ -82,6 +82,7 @@ try {
     assert.deepEqual(list.errors, []);
     assert.equal(list.rows[4].preview, false);
     assert.equal(list.rows[4].watch, false);
+    assert.equal(list.rows[4].title, 'Cuevertis');
     if (before) for (let i = 0; i < 4; i++) {
       assert.equal(list.rows[i].id, before.rows[i].id);
       assert.ok(Math.abs(list.rows[i].height - before.rows[i].height) < 2, 'existing card height changed');
@@ -112,11 +113,30 @@ try {
     assert.ok(links.actions.includes('https://cueveris.demtsev.com/'));
     assert.ok(links.actions.includes('https://github.com/daniil-777/universal-ai-proctor'));
     await page(() => document.querySelector('#featured article:last-child h3 a').click());
-    await waitFor(() => location.pathname === '/work/universal-ai-proctor/' && document.querySelector('h1')?.textContent.includes('Universal AI Proctor'), 'project navigation');
+    await waitFor(() => location.pathname === '/work/universal-ai-proctor/' && document.querySelector('h1')?.textContent.includes('Cuevertis'), 'project navigation');
+    const description = await page(() => document.querySelector('main').innerText);
+    assert.match(description, /local Qwen vision-language models/);
+    assert.match(description, /Google EmbeddingGemma models power semantic search/);
+    assert.match(description, /BM25 keyword search/);
+    assert.deepEqual(await page(() => window.__selectedErrors), []);
     checks.push({ width, list, grid, links, savedPreference: true, keyboardToggle: true, projectNavigation: true,
       baselineGeometry: before ? 'first four cards unchanged within 2px' : 'not compared' });
   }
+  const translations = [];
+  for (const locale of ['de', 'fr', 'it', 'es', 'zh', 'ru']) {
+    await page(locale => document.querySelector(`[data-language-option="${locale}"]`).click(), locale);
+    await waitFor(locale => document.documentElement.dataset.language === locale, 'language update', locale);
+    const translated = await page(() => ({ title: document.querySelector('h1').textContent.trim(), text: document.querySelector('main').innerText,
+      overflow: document.documentElement.scrollWidth > innerWidth, errors: window.__selectedErrors }));
+    assert.equal(translated.title, 'Cuevertis');
+    assert.ok(translated.text.includes('Google EmbeddingGemma') && translated.text.includes('Qwen'));
+    assert.ok(!translated.text.includes('The report assistant uses local Qwen vision-language models'));
+    assert.equal(translated.overflow, false);
+    assert.deepEqual(translated.errors, []);
+    translations.push(locale);
+  }
   await writeFile(join(output, 'report.json'), JSON.stringify({ base, baseline: baseline ?? null, checks, passed: true,
+    translations,
     scope: 'Responsive selected-work rendering, links, keyboard layout toggle, preference and page navigation. Baseline comparison covers existing list geometry; screenshots require visual review.' }, null, 2));
   console.log(JSON.stringify({ passed: true, widths: checks.map(check => check.width), output }));
 } finally {
