@@ -9,7 +9,7 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
     <a class="nav__brand" href="/" aria-label={`${site.name}, home`}>{site.name}</a>
 
     <nav class="nav__links" aria-label="Primary">
-      {nav.map((item) => <a href={item.href} data-nav-link>{item.label}</a>)}
+      {nav.map((item) => <a href={item.href} class:list={{ 'nav__widgets': item.href === '/#ai-widgets' }} data-nav-link>{item.label}</a>)}
     </nav>
 
     <div class="nav__tools">
@@ -37,7 +37,7 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
       {
         nav.map((item, i) => (
           <li style={`--i:${i}`}>
-            <a href={item.href}>{item.label}</a>
+            <a href={item.href} class:list={{ 'nav__widgets': item.href === '/#ai-widgets' }}>{item.label}</a>
           </li>
         ))
       }
@@ -49,6 +49,14 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
 </header>
 
 <style>
+  @font-face {
+    font-family: 'Nav Handwriting';
+    src: url('/fonts/italianno-latin.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+  }
+
   .nav {
     position: sticky;
     top: 0;
@@ -87,6 +95,7 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
 
   .nav__links {
     display: flex;
+    align-items: center;
     gap: clamp(18px, 2.6vw, 34px);
   }
 
@@ -102,6 +111,37 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
   .nav__links a.is-active {
     color: var(--text);
     text-decoration: none;
+  }
+
+  .nav__links a.nav__widgets,
+  .nav__sheet .nav__widgets {
+    position: relative;
+    width: fit-content;
+    color: var(--link);
+    font-family: 'Nav Handwriting', 'Snell Roundhand', cursive;
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: .01em;
+  }
+
+  .nav__widgets::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 2px 2px;
+    height: 5px;
+    border-bottom: 1.5px solid currentColor;
+    border-radius: 50%;
+    transform: rotate(-3deg);
+    opacity: .65;
+    pointer-events: none;
+  }
+
+  :global(:root:lang(ru)) .nav__links .nav__widgets,
+  :global(:root:lang(zh)) .nav__links .nav__widgets {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
   }
 
   .nav__tools {
@@ -137,12 +177,13 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
     margin-right: 6px;
     padding: 0 12px;
     border-radius: 980px;
-    background: var(--field);
-    color: var(--text);
+    background: var(--accent);
+    color: #fff;
     font-size: 13px;
     font-weight: 500;
     white-space: nowrap;
-    transition: background-color 0.2s var(--ease);
+    box-shadow: 0 2px 8px rgb(0 102 204 / 16%);
+    transition: background-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
   }
 
   [data-chat-paused] { opacity: .48; cursor: not-allowed; }
@@ -150,7 +191,8 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
   .nav__sheet [data-chat-paused] { display: block; padding: 16px 0; color: var(--text-2); font-size: 28px; font-weight: 600; }
 
   .nav__ask:hover {
-    background: var(--field-hover);
+    background: #0066cc;
+    box-shadow: 0 3px 10px rgb(0 102 204 / 20%);
     text-decoration: none;
   }
 
@@ -236,6 +278,15 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
     text-decoration: none;
   }
 
+  .nav__sheet .nav__widgets { font-size: 44px; }
+  .nav__sheet .nav__widgets::after { bottom: 12px; }
+  :global(:root:lang(ru)) .nav__sheet .nav__widgets,
+  :global(:root:lang(zh)) .nav__sheet .nav__widgets {
+    font-family: inherit;
+    font-size: 28px;
+    font-weight: 600;
+  }
+
   @keyframes sheet-in {
     from {
       opacity: 0;
@@ -290,13 +341,6 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
       margin: 0;
       padding: 0;
       border: 0;
-      background: none;
-      color: var(--text-2);
-    }
-
-    .nav__ask:hover {
-      background: var(--field);
-      color: var(--text);
     }
 
     .nav__ask :global(svg) {
