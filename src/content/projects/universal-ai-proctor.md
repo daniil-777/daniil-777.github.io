@@ -6,6 +6,8 @@ category: independent
 year: "2026"
 sortDate: 2026-10-05
 organisation: Independent project
+featured: true
+order: 5
 topics: [LLM & VLM, Computer Vision, Real-time]
 stack: [React, TypeScript, Fastify, FFmpeg, Vision-language models, Voice interface]
 cover: ../../assets/projects/universal-ai-proctor/cover.png

@@ -110,9 +110,9 @@ describe('projects', () => {
     assert.equal(new Set(videoIds).size, videoIds.length);
   });
 
-  it('featured projects have a video for their tile', () => {
+  it('featured projects have a video or cover for their tile', () => {
     for (const { id, data } of projects.filter((project) => project.data.featured)) {
-      assert.ok((data.videos?.length ?? 0) > 0, `${id} is featured but has no video`);
+      assert.ok((data.videos?.length ?? 0) > 0 || data.cover, `${id} is featured but has no video or cover`);
     }
   });
 

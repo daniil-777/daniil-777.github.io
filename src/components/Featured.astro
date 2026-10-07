@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { projectContext, projectHref, resolveVideos, type Project } from '../lib/projects';
+import { projectContext, projectCover, projectHref, resolveVideos, type Project } from '../lib/projects';
 import Icon from './Icon.astro';
 import ProjectActions from './ProjectActions.astro';
 
@@ -15,6 +15,7 @@ const featured = Astro.props.projects
 const tiles = featured.map((project, i) => ({
   project,
   video: resolveVideos(project)[0],
+  cover: projectCover(project),
   // Wide, two halves, wide, two halves ...
   wide: i % 3 === 0,
 }));
@@ -40,7 +41,7 @@ const tiles = featured.map((project, i) => ({
 
     <div class="bento" data-featured-items data-view="list">
       {
-        tiles.map(({ project, video, wide }) => (
+        tiles.map(({ project, video, cover, wide }) => (
           <article class:list={['tile', 'reveal', { 'tile--wide': wide }]} data-preview-scope>
             <div class="tile__text">
               <p class="tile__cat">{projectContext(project)}</p>
@@ -57,10 +58,10 @@ const tiles = featured.map((project, i) => ({
                 </span>
               </div>
             </div>
-            {video && (
-              <div class="tile__media" data-preview={video.preview}>
+            {cover && (
+              <div class="tile__media" data-preview={video?.preview}>
                 <Image
-                  src={video.poster}
+                  src={cover.image}
                   alt=""
                   widths={[224, 416, 960, 1600]}
                   sizes="(max-width: 339px) 96px, (max-width: 760px) 112px, (max-width: 959px) 180px, 208px"
