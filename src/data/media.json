@@ -163,5 +163,20 @@
       "preview": "6e97fbcfbb19",
       "poster": "2f77d6ea2a17"
     }
+  },
+  "viscera-atlas": {
+    "src": "/media/video/viscera-atlas.mp4",
+    "small": "/media/small/viscera-atlas.mp4",
+    "preview": "/media/preview/viscera-atlas.mp4",
+    "width": 1920,
+    "height": 1080,
+    "duration": 25,
+    "audio": true,
+    "sig": {
+      "full": "cbdbd3621dd9",
+      "small": "173f754a306f",
+      "preview": "900a66a661fe",
+      "poster": "3f1dbe41bd16"
+    }
   }
 }
