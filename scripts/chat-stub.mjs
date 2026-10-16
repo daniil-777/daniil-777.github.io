@@ -72,8 +72,11 @@ export async function startStub({ port = 0, pieceMs = 15 } = {}) {
     }
     if (request.method !== 'POST' || url.pathname !== '/v1/messages') return json(404, { type: 'error', error: { type: 'not_found_error', message: 'Not found' } });
 
-    let raw = '';
-    for await (const piece of request) raw += piece;
+    // Decode once, after joining the bytes: a multi-byte character split across two
+    // network reads would otherwise turn into replacement characters.
+    const pieces = [];
+    for await (const piece of request) pieces.push(piece);
+    const raw = Buffer.concat(pieces).toString('utf8');
     const body = JSON.parse(raw);
     const wrong = problem(request, body);
     if (wrong) {
