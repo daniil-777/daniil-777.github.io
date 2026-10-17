@@ -42,7 +42,7 @@ test('all seven locales switch instantly, restore copy, preserve state and suppo
     }
     await setLocale('zh');
     // A chat passage is composed from separately translated published paragraphs.
-    const source = 'For the past 4.5 years, I’ve been a Machine Learning Research Engineer at VirtaMed in Zurich, building AI for surgical training. I take projects from model development to on-device applications and deployment, including computer vision, generative image enhancement and AI coaching systems.';
+    const source = 'For the past 4.5 years, I’ve been a Machine Learning Research Engineer at VirtaMed in Zurich, building AI for surgical training. I’m currently developing libraries for fast 3D and physics generation, as well as fast methods for time-series and signal forecasting. I take projects from model development to on-device applications and deployment, including computer vision, generative image enhancement and AI coaching systems.';
     const next = 'Alongside my industry work, I build independent AI applications for art, real-time 2D and 3D generation, autonomous navigation and financial analysis. I’m also developing a fast browser-based AI library to make advanced models more accessible.';
     const quote = document.createElement('blockquote');
     quote.className = 'turn__quote'; quote.textContent = prose(`${source} ${next}`); document.body.append(quote);

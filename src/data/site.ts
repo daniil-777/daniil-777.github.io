@@ -24,9 +24,9 @@ export const hero = {
 
 export const nav = [
   { label: 'About', href: '/#about' },
+  { label: 'Research', href: '/#research' },
   { label: 'Work', href: '/#work' },
   { label: 'Journey', href: '/#journey' },
-  { label: 'Research', href: '/#research' },
   { label: 'Contact', href: '/#contact' },
   { label: 'AI widgets', href: '/#ai-widgets' },
 ];
@@ -48,7 +48,7 @@ export const stats = [
 ];
 
 export const bio = [
-  'For the past 4.5 years, I’ve been a Machine Learning Research Engineer at VirtaMed in Zurich, building AI for surgical training. I take projects from model development to on-device applications and deployment, including computer vision, generative image enhancement and AI coaching systems.',
+  'For the past 4.5 years, I’ve been a Machine Learning Research Engineer at VirtaMed in Zurich, building AI for surgical training. I’m currently developing libraries for fast 3D and physics generation, as well as fast methods for time-series and signal forecasting. I take projects from model development to on-device applications and deployment, including computer vision, generative image enhancement and AI coaching systems.',
   'At ETH Zurich, I completed a master’s in Computational Science and Engineering, focusing on robotics. I co-authored a WACV paper on neural 3D reconstruction, co-invented a camera pose estimation method filed as an international patent application, and worked on de novo drug design in the Molecular Design Lab.',
   'I graduated with honours from the Moscow Institute of Physics and Technology. During an Amgen Scholars internship at ETH Zurich, I used generative adversarial networks to study Alzheimer’s-related brain changes and presented the work at the Amgen Scholars Symposium in Cambridge.',
   'Alongside my industry work, I build independent AI applications for art, real-time 2D and 3D generation, autonomous navigation and financial analysis. I’m also developing a fast browser-based AI library to make advanced models more accessible.',
