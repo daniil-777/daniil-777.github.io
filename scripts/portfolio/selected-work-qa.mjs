@@ -8,7 +8,7 @@ const base = process.env.SELECTED_QA_URL ?? 'http://127.0.0.1:4373/';
 const baseline = process.env.SELECTED_QA_BASELINE;
 const output = process.env.SELECTED_QA_OUTPUT ?? '/tmp/selected-universal-browser';
 await mkdir(output, { recursive: true });
-const expected = ['ai-proctor', 'astro-pilot', 'pixel-morph', 'laparoscopic-skills-trainer', 'universal-ai-proctor'];
+const expected = ['ai-proctor', 'astro-pilot', 'pixel-morph', 'laparoscopic-skills-trainer', 'universal-ai-proctor', 'viscera-atlas'];
 const checks = [];
 const browser = await startBrowser('about:blank', { width: 1440, height: 1000 });
 const page = (fn, arg) => browser.evaluate(`(${fn.toString()})(${JSON.stringify(arg)})`);
@@ -88,8 +88,8 @@ try {
       assert.ok(Math.abs(list.rows[i].height - before.rows[i].height) < 2, 'existing card height changed');
       assert.ok(Math.abs(list.rows[i].imageWidth - before.rows[i].imageWidth) < 2, 'existing thumbnail changed');
     }
-    await page(() => document.querySelector('#featured article:last-child').scrollIntoView({ block: 'center' }));
-    await waitFor(() => parseFloat(getComputedStyle(document.querySelector('#featured article:last-child')).opacity) >= 0.99, 'visible list card');
+    await page(() => document.querySelector('#featured article:has(a[href^="/work/universal-ai-proctor/"])').scrollIntoView({ block: 'center' }));
+    await waitFor(() => parseFloat(getComputedStyle(document.querySelector('#featured article:has(a[href^="/work/universal-ai-proctor/"])')).opacity) >= 0.99, 'visible list card');
     await screenshot(`selected-list-${width}.png`);
     await page(() => document.querySelector('[data-featured-view-btn="grid"]').focus());
     await browser.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', text: '\r', windowsVirtualKeyCode: 13 });
@@ -100,19 +100,19 @@ try {
     assert.equal(grid.overflow, false);
     assert.ok(grid.rows.every(row => row.image && row.imageWidth > 0));
     assert.equal(await page(() => document.querySelector('[data-featured-view-btn="grid"]').getAttribute('aria-pressed')), 'true');
-    await page(() => document.querySelector('#featured article:last-child').scrollIntoView({ block: 'center' }));
-    await waitFor(() => parseFloat(getComputedStyle(document.querySelector('#featured article:last-child')).opacity) >= 0.99, 'visible grid card');
+    await page(() => document.querySelector('#featured article:has(a[href^="/work/universal-ai-proctor/"])').scrollIntoView({ block: 'center' }));
+    await waitFor(() => parseFloat(getComputedStyle(document.querySelector('#featured article:has(a[href^="/work/universal-ai-proctor/"])')).opacity) >= 0.99, 'visible grid card');
     await screenshot(`selected-grid-${width}.png`);
     await navigate(base);
     assert.equal((await measure()).view, 'grid', 'saved preference');
     const links = await page(() => {
-      const tile = document.querySelector('#featured article:last-child');
+      const tile = document.querySelector('#featured article:has(a[href^="/work/universal-ai-proctor/"])');
       return { project: tile.querySelector('h3 a').getAttribute('href'), actions: [...tile.querySelectorAll('.act')].map(a => a.getAttribute('href')) };
     });
     assert.equal(new URL(links.project, base).pathname, '/work/universal-ai-proctor/');
     assert.ok(links.actions.includes('https://cueveris.demtsev.com/'));
     assert.ok(links.actions.includes('https://github.com/daniil-777/universal-ai-proctor'));
-    await page(() => document.querySelector('#featured article:last-child h3 a').click());
+    await page(() => document.querySelector('#featured article:has(a[href^="/work/universal-ai-proctor/"]) h3 a').click());
     await waitFor(() => location.pathname === '/work/universal-ai-proctor/' && document.querySelector('h1')?.textContent.includes('Cuevertis'), 'project navigation');
     const description = await page(() => document.querySelector('main').innerText);
     assert.match(description, /local Qwen vision-language models/);

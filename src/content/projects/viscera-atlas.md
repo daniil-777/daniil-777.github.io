@@ -1,11 +1,13 @@
 ---
 title: VISCERA Atlas
-tagline: Open anatomy you can reshape with words, in the browser.
-summary: A browser anatomy studio built on 24 open reference organs from 12 organ families. Reshape an organ with sliders or a sentence, lay real tissue detail from licensed surgical photographs over it, give it a synthetic disease morphology and drop it into a liver physics lab. Every variation is bounded, seeded and reproducible.
+tagline: Generative shape modelling and text-to-shape editing for interactive 3D anatomy.
+summary: A browser-based anatomy studio combining a generative shape model with text-to-shape editing. Create reproducible 3D organ variations with natural-language instructions or interactive controls, then explore tissue appearance, synthetic disease morphology and liver mechanics.
 category: independent
 year: "2026"
 sortDate: 2026-10-16
 organisation: Independent project
+featured: true
+order: 6
 topics: [Generative AI, 3D, In-browser AI, Medical, Simulation, Synthetic data]
 stack: [React, TypeScript, Three.js, Vite, Python, FastAPI, PyTorch, NumPy, Normalizing flows, Finite elements, meshoptimizer, Playwright]
 highlights:
