@@ -178,5 +178,125 @@
       "preview": "900a66a661fe",
       "poster": "3f1dbe41bd16"
     }
+  },
+  "viscera-motivation": {
+    "src": "/media/video/viscera-motivation.mp4",
+    "small": "/media/small/viscera-motivation.mp4",
+    "preview": "/media/preview/viscera-motivation.mp4",
+    "width": 1920,
+    "height": 972,
+    "duration": 92.1,
+    "audio": true,
+    "sig": {
+      "full": "bc9e891ad754",
+      "small": "03f5d1b7dc19",
+      "preview": "9f5814715031",
+      "poster": "1aa1b452c103"
+    }
+  },
+  "viscera-text-to-shape": {
+    "src": "/media/video/viscera-text-to-shape.mp4",
+    "small": "/media/small/viscera-text-to-shape.mp4",
+    "preview": "/media/preview/viscera-text-to-shape.mp4",
+    "width": 1920,
+    "height": 972,
+    "duration": 242.2,
+    "audio": true,
+    "sig": {
+      "full": "00200509c100",
+      "small": "fb3624e79efc",
+      "preview": "da4c2de705b9",
+      "poster": "967f7069ef87"
+    }
+  },
+  "viscera-scene-import": {
+    "src": "/media/video/viscera-scene-import.mp4",
+    "small": "/media/small/viscera-scene-import.mp4",
+    "preview": "/media/preview/viscera-scene-import.mp4",
+    "width": 1920,
+    "height": 972,
+    "duration": 298.8,
+    "audio": true,
+    "sig": {
+      "full": "65895d1ff858",
+      "small": "fe4780b743eb",
+      "preview": "254901c03db4",
+      "poster": "a6190f3d2ebc"
+    }
+  },
+  "viscera-rl-camera-grasping": {
+    "src": "/media/video/viscera-rl-camera-grasping.mp4",
+    "small": "/media/small/viscera-rl-camera-grasping.mp4",
+    "preview": "/media/preview/viscera-rl-camera-grasping.mp4",
+    "width": 1920,
+    "height": 972,
+    "duration": 150.7,
+    "audio": true,
+    "sig": {
+      "full": "0ac65358928f",
+      "small": "1cc67c984306",
+      "preview": "fef2859eef66",
+      "poster": "48b8a448f5ad"
+    }
+  },
+  "viscera-disease": {
+    "src": "/media/video/viscera-disease.mp4",
+    "small": "/media/small/viscera-disease.mp4",
+    "preview": "/media/preview/viscera-disease.mp4",
+    "width": 1920,
+    "height": 972,
+    "duration": 133.9,
+    "audio": true,
+    "sig": {
+      "full": "3649a2c17c1f",
+      "small": "42de9472f7bd",
+      "preview": "696e5a356c9c",
+      "poster": "132de87068f4"
+    }
+  },
+  "viscera-tissue-lab": {
+    "src": "/media/video/viscera-tissue-lab.mp4",
+    "small": "/media/small/viscera-tissue-lab.mp4",
+    "preview": "/media/preview/viscera-tissue-lab.mp4",
+    "width": 1920,
+    "height": 972,
+    "duration": 161,
+    "audio": true,
+    "sig": {
+      "full": "566fd966db71",
+      "small": "f5ba464d4aeb",
+      "preview": "b5f944790b9f",
+      "poster": "6e47d602f4c4"
+    }
+  },
+  "viscera-adipose": {
+    "src": "/media/video/viscera-adipose.mp4",
+    "small": "/media/small/viscera-adipose.mp4",
+    "preview": "/media/preview/viscera-adipose.mp4",
+    "width": 1920,
+    "height": 972,
+    "duration": 162.7,
+    "audio": true,
+    "sig": {
+      "full": "18bbf72c540c",
+      "small": "e888e8312af0",
+      "preview": "503d3bce13ac",
+      "poster": "7f415f2a450a"
+    }
+  },
+  "viscera-physics-lab": {
+    "src": "/media/video/viscera-physics-lab.mp4",
+    "small": "/media/small/viscera-physics-lab.mp4",
+    "preview": "/media/preview/viscera-physics-lab.mp4",
+    "width": 1920,
+    "height": 972,
+    "duration": 149,
+    "audio": true,
+    "sig": {
+      "full": "93ad7ea7d5d9",
+      "small": "d9bbefd70116",
+      "preview": "ec9e684a20d0",
+      "poster": "b9f74e65a36c"
+    }
   }
 }

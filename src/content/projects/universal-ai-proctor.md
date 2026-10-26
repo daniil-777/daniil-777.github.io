@@ -7,7 +7,7 @@ year: "2026"
 sortDate: 2026-10-05
 organisation: Independent product
 featured: true
-order: 5
+order: 6
 topics: [LLM & VLM, Computer Vision, Real-time]
 stack: [React, TypeScript, Fastify, FFmpeg, Qwen, Google EmbeddingGemma, WebGPU, Ollama, Voice interface]
 cover: ../../assets/projects/universal-ai-proctor/cover.png

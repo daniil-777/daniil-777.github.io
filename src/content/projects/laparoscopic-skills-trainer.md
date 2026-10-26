@@ -8,7 +8,7 @@ sortDate: 2026-09-29
 organisation: VirtaMed
 role: Machine Learning Research Engineer
 featured: true
-order: 4
+order: 5
 topics: [Computer Vision, Real-time, In-browser AI, Medical]
 stack: [PyTorch, TypeScript, Edge inference, Real-time computer vision]
 highlights:

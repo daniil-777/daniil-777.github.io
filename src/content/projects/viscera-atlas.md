@@ -7,7 +7,7 @@ year: "2026"
 sortDate: 2026-10-16
 organisation: Independent project
 featured: true
-order: 6
+order: 2
 topics: [Generative AI, 3D, In-browser AI, Medical, Simulation, Synthetic data]
 stack: [React, TypeScript, Three.js, Vite, Python, FastAPI, PyTorch, NumPy, Normalizing flows, Finite elements, meshoptimizer, Playwright]
 highlights:
@@ -33,6 +33,54 @@ videos:
     source: me/projects/visceraAtlas/visceraAtlas.mp4
     posterAt: 5.8
     previewAt: 4
+  - id: viscera-motivation
+    title: Motivation · every shape in between
+    caption: Pixel Morph blends castles, temples and houses into one another; VISCERA Atlas brings the same idea to anatomy.
+    source: me/projects/visceraAtlas/viscera-motivation-3D.mp4
+    posterAt: 69
+    previewAt: 10
+  - id: viscera-text-to-shape
+    title: Anatomy with words · text to 3D
+    caption: Typed instructions reshape the liver, gallbladder and kidney and add disease to the surface, each one interpreted before it is applied.
+    source: me/projects/visceraAtlas/viscera-generative-text-3D-main.mp4
+    posterAt: 196.8
+    previewAt: 185
+  - id: viscera-scene-import
+    title: A whole laparoscopic scene, from Unity
+    caption: A 24-structure abdominal scene from Unity is imported into the browser, varied organ by organ, then textured and explored as one connected scene.
+    source: me/projects/visceraAtlas/viscera-from-unity-main.mp4
+    posterAt: 74.7
+    previewAt: 195
+  - id: viscera-rl-camera-grasping
+    title: See. Decide. Act. · camera navigation and grasping
+    caption: A trained visual policy steers the laparoscope through the scene, approaches the liver and grasps it.
+    source: me/projects/visceraAtlas/viscera-RL-navigation-grasping.mp4
+    posterAt: 100
+    previewAt: 92
+  - id: viscera-disease
+    title: Disease variations
+    caption: Synthetic disease morphology and colour taken from a reference photograph, applied to the liver with bounded design controls.
+    source: me/projects/visceraAtlas/viscera-disease-variations.mp4
+    posterAt: 46
+    previewAt: 40
+  - id: viscera-tissue-lab
+    title: Tissue lab · beneath the surface
+    caption: Learned tissue tiles and material variations build up the liver surface, then an incision opens the liver bleeding experiment.
+    source: me/projects/visceraAtlas/viscera-tissue-lab.mp4
+    posterAt: 60
+    previewAt: 50
+  - id: viscera-adipose
+    title: Adipose, in detail
+    caption: New fat specimens are generated, pressed and released in a compression test, then placed around the organs of the connected body.
+    source: me/projects/visceraAtlas/viscera-fat.mp4
+    posterAt: 19
+    previewAt: 13
+  - id: viscera-physics-lab
+    title: Liver physics lab
+    caption: The liver is dropped, grasped and left to recover, then cut with laparoscopic scissors, with material parameters from a learned physics network.
+    source: me/projects/visceraAtlas/viscera-physcis-learning.mp4
+    posterAt: 121
+    previewAt: 115
 ---
 
 ## The idea

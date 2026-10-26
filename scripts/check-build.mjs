@@ -188,7 +188,9 @@ if (!existsSync(kbFile)) {
 for (const file of files.filter((name) => /\.(html|json|xml|txt|js|css|svg)$/.test(name))) {
   const content = readFileSync(path.join(build, file), 'utf8');
   // Scripts and styles are full of long numbers; only prose and data are checked for phone numbers.
-  let prose = /\.(js|css|svg)$/.test(file) ? null : content.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<svg[^>]*data-watch-dial[\s\S]*?<\/svg>|<[^>]+>/g, ' ');
+  // Each stripped tag leaves a space, so runs of spaces are collapsed: otherwise neighbouring elements,
+  // such as one card's "2:46" and the next card's "9 videos", read as a single long number.
+  let prose = /\.(js|css|svg)$/.test(file) ? null : content.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<svg[^>]*data-watch-dial[\s\S]*?<\/svg>|<[^>]+>/g, ' ').replace(/ {2,}/g, ' ');
   // Watch telemetry contains legitimate integer byte counts, seeds and training
   // steps. Its string fields still receive the same privacy scan as all prose.
   if (/^watch\/(?:plane|language)\/.*\.json$/.test(file)) {

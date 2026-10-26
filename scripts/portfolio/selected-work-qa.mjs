@@ -8,7 +8,7 @@ const base = process.env.SELECTED_QA_URL ?? 'http://127.0.0.1:4373/';
 const baseline = process.env.SELECTED_QA_BASELINE;
 const output = process.env.SELECTED_QA_OUTPUT ?? '/tmp/selected-universal-browser';
 await mkdir(output, { recursive: true });
-const expected = ['ai-proctor', 'astro-pilot', 'pixel-morph', 'laparoscopic-skills-trainer', 'universal-ai-proctor', 'viscera-atlas'];
+const expected = ['ai-proctor', 'viscera-atlas', 'astro-pilot', 'pixel-morph', 'laparoscopic-skills-trainer', 'universal-ai-proctor'];
 const checks = [];
 const browser = await startBrowser('about:blank', { width: 1440, height: 1000 });
 const page = (fn, arg) => browser.evaluate(`(${fn.toString()})(${JSON.stringify(arg)})`);
@@ -80,13 +80,15 @@ try {
     assert.ok(list.rows.every(row => row.image && row.imageWidth > 0 && row.imageHeight > 0));
     assert.equal(list.overflow, false);
     assert.deepEqual(list.errors, []);
-    assert.equal(list.rows[4].preview, false);
-    assert.equal(list.rows[4].watch, false);
-    assert.equal(list.rows[4].title, 'Cuevertis');
-    if (before) for (let i = 0; i < 4; i++) {
-      assert.equal(list.rows[i].id, before.rows[i].id);
-      assert.ok(Math.abs(list.rows[i].height - before.rows[i].height) < 2, 'existing card height changed');
-      assert.ok(Math.abs(list.rows[i].imageWidth - before.rows[i].imageWidth) < 2, 'existing thumbnail changed');
+    assert.equal(list.rows[5].preview, false);
+    assert.equal(list.rows[5].watch, false);
+    assert.equal(list.rows[5].title, 'Cuevertis');
+    // Matched by project, so reordering the selection does not read as a geometry change.
+    if (before) for (const old of before.rows.slice(0, 4)) {
+      const row = list.rows.find(row => row.id === old.id);
+      assert.ok(row, `${old.id} left the selection`);
+      assert.ok(Math.abs(row.height - old.height) < 2, 'existing card height changed');
+      assert.ok(Math.abs(row.imageWidth - old.imageWidth) < 2, 'existing thumbnail changed');
     }
     await page(() => document.querySelector('#featured article:has(a[href^="/work/universal-ai-proctor/"])').scrollIntoView({ block: 'center' }));
     await waitFor(() => parseFloat(getComputedStyle(document.querySelector('#featured article:has(a[href^="/work/universal-ai-proctor/"])')).opacity) >= 0.99, 'visible list card');

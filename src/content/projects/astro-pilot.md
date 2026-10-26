@@ -7,7 +7,7 @@ year: "2026"
 sortDate: 2026-09-30
 organisation: Independent project
 featured: true
-order: 2
+order: 3
 topics: [Reinforcement Learning, In-browser AI, 3D, LLM & VLM, Real-time, Simulation]
 stack: [TensorFlow.js, three.js, PPO, WebGPU, SmolVLM, LoRA, MobileNetV4, ONNX Runtime Web, JavaScript]
 highlights:

@@ -7,7 +7,7 @@ year: "2026"
 sortDate: 2026-10-01
 organisation: Independent project
 featured: true
-order: 3
+order: 4
 topics: [Generative AI, 3D, In-browser AI, Real-time]
 stack: [TensorFlow.js, WebGPU, WebGL, PyTorch, Triplane VAE, Signed distance fields, Rectified flow, CLIP, ONNX Runtime Web, transformers.js]
 highlights:
