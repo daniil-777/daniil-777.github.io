@@ -21,7 +21,7 @@ highlights:
     label: to the first frame of the drawing app
 links:
   - label: Try it live
-    href: https://daniil-777.github.io/real-time-web-2D3D-generation/
+    href: https://daniil-777.github.io/generation-lab/#objects
     kind: live
   - label: Source on GitHub
     href: https://github.com/daniil-777/real-time-web-2D3D-generation

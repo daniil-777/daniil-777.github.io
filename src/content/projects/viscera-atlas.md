@@ -21,7 +21,7 @@ highlights:
     label: paired text edits in the open language dataset
 links:
   - label: Try it live
-    href: https://daniil-777.github.io/real-time-web-2D3D-generation/anatomy/?mode=atlas
+    href: https://daniil-777.github.io/generation-lab/#objects
     kind: live
   - label: Source on GitHub
     href: https://github.com/daniil-777/surgery-anatomical-variations
