@@ -101,7 +101,7 @@ try {
   const started = Date.now();
   await until(browser, `document.querySelector('[data-watch-caption]').textContent !== ${JSON.stringify(previous)}`);
   assert.ok(Date.now() - started < 2600, 'Two-second answer interval must take effect promptly');
-  await browser.evaluate('(()=>{const range=document.querySelector("[data-watch-interval]");range.value="8";range.dispatchEvent(new Event("change",{bubbles:true}));document.querySelector("[data-watch-pause]").click();})()');
+  await browser.evaluate('(()=>{const range=document.querySelector("[data-watch-interval]");range.value="4";range.dispatchEvent(new Event("change",{bubbles:true}));document.querySelector("[data-watch-pause]").click();})()');
   results.push({ test: 'answer interval starts at two seconds and actually rotates', passed: true });
   await browser.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false });
   await browser.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });

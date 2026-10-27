@@ -53,7 +53,7 @@ export function mountSmartWatch(root: HTMLElement, options: SmartWatchOptions = 
   root.dataset.watchDomain = knowledgeDomain;
   node<HTMLSelectElement>('[data-watch-domain]').value = knowledgeDomain;
   node<HTMLElement>('[data-watch-knowledge]').hidden = mode !== 'ai';
-  let interval = Math.min(60000, Math.max(2000, options.phraseIntervalMs ?? (Number(root.dataset.watchIntervalValue) || 8000)));
+  let interval = Math.min(60000, Math.max(2000, options.phraseIntervalMs ?? (Number(root.dataset.watchIntervalValue) || 4000)));
   let paused = false, offset = 0, sequence = 0, due = Date.now() + interval;
   let plane: ReturnType<typeof mountPlane> | undefined;
   let currentFacts: WatchFact[] = [];
